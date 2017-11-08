@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "568269933371",
+    "firebase_url": "https://catchabug-teste.firebaseio.com",
+    "project_id": "catchabug-teste",
+    "storage_bucket": "catchabug-teste.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:568269933371:android:142eba2c334f8b59",
+        "android_client_info": {
+          "package_name": "com.example.jcca.teseandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "568269933371-t5vcsnv38qcqph94k53ap45nq53v8o9g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jcca.teseandroid",
+            "certificate_hash": "67761a833e5a24619bf14cc0184d6753da12b575"
+          }
+        },
+        {
+          "client_id": "568269933371-mo5kkqrh55962vt9n9p4b0882o5dh8c8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuM739gEftlR0is23mY7m__VOLZGB-Xag"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "568269933371-mo5kkqrh55962vt9n9p4b0882o5dh8c8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
