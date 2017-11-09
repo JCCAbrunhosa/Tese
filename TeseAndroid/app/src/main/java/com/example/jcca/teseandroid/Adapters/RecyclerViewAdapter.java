@@ -57,7 +57,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         ImageInfo UploadInfo = MainImageUploadInfoList.get(position);
 
         if(UploadInfo!=null){
-            holder.imageNameTextView.setText(UploadInfo.getDate());
+            holder.imageNameTextView.setText(UploadInfo.getAuthor());
 
 
             //Loading image from Glide library.

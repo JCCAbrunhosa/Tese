@@ -21,10 +21,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".Gallery.mainFeed"
-            android:label="Galeria de Capturas"
-            android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -38,7 +34,7 @@
 
         <activity
             android:name=".Login_Registering.LoginActivity"
-            android:label="@string/title_activity_login">
+            android:label="Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -56,11 +52,11 @@
         </activity>
         <activity
             android:name=".Gallery.galleryFeed"
-            android:label="@string/title_activity_gallery_feed"
+            android:label="Suas Capturas"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Gallery.otherPhotosGallery"
-            android:label="@string/title_activity_other_photos_gallery"
+            android:label="Galeria de Capturas"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -34,7 +34,6 @@ import android.widget.Toast;
 
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.R;
-import com.example.jcca.teseandroid.Gallery.mainFeed;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

@@ -1,5 +1,6 @@
 package com.example.jcca.teseandroid.Gallery;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,9 +18,7 @@ import android.view.MenuItem;
 
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
-import com.example.jcca.teseandroid.DataObjects.ImageUploadData;
 import com.example.jcca.teseandroid.R;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,10 +33,6 @@ public class otherPhotosGallery extends AppCompatActivity
 
 
     DatabaseReference mDatabase;
-
-
-    //Data for the current photo taken
-    private ImageUploadData image;
 
     //RecyclerView
     private RecyclerView imageViewer;
@@ -144,8 +139,11 @@ public class otherPhotosGallery extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            Intent k = new Intent(getApplicationContext(), galleryFeed.class);
+            startActivity(k);
         } else if (id == R.id.nav_gallery) {
-
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
