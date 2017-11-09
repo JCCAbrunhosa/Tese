@@ -16,4 +16,10 @@
         completions."
     </string>
     <string name="title_activity_register">Registar Conta</string>
+    <string name="title_activity_asdsadasd">asdsadasd</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_gallery_feed">galleryFeed</string>
+    <string name="title_activity_other_photos_gallery">otherPhotosGallery</string>
 </resources>

@@ -1,9 +1,21 @@
 package com.example.jcca.teseandroid.Gallery;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import com.example.jcca.teseandroid.Login_Registering.RegisterActivity;
+import com.example.jcca.teseandroid.R;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Point;
@@ -56,7 +68,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class mainFeed extends AppCompatActivity {
+public class galleryFeed extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     //Take a picture intent
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -86,23 +99,26 @@ public class mainFeed extends AppCompatActivity {
     //Pretty
 
     String timeStamp;
-    private boolean zoomOut =  false;
 
-    //Navigation
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private String[] mPlanetTitles;
-
-
-    @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_feed);
-
+        setContentView(R.layout.activity_gallery_feed);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+        //Photo
         imageViewer=(RecyclerView) findViewById(R.id.imageGallery);
         imageViewer.setHasFixedSize(true);
 
@@ -142,7 +158,6 @@ public class mainFeed extends AppCompatActivity {
 
         });
 
-
     }
 
     //Maneira menos elegante de fazer as coisas mas funciona
@@ -152,35 +167,44 @@ public class mainFeed extends AppCompatActivity {
         list.clear();
 
 
-                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
 
 
-                        ImageInfo imageInfo=dataSnapshot.getValue(ImageInfo.class);
+                ImageInfo imageInfo=dataSnapshot.getValue(ImageInfo.class);
 
-                        list.add(imageInfo);
+                list.add(imageInfo);
 
-                        adapter = new RecyclerViewAdapter(getApplicationContext(),list);
-                        imageViewer.setAdapter(adapter); //Está a repetir dados mas se reiniciar a app já não repete
-                    }
+                adapter = new RecyclerViewAdapter(getApplicationContext(),list);
+                imageViewer.setAdapter(adapter); //Está a repetir dados mas se reiniciar a app já não repete
+            }
 
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
+            }
+        });
 
 
     }
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_feed, menu);
+        getMenuInflater().inflate(R.menu.gallery_feed, menu);
         return true;
     }
 
@@ -199,7 +223,35 @@ public class mainFeed extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
 
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.nav_gallery) {
+            Intent goTo = new Intent(getApplicationContext(), otherPhotosGallery.class);
+            startActivity(goTo);
+        } else if (id == R.id.nav_guide) {
+
+        } else if (id == R.id.nav_map) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    /////////////////////////////////////Photo Functions/////////////////////////////
     private void takeAPhotoIntent(){
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -259,7 +311,7 @@ public class mainFeed extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(mainFeed.this, "Upload failed. Try again!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(galleryFeed.this, "Upload failed. Try again!", Toast.LENGTH_SHORT).show();
 
 
             }
@@ -289,5 +341,3 @@ public class mainFeed extends AppCompatActivity {
 
 
 }
-
-

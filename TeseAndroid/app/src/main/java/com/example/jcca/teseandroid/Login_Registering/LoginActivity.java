@@ -32,6 +32,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.R;
 import com.example.jcca.teseandroid.Gallery.mainFeed;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -420,7 +421,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
-                        Intent goToMain = new Intent(LoginActivity.this, mainFeed.class);
+                        Intent goToMain = new Intent(LoginActivity.this, galleryFeed.class);
                         startActivity(goToMain);
 
                         if (!task.isSuccessful()) {

@@ -23,7 +23,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Gallery.mainFeed"
-            android:label="@string/app_name"
+            android:label="Galeria de Capturas"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
@@ -45,7 +45,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Login_Registering.RegisterActivity"
             android:label="@string/title_activity_register">
@@ -55,6 +54,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Gallery.galleryFeed"
+            android:label="@string/title_activity_gallery_feed"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Gallery.otherPhotosGallery"
+            android:label="@string/title_activity_other_photos_gallery"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

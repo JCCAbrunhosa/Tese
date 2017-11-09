@@ -8,10 +8,9 @@
     tools:context="com.example.jcca.teseandroid.Gallery.mainFeed"
     tools:showIn="@layout/activity_main_feed">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
+
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/imageGallery"
             android:layout_width="fill_parent"
@@ -23,7 +22,16 @@
 
 
         </android.support.v7.widget.RecyclerView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+
+        <android.support.v4.widget.DrawerLayout
+            android:id="@+id/drawerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+                <!-- ...... -->
+        </android.support.v4.widget.DrawerLayout>
+
+
 
 
 </android.support.constraint.ConstraintLayout>

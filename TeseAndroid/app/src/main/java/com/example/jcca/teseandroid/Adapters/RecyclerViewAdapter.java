@@ -1,16 +1,24 @@
 package com.example.jcca.teseandroid.Adapters;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.request.target.Target;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
 import com.example.jcca.teseandroid.R;
+import com.example.jcca.teseandroid.Misc.*;
 
 import java.util.List;
 
@@ -23,12 +31,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     Context context;
     List<ImageInfo> MainImageUploadInfoList;
 
+
+
     public RecyclerViewAdapter(Context context, List<ImageInfo> TempList) {
 
         this.MainImageUploadInfoList = TempList;
 
         this.context = context;
+
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -41,7 +53,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         ImageInfo UploadInfo = MainImageUploadInfoList.get(position);
 
         if(UploadInfo!=null){
@@ -49,11 +61,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
             //Loading image from Glide library.
-            GlideApp.with(context).load(UploadInfo.getUrl()+".jpg").override(100,100).centerCrop().dontTransform().into(holder.imageView);
-
-
+            GlideApp.with(context).load(UploadInfo.getUrl()+".jpg").override(1000,1000).into(holder.imageView);
         }
-
 
     }
 
@@ -71,9 +80,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public ViewHolder(View itemView) {
             super(itemView);
 
+
             imageView = (ImageView) itemView.findViewById(R.id.img);
 
             imageNameTextView = (TextView) itemView.findViewById(R.id.data);
+
         }
+
     }
+
+
 }
