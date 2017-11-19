@@ -297,7 +297,7 @@ public class galleryFeed extends AppCompatActivity
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                ImageInfo image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                ImageInfo image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(), "", "", "" , "");
                 mDatabase.child(mDatabase.push().getKey()).setValue(image);
                 newPhotos.child(mDatabase.push().getKey()).setValue(image);
 
