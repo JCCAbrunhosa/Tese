@@ -47,7 +47,7 @@ public class NewPhotoAdded extends Service {
                                 .setContentTitle("Nova Captura!")
                                 .setContentText(dataSnapshot.child("date").getValue().toString());
 
-
+                mBuilder.setAutoCancel(true);
                 //Notification Action
                 Intent resultIntent = new Intent(NewPhotoAdded.this, onClickImage.class);
                 Bundle toSend = new Bundle();
