@@ -22,4 +22,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_gallery_feed">galleryFeed</string>
     <string name="title_activity_other_photos_gallery">otherPhotosGallery</string>
+
+    <string name="title_activity_on_click_image">onClickImage</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

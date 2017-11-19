@@ -21,7 +21,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
@@ -57,7 +56,34 @@
         <activity
             android:name=".Gallery.otherPhotosGallery"
             android:label="Galeria de Capturas"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service
+            android:name=".Notifications.NotificationService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".Notifications.GetTokenService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".Notifications.NewPhotoAdded"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".Gallery.onClickImage"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_on_click_image"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

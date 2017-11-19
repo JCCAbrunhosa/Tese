@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 
 import android.content.Intent;
@@ -57,7 +58,7 @@ public class galleryFeed extends AppCompatActivity
     //Connection between RecyclerView and Firebase variables
     public List<ImageInfo> list = new ArrayList<>();
 
-    public RecyclerView.Adapter adapter ;
+    public RecyclerView.Adapter adapter;
 
     //Firebase Storage Connection
     private String mCurrentPhotoPath;
@@ -67,6 +68,7 @@ public class galleryFeed extends AppCompatActivity
     StorageReference storageRef = storage.getReferenceFromUrl("gs://catchabug-teste.appspot.com");
 
     DatabaseReference mDatabase;
+    DatabaseReference newPhotos;
 
 
     //RecyclerView
@@ -83,6 +85,7 @@ public class galleryFeed extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        startService(new Intent(this, NewPhotoAdded.class));
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -95,12 +98,13 @@ public class galleryFeed extends AppCompatActivity
 
 
         //Photo
-        imageViewer=(RecyclerView) findViewById(R.id.imageGallery);
+        imageViewer = (RecyclerView) findViewById(R.id.imageGallery);
         imageViewer.setHasFixedSize(true);
 
-        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
+        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+        newPhotos = FirebaseDatabase.getInstance().getReference().child("NewPhotos");
 
-        RecyclerView.LayoutManager layoutManager= new LinearLayoutManager(getApplicationContext());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         imageViewer.setLayoutManager(layoutManager);
 
 
@@ -109,12 +113,12 @@ public class galleryFeed extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
-                    ImageInfo imageInfo=postSnapshot.getValue(ImageInfo.class);
+                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
 
                     list.add(imageInfo);
                 }
 
-                adapter = new RecyclerViewAdapter(getApplicationContext(),list);
+                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
                 imageViewer.setAdapter(adapter); //Está a repetir dados mas se reiniciar a app já não repete
             }
 
@@ -137,7 +141,7 @@ public class galleryFeed extends AppCompatActivity
     }
 
     //Maneira menos elegante de fazer as coisas mas funciona
-    public void onResume(){
+    public void onResume() {
         super.onResume();
 
         list.clear();
@@ -148,15 +152,13 @@ public class galleryFeed extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
 
 
-
-                ImageInfo imageInfo=dataSnapshot.getValue(ImageInfo.class);
+                ImageInfo imageInfo = dataSnapshot.getValue(ImageInfo.class);
 
                 list.add(imageInfo);
 
-                adapter = new RecyclerViewAdapter(getApplicationContext(),list);
+                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
                 imageViewer.setAdapter(adapter); //Está a repetir dados mas se reiniciar a app já não repete
             }
-
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -228,7 +230,7 @@ public class galleryFeed extends AppCompatActivity
     }
 
     /////////////////////////////////////Photo Functions/////////////////////////////
-    private void takeAPhotoIntent(){
+    private void takeAPhotoIntent() {
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -242,7 +244,7 @@ public class galleryFeed extends AppCompatActivity
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri uriSavedImage=Uri.fromFile(new File(photoFile.getAbsolutePath()));
+                Uri uriSavedImage = Uri.fromFile(new File(photoFile.getAbsolutePath()));
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
@@ -257,8 +259,8 @@ public class galleryFeed extends AppCompatActivity
         String imageFileName = "JPEG_" + timeStamp + "_";
         //Saves on directory made for that day
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File dir = new File(storageDir,new SimpleDateFormat("yyyyMMdd").format(new Date()));
-        if(!dir.exists())
+        File dir = new File(storageDir, new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        if (!dir.exists())
             dir.mkdirs();
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
@@ -272,14 +274,14 @@ public class galleryFeed extends AppCompatActivity
     }
 
 
-    private void uploadPhoto(){
+    private void uploadPhoto() {
 
         //Upload to Data Storage
         Uri file = Uri.fromFile(new File(mCurrentPhotoPath));
         Log.d("Storage ", mCurrentPhotoPath.toString());
-        StorageReference photosRef = storageRef.child("photos/"+ FirebaseAuth.getInstance().getCurrentUser().getEmail()+"/"+file.getLastPathSegment());
-        final StorageMetadata metadata= new StorageMetadata.Builder().setContentType("image/jpeg").build();
-        UploadTask uploadTask = photosRef.putFile(file,metadata);
+        StorageReference photosRef = storageRef.child("photos/" + FirebaseAuth.getInstance().getCurrentUser().getEmail() + "/" + file.getLastPathSegment());
+        final StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
+        UploadTask uploadTask = photosRef.putFile(file, metadata);
 
 
         // Register observers to listen for when the download is done or if it fails
@@ -295,8 +297,9 @@ public class galleryFeed extends AppCompatActivity
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                ImageInfo image= new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(),FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                ImageInfo image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail());
                 mDatabase.child(mDatabase.push().getKey()).setValue(image);
+                newPhotos.child(mDatabase.push().getKey()).setValue(image);
 
             }
 
@@ -313,7 +316,6 @@ public class galleryFeed extends AppCompatActivity
             //onResume();
         }
     }
-
 
 
 }

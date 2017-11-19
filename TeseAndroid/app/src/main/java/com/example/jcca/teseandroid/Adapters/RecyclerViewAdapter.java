@@ -1,6 +1,7 @@
 package com.example.jcca.teseandroid.Adapters;
 
 import android.content.Context;
+import android.media.Image;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
 
+
     public RecyclerViewAdapter(Context context, List<ImageInfo> TempList) {
 
         this.MainImageUploadInfoList = TempList;
@@ -54,11 +56,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        ImageInfo UploadInfo = MainImageUploadInfoList.get(position);
+        final ImageInfo UploadInfo = MainImageUploadInfoList.get(position);
 
         if(UploadInfo!=null){
             holder.imageNameTextView.setText(UploadInfo.getAuthor());
 
+            //OnClick
+            holder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(context, UploadInfo.getAuthor(), Toast.LENGTH_SHORT).show();
+
+                }
+            });
 
             //Loading image from Glide library.
             GlideApp.with(context).load(UploadInfo.getUrl()+".jpg").override(1000,1000).into(holder.imageView);
