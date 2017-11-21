@@ -20,6 +20,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Random;
+
 public class NewPhotoAdded extends Service {
 
 
@@ -36,22 +38,23 @@ public class NewPhotoAdded extends Service {
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
         newPhotoAdded = FirebaseDatabase.getInstance().getReference().child("NewPhotos");
 
+        //Enviar notificação
+        final NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(NewPhotoAdded.this)
+                        .setSmallIcon(R.drawable.side_nav_bar)
+                        .setContentTitle("Nova Captura!");
+
         newPhotoAdded.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                //Enviar notificação
-                Log.d("Imagem", "Imagem Adicionada");
-                NotificationCompat.Builder mBuilder =
-                        new NotificationCompat.Builder(NewPhotoAdded.this)
-                                .setSmallIcon(R.drawable.side_nav_bar)
-                                .setContentTitle("Nova Captura!")
-                                .setContentText(dataSnapshot.child("date").getValue().toString());
+
 
                 mBuilder.setAutoCancel(true);
                 //Notification Action
                 Intent resultIntent = new Intent(NewPhotoAdded.this, onClickImage.class);
                 Bundle toSend = new Bundle();
                 toSend.putString("URL", dataSnapshot.child("url").getValue().toString());
+                toSend.putString("photoName", dataSnapshot.getKey());
                 resultIntent.putExtras(toSend);
                 // Because clicking the notification opens a new ("special") activity, there's
                 // no need to create an artificial back stack.
@@ -68,7 +71,8 @@ public class NewPhotoAdded extends Service {
 
 
                 // Sets an ID for the notification
-                int mNotificationId = 001;
+                Random random = new Random();
+                int mNotificationId= random.nextInt(9999 - 1000) + 1000;
                 // Gets an instance of the NotificationManager service
                 NotificationManager mNotifyMgr =
                         (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

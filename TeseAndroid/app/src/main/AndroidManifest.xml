@@ -83,7 +83,8 @@
             android:name=".Gallery.onClickImage"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_on_click_image"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
+        <activity android:name=".Misc.editDetails"></activity>
     </application>
 
 </manifest>

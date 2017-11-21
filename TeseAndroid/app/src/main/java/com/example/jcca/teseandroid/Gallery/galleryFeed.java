@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 
@@ -85,7 +86,7 @@ public class galleryFeed extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        startService(new Intent(this, NewPhotoAdded.class));
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -136,34 +137,6 @@ public class galleryFeed extends AppCompatActivity
                 takeAPhotoIntent();
             }
 
-        });
-
-    }
-
-    //Maneira menos elegante de fazer as coisas mas funciona
-    public void onResume() {
-        super.onResume();
-
-        list.clear();
-
-
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                ImageInfo imageInfo = dataSnapshot.getValue(ImageInfo.class);
-
-                list.add(imageInfo);
-
-                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
-                imageViewer.setAdapter(adapter); //Está a repetir dados mas se reiniciar a app já não repete
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
         });
 
 
@@ -221,7 +194,9 @@ public class galleryFeed extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
+            FirebaseAuth.getInstance().signOut();
+            Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(goTo);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -313,7 +288,6 @@ public class galleryFeed extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             uploadPhoto();
-            //onResume();
         }
     }
 

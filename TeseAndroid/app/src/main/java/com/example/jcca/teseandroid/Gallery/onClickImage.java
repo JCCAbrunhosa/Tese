@@ -1,15 +1,21 @@
 package com.example.jcca.teseandroid.Gallery;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
+import com.example.jcca.teseandroid.Misc.editDetails;
 import com.example.jcca.teseandroid.R;
 
 /**
@@ -87,6 +93,8 @@ public class onClickImage extends AppCompatActivity {
         }
     };
 
+    Bundle editDetails;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +102,10 @@ public class onClickImage extends AppCompatActivity {
         setContentView(R.layout.activity_on_click_image);
 
         String url = getIntent().getStringExtra("URL");
+        String photoName = getIntent().getStringExtra("photoName");
+
+        editDetails = new Bundle();
+        editDetails.putString("photoName", photoName);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
@@ -102,6 +114,7 @@ public class onClickImage extends AppCompatActivity {
 
         GlideApp.with(getApplicationContext()).load(url).into(mContentView);
 
+        registerForContextMenu(mContentView);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -168,5 +181,29 @@ public class onClickImage extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.onclick_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.edit:
+                Intent k = new Intent(getApplicationContext(), editDetails.class);
+                k.putExtras(editDetails);
+                startActivity(k);
+                return true;
+            case R.id.delete:
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 }

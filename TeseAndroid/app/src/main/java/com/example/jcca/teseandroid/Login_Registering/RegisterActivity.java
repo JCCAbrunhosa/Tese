@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mName;
     private View mProgressView;
     private View mLoginFormView;
+    private CheckBox isPro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         mPasswordView1 = (EditText) findViewById(R.id.pwd1);
         mPasswordView2 = (EditText) findViewById(R.id.pwd2);
+
+        isPro = findViewById(R.id.isPro);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.createAccount);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -73,7 +77,8 @@ public class RegisterActivity extends AppCompatActivity {
                                     // If sign in fails, display a message to the user.
 
                                     Toast.makeText( RegisterActivity.this,"Conta já existente!",Toast.LENGTH_SHORT).show();
-
+                                    mPasswordView1.clearComposingText();
+                                    mPasswordView2.clearComposingText();
                                 }
 
 
