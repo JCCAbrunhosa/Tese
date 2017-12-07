@@ -1,5 +1,6 @@
 package com.example.jcca.teseandroid.DataObjects;
 
+import android.location.Location;
 import android.media.Image;
 import android.net.Uri;
 
@@ -17,7 +18,7 @@ public class ImageInfo {
     private String date;
     private String url;
     private String author;
-    private String location;
+    private Position location;
     private String species;
     private String description;
     private String eco;
@@ -25,7 +26,7 @@ public class ImageInfo {
 
     public ImageInfo(){};
 
-    public ImageInfo(String date, String url, String author, String location, String species, String description, String eco){
+    public ImageInfo(String date, String url, String author, Position location, String species, String description, String eco){
 
         this.date=date;
         this.url=url;
@@ -47,7 +48,7 @@ public class ImageInfo {
 
     public String getAuthor(){  return author;  }
 
-    public String getLocation(){return location;}
+    public Position getLocation(){return location;}
 
     public String getSpecies(){return species;}
 
@@ -61,5 +62,17 @@ public class ImageInfo {
 
     public void setUrl(String url){
         this.url=url;
+    }
+
+    public void setLocation(Position location){
+        this.location=location;
+    }
+
+    public void setDescription(String description){
+        this.description=description;
+    }
+
+    public void setEco(String eco){
+        this.eco=eco;
     }
 }

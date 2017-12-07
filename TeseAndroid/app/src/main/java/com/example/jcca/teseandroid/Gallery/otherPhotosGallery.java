@@ -10,12 +10,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
+import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,13 +56,30 @@ public class otherPhotosGallery extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         imageViewer=(RecyclerView) findViewById(R.id.imageGallery1);
         imageViewer.setHasFixedSize(true);
 
-        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/");
+        mDatabase =  FirebaseDatabase.getInstance().getReference();
+
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("isPro").getValue() == null){
+                    navigationView.getMenu().findItem(R.id.nav_waitingPhotos).setVisible(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/PhotosReviewed");
 
         RecyclerView.LayoutManager layoutManager= new LinearLayoutManager(getApplicationContext());
         imageViewer.setLayoutManager(layoutManager);
@@ -68,11 +88,10 @@ public class otherPhotosGallery extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    for(DataSnapshot allSnaps : postSnapshot.getChildren()){
-                        ImageInfo imageInfo=allSnaps.getValue(ImageInfo.class);
+
+                        ImageInfo imageInfo=postSnapshot.getValue(ImageInfo.class);
 
                         list.add(imageInfo);
-                    }
 
                 }
 
@@ -85,6 +104,7 @@ public class otherPhotosGallery extends AppCompatActivity
 
             }
         });
+
 
     }
 
@@ -101,6 +121,7 @@ public class otherPhotosGallery extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.other_photos_gallery, menu);
         return true;
     }
@@ -128,19 +149,23 @@ public class otherPhotosGallery extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-            Intent k = new Intent(getApplicationContext(), galleryFeed.class);
-            startActivity(k);
+            Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+            startActivity(goTo);
         } else if (id == R.id.nav_gallery) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
-        } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_waitingPhotos) {
+            Intent goTo = new Intent(getApplicationContext(), photosToReview.class);
+            startActivity(goTo);
+        } else if (id == R.id.nav_guide) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_map) {
 
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_signOut) {
+            FirebaseAuth.getInstance().signOut();
+            Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(goTo);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

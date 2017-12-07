@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
 import com.example.jcca.teseandroid.Misc.editDetails;
+import com.example.jcca.teseandroid.Misc.showOnMap;
 import com.example.jcca.teseandroid.R;
 
 /**
@@ -94,6 +95,8 @@ public class onClickImage extends AppCompatActivity {
     };
 
     Bundle editDetails;
+    String lat;
+    String lng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,9 +105,13 @@ public class onClickImage extends AppCompatActivity {
         setContentView(R.layout.activity_on_click_image);
 
         String url = getIntent().getStringExtra("URL");
+        lat = getIntent().getStringExtra("Lat");
+        lng = getIntent().getStringExtra("Long");
         String photoName = getIntent().getStringExtra("photoName");
 
         editDetails = new Bundle();
+        editDetails.putString("photoName", photoName);
+        editDetails.putString("URL", url);
         editDetails.putString("photoName", photoName);
 
         mVisible = true;
@@ -201,6 +208,14 @@ public class onClickImage extends AppCompatActivity {
                 startActivity(k);
                 return true;
             case R.id.delete:
+                return true;
+            case R.id.map:
+                Bundle coordinates = new Bundle();
+                coordinates.putString("Lat", lat);
+                coordinates.putString("Long", lng);
+                Intent map = new Intent(getApplicationContext(), showOnMap.class);
+                map.putExtras(coordinates);
+                startActivity(map);
                 return true;
             default:
                 return super.onContextItemSelected(item);

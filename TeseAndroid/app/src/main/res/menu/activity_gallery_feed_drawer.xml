@@ -11,6 +11,10 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Galeria" />
         <item
+            android:id="@+id/nav_waitingPhotos"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Fotos Novas" />
+        <item
             android:id="@+id/nav_guide"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Guia" />
@@ -23,13 +27,13 @@
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_options"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="Opções de Conta" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_signOut"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="Terminar Sessão" />
         </menu>
     </item>
 

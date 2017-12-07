@@ -24,6 +24,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * A login screen that offers login via email/password.
@@ -32,6 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -48,12 +51,14 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
 
         mPasswordView1 = (EditText) findViewById(R.id.pwd1);
         mPasswordView2 = (EditText) findViewById(R.id.pwd2);
+        isPro = findViewById(R.id.isPro);
 
         isPro = findViewById(R.id.isPro);
 
@@ -69,8 +74,11 @@ public class RegisterActivity extends AppCompatActivity {
                                     // Sign in success, update UI with the signed-in user's information
 
                                     FirebaseUser user = mAuth.getCurrentUser();
-
-                                    Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+                                    if(isPro.isChecked()){
+                                        sendVerificationEmail();
+                                        Toast.makeText( RegisterActivity.this,"Email de Verificação Enviado",Toast.LENGTH_SHORT).show();
+                                    }
+                                    Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
                                     startActivity(goTo);
 
                                 } else {
@@ -143,5 +151,35 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+
+    private void sendVerificationEmail()
+    {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // email sent
+                            // after email is sent just logout the user and finish this activity
+                            FirebaseAuth.getInstance().signOut();
+                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                            finish();
+                        }
+                        else
+                        {
+                            // email not sent, so display message and restart the activity or do whatever you wish to do
+
+                            //restart this activity
+                            overridePendingTransition(0, 0);
+                            finish();
+                            overridePendingTransition(0, 0);
+                            startActivity(getIntent());
+
+                        }
+                    }
+                });
+    }
 }
 

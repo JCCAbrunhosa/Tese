@@ -34,26 +34,28 @@ public class NewPhotoAdded extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
 
-        DatabaseReference mDatabase, newPhotoAdded;
-        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
-        newPhotoAdded = FirebaseDatabase.getInstance().getReference().child("NewPhotos");
+        final DatabaseReference newPhotoAdded;
+        newPhotoAdded = FirebaseDatabase.getInstance().getReference().child("toReview");
 
-        //Enviar notificação
-        final NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(NewPhotoAdded.this)
-                        .setSmallIcon(R.drawable.side_nav_bar)
-                        .setContentTitle("Nova Captura!");
 
         newPhotoAdded.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
 
+                    //Enviar notificação
+                final NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(NewPhotoAdded.this)
+                                .setSmallIcon(R.drawable.side_nav_bar)
+                                .setContentTitle("Nova Captura!");
+
                 mBuilder.setAutoCancel(true);
                 //Notification Action
                 Intent resultIntent = new Intent(NewPhotoAdded.this, onClickImage.class);
                 Bundle toSend = new Bundle();
                 toSend.putString("URL", dataSnapshot.child("url").getValue().toString());
+                toSend.putString("Lat", dataSnapshot.child("location").child("latitude").getValue().toString());
+                toSend.putString("Long", dataSnapshot.child("location").child("longitude").getValue().toString());
                 toSend.putString("photoName", dataSnapshot.getKey());
                 resultIntent.putExtras(toSend);
                 // Because clicking the notification opens a new ("special") activity, there's
@@ -76,7 +78,9 @@ public class NewPhotoAdded extends Service {
                 // Gets an instance of the NotificationManager service
                 NotificationManager mNotifyMgr =
                         (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                // Builds the notification and issues it.
+
+
+
                 mNotifyMgr.notify(mNotificationId, mBuilder.build());
             }
 
