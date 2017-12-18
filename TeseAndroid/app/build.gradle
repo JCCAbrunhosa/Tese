@@ -42,10 +42,22 @@ dependencies {
     compile 'com.firebase:firebase-jobdispatcher:0.6.0'
     compile 'com.android.support:support-v4:26.+'
     compile 'com.google.android.gms:play-services-maps:11.4.2'
+    compile 'com.github.chathuralakmal:AndroidImagePopup:1.2.1'
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'com.mikhaellopez:circularimageview:3.0.2'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.2.0'
-    compile 'com.github.chathuralakmal:AndroidImagePopup:1.2.1'
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

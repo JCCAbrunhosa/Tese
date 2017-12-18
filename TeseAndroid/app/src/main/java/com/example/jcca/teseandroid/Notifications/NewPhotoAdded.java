@@ -54,6 +54,8 @@ public class NewPhotoAdded extends Service {
                 Intent resultIntent = new Intent(NewPhotoAdded.this, onClickImage.class);
                 Bundle toSend = new Bundle();
                 toSend.putString("URL", dataSnapshot.child("url").getValue().toString());
+                toSend.putString("Date", dataSnapshot.child("date").getValue().toString());
+                toSend.putString("Species", dataSnapshot.child("species").getValue().toString());
                 toSend.putString("Lat", dataSnapshot.child("location").child("latitude").getValue().toString());
                 toSend.putString("Long", dataSnapshot.child("location").child("longitude").getValue().toString());
                 toSend.putString("photoName", dataSnapshot.getKey());

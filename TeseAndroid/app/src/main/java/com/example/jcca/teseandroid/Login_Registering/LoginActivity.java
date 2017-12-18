@@ -116,6 +116,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
+        startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -123,7 +124,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
+
                     Log.d("Login", "onAuthStateChanged:signed_in:" + user.getUid());
                     Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
                     startActivity(goTo);

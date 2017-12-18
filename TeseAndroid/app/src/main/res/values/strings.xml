@@ -27,4 +27,14 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_show_on_map">Map</string>
+    <string name="title_activity_guide">guide</string>
+    <string name="title_activity_species_details">speciesDetails</string>
+    <string name="title_activity_same_species_gallery">sameSpeciesGallery</string>
+    <string name="title_activity_show_species_on_map">Map</string>
+    <string name="title_activity_photo_details">photoDetails</string>
+    <string name="title_activity_guide_activity">guide_activity</string>
+    <string name="title_activity_photo_details_activity">photoDetails_activity</string>
+    <string name="title_activity_same_species_activity">same_species_activity</string>
+    <string name="title_activity_species_details_activity">speciesDetails_activity</string>
+    <string name="title_activity_map_activity">Map</string>
 </resources>

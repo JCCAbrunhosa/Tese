@@ -19,6 +19,7 @@ import android.view.View;
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
+import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -144,9 +145,11 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_guide) {
-
+            Intent goTo = new Intent(getApplicationContext(), guide_activity.class);
+            startActivity(goTo);
         } else if (id == R.id.nav_map) {
-
+            Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            startActivity(goTo);
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);

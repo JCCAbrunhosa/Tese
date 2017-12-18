@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -24,7 +25,9 @@ import android.view.MenuItem;
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Misc.editDetails;
+import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.Misc.showOnMap;
+import com.example.jcca.teseandroid.Misc.takeAPhoto;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 
@@ -36,6 +39,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -112,7 +116,7 @@ public class galleryFeed extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mDatabase =  FirebaseDatabase.getInstance().getReference();
-
+        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -146,8 +150,10 @@ public class galleryFeed extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+                    TextView name = findViewById(R.id.userName);
+                    name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
+                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
                     list.add(imageInfo);
                 }
 
@@ -166,11 +172,26 @@ public class galleryFeed extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                takeAPhotoIntent();
+              takeAPhotoIntent();
             }
 
         });
 
+
+        mySwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.i("Refresh", "onRefresh called from SwipeRefreshLayout");
+                        Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_LONG).show();
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        refreshList(mDatabase);
+                        mySwipeRefreshLayout.setRefreshing(false);
+
+                    }
+                }
+        );
 
     }
 
@@ -179,6 +200,30 @@ public class galleryFeed extends AppCompatActivity
         super.onResume();
         list.clear();
 
+    }
+
+    public void refreshList(DatabaseReference mDatabase){
+
+        list.clear();
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+
+                    list.add(imageInfo);
+                }
+
+                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
+                imageViewer.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -230,8 +275,12 @@ public class galleryFeed extends AppCompatActivity
             Intent goTo = new Intent(getApplicationContext(), photosToReview.class);
             startActivity(goTo);
         } else if (id == R.id.nav_guide) {
+            Intent goTo = new Intent(getApplicationContext(), guide_activity.class);
+            startActivity(goTo);
 
         } else if (id == R.id.nav_map) {
+            Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            startActivity(goTo);
 
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
@@ -339,8 +388,9 @@ public class galleryFeed extends AppCompatActivity
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "", "");
-                mDatabase.child(mDatabase.push().getKey()).setValue(image);
-                toReview.child(mDatabase.push().getKey()).setValue(image);
+                mDatabase.child(timeStamp).setValue(image);
+                Log.d("DATABASE:", mDatabase.getRef().toString());
+                toReview.child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
 
@@ -368,30 +418,5 @@ public class galleryFeed extends AppCompatActivity
 
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        // Inflate Menu from xml resource
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.info_menu, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.info:
-                Intent k = new Intent(getApplicationContext(), editDetails.class);
-                startActivity(k);
-                return true;
-            case R.id.map:
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-
-        }
-
-    }
 
 }
