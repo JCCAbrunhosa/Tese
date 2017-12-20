@@ -51,7 +51,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         final ImageInfo UploadInfo = MainImageUploadInfoList.get(position);
         if(UploadInfo!=null){
 
-            holder.speciesDesc.setText(UploadInfo.getDescription());
+            //holder.speciesDesc.setText(UploadInfo.getDescription());
             holder.speciesName.setText(UploadInfo.getSpecies());
             holder.itemView.setLongClickable(true);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +71,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
             });
 
             //Loading image from Glide library.
-            GlideApp.with(context).load(UploadInfo.getUrl()+".jpg").into(holder.speciesPhoto);
+            GlideApp.with(context).load(UploadInfo.getUrl()).into(holder.speciesPhoto);
         }
 
 
@@ -95,7 +95,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
 
             species = (CardView)itemView.findViewById(R.id.guideList);
             speciesName = (TextView)itemView.findViewById(R.id.species_name);
-            speciesDesc= (TextView)itemView.findViewById(R.id.species_desc);
+            //speciesDesc= (TextView)itemView.findViewById(R.id.species_desc);
             speciesPhoto = (ImageView)itemView.findViewById(R.id.species_photo);
 
 

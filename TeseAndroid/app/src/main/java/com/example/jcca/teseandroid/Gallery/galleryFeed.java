@@ -91,8 +91,6 @@ public class galleryFeed extends AppCompatActivity
     //RecyclerView
     private RecyclerView imageViewer;
 
-
-
     String timeStamp;
 
     ImageInfo image;
@@ -198,7 +196,6 @@ public class galleryFeed extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        list.clear();
 
     }
 
@@ -387,7 +384,7 @@ public class galleryFeed extends AppCompatActivity
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "", "");
+                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "", "", FirebaseAuth.getInstance().getCurrentUser().getUid());
                 mDatabase.child(timeStamp).setValue(image);
                 Log.d("DATABASE:", mDatabase.getRef().toString());
                 toReview.child(timeStamp).setValue(image);

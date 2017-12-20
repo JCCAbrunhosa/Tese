@@ -43,7 +43,8 @@ public class NewPhotoAdded extends Service {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
 
-                    //Enviar notificação
+                //Notificação para um investigador
+                //Enviar notificação
                 final NotificationCompat.Builder mBuilder =
                         new NotificationCompat.Builder(NewPhotoAdded.this)
                                 .setSmallIcon(R.drawable.side_nav_bar)
@@ -59,6 +60,7 @@ public class NewPhotoAdded extends Service {
                 toSend.putString("Lat", dataSnapshot.child("location").child("latitude").getValue().toString());
                 toSend.putString("Long", dataSnapshot.child("location").child("longitude").getValue().toString());
                 toSend.putString("photoName", dataSnapshot.getKey());
+                toSend.putString("UID", dataSnapshot.child("uid").getValue().toString());
                 resultIntent.putExtras(toSend);
                 // Because clicking the notification opens a new ("special") activity, there's
                 // no need to create an artificial back stack.
@@ -81,6 +83,8 @@ public class NewPhotoAdded extends Service {
                 NotificationManager mNotifyMgr =
                         (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
+
+                //Notificação para um utilizador comum
 
 
                 mNotifyMgr.notify(mNotificationId, mBuilder.build());

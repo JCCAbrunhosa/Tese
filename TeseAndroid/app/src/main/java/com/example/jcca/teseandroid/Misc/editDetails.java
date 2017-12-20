@@ -1,8 +1,10 @@
 package com.example.jcca.teseandroid.Misc;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.text.TextUtilsCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -47,6 +49,7 @@ public class editDetails extends AppCompatActivity {
     String key;
     String data;
     String species;
+    String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,7 @@ public class editDetails extends AppCompatActivity {
         key = getIntent().getStringExtra("photoName");
         data = getIntent().getStringExtra("photoName");
         species = getIntent().getStringExtra("Species");
+        uid=getIntent().getStringExtra("UID");
 
         submit = findViewById(R.id.submitData);
 
@@ -161,7 +165,26 @@ public class editDetails extends AppCompatActivity {
             }
         });
 
+        FloatingActionButton deny = findViewById(R.id.denyPhoto);
+        deny.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(editDetails.this)
+                        .setTitle("Rejeitar Avistamento")
+                        .setMessage("Confirme se deseja rejeitar o avistamento:")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                mDatabase.child("toReview").child(key).getRef().removeValue();
+                                mDatabase.child("Users").child(uid).child(key).getRef().removeValue();
+                                Intent goBack = new Intent(getApplicationContext(), galleryFeed.class);
+                                startActivity(goBack);
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+
+            }
+        });
 
     }
 

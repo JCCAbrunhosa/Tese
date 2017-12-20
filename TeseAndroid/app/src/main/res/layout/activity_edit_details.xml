@@ -34,8 +34,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="45dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        android:layout_marginBottom="47dp"
+        android:layout_marginRight="100dp" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="231dp"
@@ -96,11 +96,12 @@
                 android:ems="10"
                 android:hint="Espécie"
                 android:inputType="textMultiLine"
+                android:textColorLink="@color/greenTese"
                 app:layout_constraintBottom_toBottomOf="@+id/newImage"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/newImage"
-                app:layout_constraintVertical_bias="1.0"
 
+                app:layout_constraintVertical_bias="1.0"
                 tools:layout_constraintBottom_creator="1"
                 tools:layout_constraintLeft_creator="1"
                 tools:layout_constraintTop_creator="1" />
@@ -140,5 +141,18 @@
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="221dp" />
     </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/denyPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="47dp"
+        android:layout_marginLeft="100dp"
+        android:clickable="true"
+        app:backgroundTint="@color/greenTese"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:srcCompat="@android:drawable/ic_input_delete" />
 
 </android.support.constraint.ConstraintLayout>

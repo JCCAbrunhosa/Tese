@@ -3,6 +3,7 @@ package com.example.jcca.teseandroid.Misc;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -74,6 +75,7 @@ public class photoDetails_activity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+
         auth = findViewById(R.id.photoAuthor);
         ec = findViewById(R.id.photoEco);
         description = findViewById(R.id.speciesName);
@@ -88,6 +90,7 @@ public class photoDetails_activity extends AppCompatActivity
         final String lat = getIntent().getStringExtra("Lat");
         final String lng = getIntent().getStringExtra("Long");
         final String date = getIntent().getStringExtra("Date");
+        final String uid = getIntent().getStringExtra("UID");
 
         //Image pops up when user clicks on it
         final ImagePopup imagePopup = new ImagePopup(this);
@@ -128,6 +131,7 @@ public class photoDetails_activity extends AppCompatActivity
 
         similar = (RecyclerView) findViewById(R.id.samePhotosGallery);
         similar.setHasFixedSize(true);
+        similar.setNestedScrollingEnabled(false);
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
         similar.setLayoutManager(layoutManager);
@@ -173,6 +177,7 @@ public class photoDetails_activity extends AppCompatActivity
                 edit.putString("photoName", date);
                 edit.putString("URL", url);
                 edit.putString("Species", species);
+                edit.putString("UID", uid);
                 Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
                 goTo.putExtras(edit);
                 startActivity(goTo);

@@ -26,7 +26,7 @@
                 android:id="@+id/species_photo"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginRight="4dp"
                 android:layout_marginTop="5dp"
                 android:elevation="10dp"
                 android:src="@drawable/img"
@@ -37,24 +37,16 @@
 
             <TextView
                 android:id="@+id/species_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_marginTop="8dp"
-                android:textSize="30sp"
+                android:textSize="18sp"
                 android:textStyle="italic"
                 card_view:layout_constraintLeft_toLeftOf="parent"
+                card_view:layout_constraintRight_toLeftOf="@+id/species_photo"
                 card_view:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/species_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                card_view:layout_constraintBottom_toBottomOf="parent"
-                card_view:layout_constraintLeft_toLeftOf="parent"
-                tools:ignore="MissingConstraints" />
 
         </android.support.constraint.ConstraintLayout>
 

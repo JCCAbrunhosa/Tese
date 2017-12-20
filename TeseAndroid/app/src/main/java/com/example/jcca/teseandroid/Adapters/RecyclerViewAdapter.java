@@ -67,6 +67,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     info.putString("URL", UploadInfo.getUrl());
                     info.putString("Lat", String.valueOf(UploadInfo.getLocation().getLatitude()));
                     info.putString("Long", String.valueOf(UploadInfo.getLocation().getLongitude()));
+                    info.putString("UID", UploadInfo.getUid());
                     Intent goTo = new Intent(view.getContext(), photoDetails_activity.class);
                     goTo.putExtras(info);
                     view.getContext().startActivity(goTo);
@@ -74,7 +75,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             });
 
             //Loading image from Glide library.
-            GlideApp.with(context).load(UploadInfo.getUrl()+".jpg").override(1000,1000).into(holder.imageView);
+            GlideApp.with(context).load(UploadInfo.getUrl()).override(1000,1000).centerCrop().into(holder.imageView);
         }
 
     }

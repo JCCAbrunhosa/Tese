@@ -110,12 +110,14 @@ public class onClickImage extends AppCompatActivity {
         String photoName = getIntent().getStringExtra("photoName");
         String data = getIntent().getStringExtra("Date");
         String species = getIntent().getStringExtra("Species");
+        String uid = getIntent().getStringExtra("UID");
 
         editDetails = new Bundle();
         editDetails.putString("photoName", photoName);
         editDetails.putString("URL", url);
         editDetails.putString("photoName", photoName);
         editDetails.putString("Species", species);
+        editDetails.putString("UID", uid);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
