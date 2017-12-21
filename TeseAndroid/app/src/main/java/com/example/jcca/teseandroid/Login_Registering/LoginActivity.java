@@ -5,7 +5,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -19,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -81,10 +84,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private DatabaseReference mDatabase;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -124,7 +129,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-
                     Log.d("Login", "onAuthStateChanged:signed_in:" + user.getUid());
                     Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
                     startActivity(goTo);
@@ -432,7 +436,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
-                        if(checkIfEmailVerified()== false)
+                        if(mDatabase.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()) != null)
+                         if(checkIfEmailVerified()== false)
                             return;
 
                         Log.d("Login", "signInWithEmail:onComplete:" + task.isSuccessful());

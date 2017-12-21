@@ -65,6 +65,8 @@ public class editDetails extends AppCompatActivity {
         species = getIntent().getStringExtra("Species");
         uid=getIntent().getStringExtra("UID");
 
+
+
         submit = findViewById(R.id.submitData);
 
         especie = findViewById(R.id.especie);
@@ -96,46 +98,67 @@ public class editDetails extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     if (!especie.getText().toString().matches("") && !descricao.getText().toString().matches("") && !ecologia.getText().toString().matches("")) {
+                        if(species.matches("")){
+                            mDatabase.child("toReview").addChildEventListener(new ChildEventListener() {
+                                @Override
+                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                    toDatabase.child(key).setValue(dataSnapshot.getValue());
+                                    toDatabase.child(key).child("eco").setValue(ecologia.getText().toString());
+                                    toDatabase.child(key).child("description").setValue(descricao.getText().toString());
+                                    toDatabase.child(key).child("species").setValue(especie.getText().toString());
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(dataSnapshot.getValue());
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("eco").setValue(ecologia.getText().toString());
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("description").setValue(descricao.getText().toString());
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("species").setValue(especie.getText().toString());
+                                    mDatabase.child("Users").child(uid).child(key).setValue(dataSnapshot.getValue());
+                                    mDatabase.child("Users").child(uid).child(key).child("eco").setValue(ecologia.getText().toString());
+                                    mDatabase.child("Users").child(uid).child(key).child("description").setValue(descricao.getText().toString());
+                                    mDatabase.child("Users").child(uid).child(key).child("species").setValue(especie.getText().toString());
+                                }
 
-                        mDatabase.child("toReview").addChildEventListener(new ChildEventListener() {
-                            @Override
-                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                toDatabase.child(key).setValue(dataSnapshot.getValue());
-                                toDatabase.child(key).child("eco").setValue(ecologia.getText().toString());
-                                toDatabase.child(key).child("description").setValue(descricao.getText().toString());
-                                toDatabase.child(key).child("species").setValue(especie.getText().toString());
-                                mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(dataSnapshot.getValue());
-                                mDatabase.child("Species").child(especie.getText().toString()).child(key).child("eco").setValue(ecologia.getText().toString());
-                                mDatabase.child("Species").child(especie.getText().toString()).child(key).child("description").setValue(descricao.getText().toString());
-                                mDatabase.child("Species").child(especie.getText().toString()).child(key).child("species").setValue(especie.getText().toString());
-                                mDatabase.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(key).setValue(dataSnapshot.getValue());
-                                mDatabase.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(key).child("eco").setValue(ecologia.getText().toString());
-                                mDatabase.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(key).child("description").setValue(descricao.getText().toString());
-                                mDatabase.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(key).child("species").setValue(especie.getText().toString());
-                            }
+                                @Override
+                                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                            @Override
-                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                                }
 
-                            }
+                                @Override
+                                public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                            @Override
-                            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                                }
 
-                            }
+                                @Override
+                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-                            @Override
-                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                                }
 
-                            }
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
+                                }
+                            });
                             mDatabase.child("toReview").child(key).getRef().removeValue();
+                        }else{
+                            mDatabase.child("Species").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    ImageInfo image =dataSnapshot.child(uid).child(data).getValue(ImageInfo.class);
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(image);
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("eco").setValue(ecologia.getText().toString());
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("description").setValue(descricao.getText().toString());
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("species").setValue(especie.getText().toString());
+                                    mDatabase.child("Users").child(uid).child(key).child("eco").setValue(ecologia.getText().toString());
+                                    mDatabase.child("Users").child(uid).child(key).child("description").setValue(descricao.getText().toString());
+                                    mDatabase.child("Users").child(uid).child(key).child("species").setValue(especie.getText().toString());
+                                    Log.d("Remove:", mDatabase.child("Species").child(species).child(data).getRef().toString());
+                                    mDatabase.child("Species").child(species).child(data).getRef().removeValue();
+                                }
 
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
 
 
                             Toast.makeText(getApplicationContext(), "Informação editada!", Toast.LENGTH_SHORT).show();

@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -49,6 +50,7 @@ public class photoDetails_activity extends AppCompatActivity
 
     public DatabaseReference mDatabase;
     public DatabaseReference users;
+    public DatabaseReference base;
 
     public List<ImageInfo> list= new ArrayList<>();
 
@@ -124,14 +126,16 @@ public class photoDetails_activity extends AppCompatActivity
         }
 
 
-
-
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Species/" + species);
         users = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid());
+        base = FirebaseDatabase.getInstance().getReference();
+
+
+
 
         similar = (RecyclerView) findViewById(R.id.samePhotosGallery);
         similar.setHasFixedSize(true);
-        similar.setNestedScrollingEnabled(false);
+
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
         similar.setLayoutManager(layoutManager);
@@ -169,6 +173,7 @@ public class photoDetails_activity extends AppCompatActivity
             }
         });
 
+
         final FloatingActionButton editDetails = (FloatingActionButton) findViewById(R.id.editDetails);
         editDetails.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,12 +183,27 @@ public class photoDetails_activity extends AppCompatActivity
                 edit.putString("URL", url);
                 edit.putString("Species", species);
                 edit.putString("UID", uid);
+                Log.d("UUID: ", uid);
                 Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
                 goTo.putExtras(edit);
                 startActivity(goTo);
 
             }
         });
+
+        base.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getValue()==null)
+                    editDetails.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 
