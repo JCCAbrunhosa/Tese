@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -31,6 +33,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class editDetails extends AppCompatActivity {
 
     //Firebase Reference
@@ -38,11 +43,14 @@ public class editDetails extends AppCompatActivity {
     DatabaseReference toDatabase;
 
     //UI
-    EditText especie;
+    AutoCompleteTextView especie;
     EditText descricao;
     EditText ecologia;
 
     FloatingActionButton submit;
+
+    List<String> listOfSpecies= new ArrayList<>();
+    int i=0;
 
     ImageView image;
 
@@ -65,8 +73,6 @@ public class editDetails extends AppCompatActivity {
         species = getIntent().getStringExtra("Species");
         uid=getIntent().getStringExtra("UID");
 
-
-
         submit = findViewById(R.id.submitData);
 
         especie = findViewById(R.id.especie);
@@ -74,6 +80,26 @@ public class editDetails extends AppCompatActivity {
         ecologia = findViewById(R.id.ecologia);
         submit = findViewById(R.id.submitData);
         image = findViewById(R.id.newImage);
+
+        mDatabase.child("Species").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                    //Log.d("Species: ", postSnapshot.getKey());
+                    listOfSpecies.add(postSnapshot.getKey());
+                }
+                ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(editDetails.this, android.R.layout.simple_dropdown_item_1line, listOfSpecies);
+                especie.setAdapter(arrayAdapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
 
         //Image pops up when user clicks on it
         final ImagePopup imagePopup = new ImagePopup(this);

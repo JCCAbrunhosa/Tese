@@ -73,7 +73,7 @@ public class showSpeciesOnMap extends FragmentActivity implements OnMapReadyCall
 
                     ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
                     Position pos = imageInfo.getLocation();
-                    String name = imageInfo.getAuthor();
+                    String name = imageInfo.getSpecies();
                     coord = new LatLng(pos.getLatitude(),pos.getLongitude());
                     mMap.addMarker(new MarkerOptions().position(coord).title(name));
 

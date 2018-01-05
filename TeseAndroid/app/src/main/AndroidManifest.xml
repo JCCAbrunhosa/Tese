@@ -59,17 +59,17 @@
         </activity>
         <activity
             android:name=".Gallery.galleryFeed"
-            android:label="Seus Avistamentos"
+            android:label="@string/userFeed"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Gallery.otherPhotosGallery"
-            android:label="Galeria de Avistamentos"
+            android:label="@string/othersFeed"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Gallery.photosToReview"
-            android:label="Avistamentos para avaliação"
+            android:label="@string/newPhotos"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

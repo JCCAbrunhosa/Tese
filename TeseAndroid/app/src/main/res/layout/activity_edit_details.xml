@@ -56,7 +56,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:ems="10"
-            android:hint="Descrição"
+            android:hint="@string/descricao"
             android:inputType="textMultiLine"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="8dp"
@@ -82,7 +82,7 @@
             tools:layout_constraintLeft_creator="1"
             android:id="@+id/textInputLayout4">
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/especie"
                 android:layout_width="207dp"
                 android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Espécie"
+                android:hint="@string/especie"
                 android:inputType="textMultiLine"
                 android:textColorLink="@color/greenTese"
                 app:layout_constraintBottom_toBottomOf="@+id/newImage"
@@ -135,7 +135,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:ems="10"
-            android:hint="Ecologia"
+            android:hint="@string/ecologia"
             android:inputType="textMultiLine"
             app:layout_constraintBottom_toBottomOf="@+id/especie"
             tools:layout_editor_absoluteX="8dp"
