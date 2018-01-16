@@ -113,6 +113,8 @@ public class galleryFeed extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        startService(new Intent(galleryFeed.this, NewPhotoAdded.class));
+
         mDatabase =  FirebaseDatabase.getInstance().getReference();
         final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
 
@@ -282,6 +284,7 @@ public class galleryFeed extends AppCompatActivity
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            stopService(new Intent(galleryFeed.this, NewPhotoAdded.class));
             startActivity(goTo);
         }else if (id == R.id.nav_options){
             Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);

@@ -36,6 +36,7 @@ public class NewPhotoAdded extends Service {
 
         final DatabaseReference newPhotoAdded;
         newPhotoAdded = FirebaseDatabase.getInstance().getReference().child("toReview");
+        final DatabaseReference whereToBuild = FirebaseDatabase.getInstance().getReference().child("Accounts");
 
 
         newPhotoAdded.addChildEventListener(new ChildEventListener() {
@@ -78,16 +79,29 @@ public class NewPhotoAdded extends Service {
 
                 // Sets an ID for the notification
                 Random random = new Random();
-                int mNotificationId= random.nextInt(9999 - 1000) + 1000;
+                final int mNotificationId= random.nextInt(9999 - 1000) + 1000;
                 // Gets an instance of the NotificationManager service
-                NotificationManager mNotifyMgr =
+                final NotificationManager mNotifyMgr =
                         (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 
+
                 //Notificação para um utilizador comum
+                whereToBuild.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("isPro").getValue() != null)
+                            mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
 
-                mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
             }
 
             @Override
