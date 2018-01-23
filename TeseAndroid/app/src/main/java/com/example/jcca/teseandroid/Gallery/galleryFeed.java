@@ -39,6 +39,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -95,6 +97,8 @@ public class galleryFeed extends AppCompatActivity
 
     ImageInfo image;
 
+    ProgressBar progressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +139,9 @@ public class galleryFeed extends AppCompatActivity
         //Photo
         imageViewer = (RecyclerView) findViewById(R.id.imageGallery);
         imageViewer.setHasFixedSize(true);
+
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
 
         registerForContextMenu(imageViewer);
 
@@ -351,6 +358,19 @@ public class galleryFeed extends AppCompatActivity
         UploadTask uploadTask = photosRef.putFile(file, metadata);
         //photoRef= mDatabase.getKey();
 
+        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                progressBar.setVisibility(View.VISIBLE);
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                Log.d("Upload","Upload is " + progress + "% done");
+                int currentProgress = (int) progress;
+                progressBar.setProgress(currentProgress);
+            }
+
+        });
+
+
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -363,11 +383,16 @@ public class galleryFeed extends AppCompatActivity
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                progressBar.setVisibility(View.INVISIBLE);
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
                 getLocation(taskSnapshot);
+
+
             }
 
         });
+
+
 
 
     }
@@ -420,6 +445,7 @@ public class galleryFeed extends AppCompatActivity
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
     }
+
 
 
 }

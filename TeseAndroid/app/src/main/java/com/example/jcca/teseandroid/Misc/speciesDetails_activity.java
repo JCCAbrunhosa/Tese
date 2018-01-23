@@ -66,6 +66,8 @@ public class speciesDetails_activity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -78,6 +80,8 @@ public class speciesDetails_activity extends AppCompatActivity
         String desc = getIntent().getStringExtra("Desc");
         String ecol = getIntent().getStringExtra("Eco");
         String url = getIntent().getStringExtra("URL");
+
+        setTitle(spec);
 
         GlideApp.with(getApplicationContext()).load(url).override(120,120).into(speciesImage);
         species.setText(spec.toString());

@@ -43,6 +43,8 @@ public class NewPhotoAdded extends Service {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+                Random random = new Random();
+                final int mNotificationId= random.nextInt(9999 - 1000) + 1000;
 
                 //Notificação para um investigador
                 //Enviar notificação
@@ -68,7 +70,7 @@ public class NewPhotoAdded extends Service {
                 PendingIntent resultPendingIntent =
                         PendingIntent.getActivity(
                                 NewPhotoAdded.this,
-                                0,
+                                mNotificationId,
                                 resultIntent,
                                 PendingIntent.FLAG_UPDATE_CURRENT
                         );
@@ -78,8 +80,7 @@ public class NewPhotoAdded extends Service {
 
 
                 // Sets an ID for the notification
-                Random random = new Random();
-                final int mNotificationId= random.nextInt(9999 - 1000) + 1000;
+
                 // Gets an instance of the NotificationManager service
                 final NotificationManager mNotifyMgr =
                         (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
