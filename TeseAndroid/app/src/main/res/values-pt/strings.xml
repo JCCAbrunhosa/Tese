@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">bioDiversidade</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password" >Password (opcional)</string>
+    <string name="action_sign_in">Fazer login ou Registar</string>
+    <string name="action_sign_in_short">Login</string>
+    <string name="error_invalid_email">Este email é inválido!</string>
+    <string name="error_invalid_password">Password muito curta!</string>
+    <string name="error_incorrect_password" >Password incorrecta</string>
+    <string name="error_field_required" >Este campo é obrigatório!</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="title_activity_register" translatable="false">Registar Conta</string>
+    <string name="especie">Espécie</string>
+    <string name="vulgar">Nome vulgar</string>
+    <string name="autor">Autor</string>
+    <string name="descricao">Descrição</string>
+    <string name="ecologia">Ecologia</string>
+    <string name="related">Avistamentos que pode gostar</string>
+    <string name="relatedPhotos">Outros avistamentos que pode gostar</string>
+    <string name="noDescription">Esta espécie é nova e não contém uma descrição. Deseja adicionar uma?</string>
+    <string name="newSpecie">Nova Espécie</string>
+
+
+    <!-- Activity Titles & Drawer Menu-->
+    <string name="userFeed">Seus avistamentos</string>
+    <string name="othersFeed">Galeria de Avistamentos</string>
+    <string name="newPhotos">Novos Avistamentos</string>
+    <string name="guide">Guia</string>
+    <string name="map">Mapa de Espécies</string>
+    <string name="options">Opções</string>
+    <string name="endSession">Terminar Sessão</string>
+    <string name="userInfo">Conta</string>
+
+
+
+</resources>

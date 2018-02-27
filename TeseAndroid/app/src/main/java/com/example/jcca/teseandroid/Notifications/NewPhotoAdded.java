@@ -36,14 +36,20 @@ public class NewPhotoAdded extends Service {
 
         final DatabaseReference newPhotoAdded;
         newPhotoAdded = FirebaseDatabase.getInstance().getReference().child("toReview");
+        final DatabaseReference whereToBuild = FirebaseDatabase.getInstance().getReference().child("Accounts");
+        int counter=0;
 
 
         newPhotoAdded.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+                Random random = new Random();
+                final int mNotificationId= random.nextInt(9999 - 1000) + 1000;
 
-                    //Enviar notificação
+
+                //Notificação para um investigador
+                //Enviar notificação
                 final NotificationCompat.Builder mBuilder =
                         new NotificationCompat.Builder(NewPhotoAdded.this)
                                 .setSmallIcon(R.drawable.side_nav_bar)
@@ -54,16 +60,20 @@ public class NewPhotoAdded extends Service {
                 Intent resultIntent = new Intent(NewPhotoAdded.this, onClickImage.class);
                 Bundle toSend = new Bundle();
                 toSend.putString("URL", dataSnapshot.child("url").getValue().toString());
+                toSend.putString("Date", dataSnapshot.child("date").getValue().toString());
+                toSend.putString("Species", dataSnapshot.child("species").getValue().toString());
+                toSend.putString("Vulgar", dataSnapshot.child("vulgar").getValue().toString());
                 toSend.putString("Lat", dataSnapshot.child("location").child("latitude").getValue().toString());
                 toSend.putString("Long", dataSnapshot.child("location").child("longitude").getValue().toString());
                 toSend.putString("photoName", dataSnapshot.getKey());
+                toSend.putString("UID", dataSnapshot.child("uid").getValue().toString());
                 resultIntent.putExtras(toSend);
                 // Because clicking the notification opens a new ("special") activity, there's
                 // no need to create an artificial back stack.
                 PendingIntent resultPendingIntent =
                         PendingIntent.getActivity(
                                 NewPhotoAdded.this,
-                                0,
+                                mNotificationId,
                                 resultIntent,
                                 PendingIntent.FLAG_UPDATE_CURRENT
                         );
@@ -73,15 +83,29 @@ public class NewPhotoAdded extends Service {
 
 
                 // Sets an ID for the notification
-                Random random = new Random();
-                int mNotificationId= random.nextInt(9999 - 1000) + 1000;
+
                 // Gets an instance of the NotificationManager service
-                NotificationManager mNotifyMgr =
+                final NotificationManager mNotifyMgr =
                         (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 
 
-                mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                //Notificação para um utilizador comum
+                whereToBuild.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("isPro").getValue() != null)
+                            mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
             }
 
             @Override

@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -23,7 +24,9 @@ import android.view.MenuItem;
 
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
+import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
 import com.example.jcca.teseandroid.Misc.editDetails;
+import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.Misc.showOnMap;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
@@ -36,6 +39,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -50,6 +55,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -87,11 +93,11 @@ public class galleryFeed extends AppCompatActivity
     //RecyclerView
     private RecyclerView imageViewer;
 
-
-
     String timeStamp;
 
     ImageInfo image;
+
+    ProgressBar progressBar;
 
 
     @Override
@@ -111,8 +117,10 @@ public class galleryFeed extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mDatabase =  FirebaseDatabase.getInstance().getReference();
+        startService(new Intent(galleryFeed.this, NewPhotoAdded.class));
 
+        mDatabase =  FirebaseDatabase.getInstance().getReference();
+        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -132,6 +140,9 @@ public class galleryFeed extends AppCompatActivity
         imageViewer = (RecyclerView) findViewById(R.id.imageGallery);
         imageViewer.setHasFixedSize(true);
 
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
+
         registerForContextMenu(imageViewer);
 
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -141,6 +152,65 @@ public class galleryFeed extends AppCompatActivity
         imageViewer.setLayoutManager(layoutManager);
 
 
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    TextView name = findViewById(R.id.userName);
+                    name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
+                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+                    list.add(imageInfo);
+                }
+
+                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
+                imageViewer.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              takeAPhotoIntent();
+            }
+
+        });
+
+
+        mySwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.i("Refresh", "onRefresh called from SwipeRefreshLayout");
+                        Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_LONG).show();
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        refreshList(mDatabase);
+                        mySwipeRefreshLayout.setRefreshing(false);
+
+                    }
+                }
+        );
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    public void refreshList(DatabaseReference mDatabase){
+
+        list.clear();
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -160,25 +230,6 @@ public class galleryFeed extends AppCompatActivity
 
             }
         });
-
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                takeAPhotoIntent();
-            }
-
-        });
-
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        list.clear();
-
     }
 
     @Override
@@ -230,12 +281,20 @@ public class galleryFeed extends AppCompatActivity
             Intent goTo = new Intent(getApplicationContext(), photosToReview.class);
             startActivity(goTo);
         } else if (id == R.id.nav_guide) {
+            Intent goTo = new Intent(getApplicationContext(), guide_activity.class);
+            startActivity(goTo);
 
         } else if (id == R.id.nav_map) {
+            Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            startActivity(goTo);
 
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            stopService(new Intent(galleryFeed.this, NewPhotoAdded.class));
+            startActivity(goTo);
+        }else if (id == R.id.nav_options){
+            Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);
             startActivity(goTo);
         }
 
@@ -299,6 +358,20 @@ public class galleryFeed extends AppCompatActivity
         UploadTask uploadTask = photosRef.putFile(file, metadata);
         //photoRef= mDatabase.getKey();
 
+
+        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                progressBar.setVisibility(View.VISIBLE);
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                Log.d("Upload","Upload is " + progress + "% done");
+                int currentProgress = (int) progress;
+                progressBar.setProgress(currentProgress);
+            }
+
+        });
+
+
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -311,11 +384,17 @@ public class galleryFeed extends AppCompatActivity
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                //progressBar.setVisibility(View.INVISIBLE);
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
                 getLocation(taskSnapshot);
+                progressBar.setVisibility(View.INVISIBLE);
+
+
             }
 
         });
+
+
 
 
     }
@@ -325,6 +404,7 @@ public class galleryFeed extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             uploadPhoto();
+
         }
     }
 
@@ -338,9 +418,11 @@ public class galleryFeed extends AppCompatActivity
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "", "");
-                mDatabase.child(mDatabase.push().getKey()).setValue(image);
-                toReview.child(mDatabase.push().getKey()).setValue(image);
+                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                Log.d("Image:", image.getUrl());
+                mDatabase.child(timeStamp).setValue(image);
+                Log.d("DATABASE:", mDatabase.getRef().toString());
+                toReview.child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
 
@@ -368,30 +450,6 @@ public class galleryFeed extends AppCompatActivity
 
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
 
-        // Inflate Menu from xml resource
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.info_menu, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.info:
-                Intent k = new Intent(getApplicationContext(), editDetails.class);
-                startActivity(k);
-                return true;
-            case R.id.map:
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-
-        }
-
-    }
 
 }

@@ -37,7 +37,9 @@
 
         <activity
             android:name=".Login_Registering.LoginActivity"
-            android:label="Login">
+            android:label="Login"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,7 +48,9 @@
         </activity>
         <activity
             android:name=".Login_Registering.RegisterActivity"
-            android:label="@string/title_activity_register">
+            android:label="@string/title_activity_register"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -55,15 +59,23 @@
         </activity>
         <activity
             android:name=".Gallery.galleryFeed"
-            android:label="Suas Capturas"
+            android:label="@string/userFeed"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Gallery.otherPhotosGallery"
-            android:label="Galeria de Capturas"
+            android:label="@string/othersFeed"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Gallery.photosToReview"
-            android:label="Capturas para avaliação"
+            android:label="@string/newPhotos"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Misc.editDetails"
+            android:label="Novo Avistamento"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
@@ -91,8 +103,9 @@
             android:name=".Gallery.onClickImage"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_on_click_image"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" />
-        <activity android:name=".Misc.editDetails" />
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -107,7 +120,34 @@
 
         <activity
             android:name=".Misc.showOnMap"
-            android:label="@string/title_activity_show_on_map"></activity>
+            android:label="@string/title_activity_show_on_map"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Misc.showSpeciesOnMap"
+            android:label="@string/title_activity_show_species_on_map"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Gallery.guide_activity"
+            android:label="Guia"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Misc.photoDetails_activity"
+            android:label="Detalhes do Avistamento"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Misc.speciesDetails_activity"
+            android:label="Detalhes da Espécie"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Misc.map_activity"
+            android:label="@string/title_activity_map_activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Login_Registering.settingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

@@ -108,11 +108,19 @@ public class onClickImage extends AppCompatActivity {
         lat = getIntent().getStringExtra("Lat");
         lng = getIntent().getStringExtra("Long");
         String photoName = getIntent().getStringExtra("photoName");
+        String data = getIntent().getStringExtra("Date");
+        String species = getIntent().getStringExtra("Species");
+        String vulgar = getIntent().getStringExtra("Vulgar");
+        String uid = getIntent().getStringExtra("UID");
 
         editDetails = new Bundle();
         editDetails.putString("photoName", photoName);
         editDetails.putString("URL", url);
         editDetails.putString("photoName", photoName);
+        editDetails.putString("Species", species);
+        editDetails.putString("UID", uid);
+        editDetails.putString("Vulgar", vulgar);
+        editDetails.putString("PreviousIntent", "onClickImage");
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);

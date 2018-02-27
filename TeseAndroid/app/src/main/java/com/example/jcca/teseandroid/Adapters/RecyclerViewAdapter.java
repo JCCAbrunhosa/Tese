@@ -2,33 +2,20 @@ package com.example.jcca.teseandroid.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.bumptech.glide.load.DecodeFormat;
-import com.bumptech.glide.request.target.Target;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
-import com.example.jcca.teseandroid.DataObjects.Position;
+import com.example.jcca.teseandroid.Misc.photoDetails_activity;
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
 import com.example.jcca.teseandroid.R;
-import com.example.jcca.teseandroid.Misc.*;
 
 import java.util.List;
 
@@ -65,14 +52,33 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final ImageInfo UploadInfo = MainImageUploadInfoList.get(position);
-
         if(UploadInfo!=null){
             holder.imageNameTextView.setText(UploadInfo.getAuthor());
 
             holder.itemView.setLongClickable(true);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final Bundle info = new Bundle();
+                    info.putString("Desc", UploadInfo.getDescription());
+                    info.putString("Date", UploadInfo.getDate());
+                    info.putString("Species", UploadInfo.getSpecies());
+                    info.putString("Eco", UploadInfo.getEco());
+                    info.putString("Vulgar", UploadInfo.getVulgar());
+                    info.putString("Author", UploadInfo.getAuthor());
+                    info.putString("URL", UploadInfo.getUrl());
+                    info.putString("Lat", String.valueOf(UploadInfo.getLocation().getLatitude()));
+                    info.putString("Long", String.valueOf(UploadInfo.getLocation().getLongitude()));
+                    info.putString("UID", UploadInfo.getUid());
+                    Log.d("UUID: ", UploadInfo.getUid());
+                    Intent goTo = new Intent(view.getContext(), photoDetails_activity.class);
+                    goTo.putExtras(info);
+                    view.getContext().startActivity(goTo);
+                }
+            });
 
             //Loading image from Glide library.
-            GlideApp.with(context).load(UploadInfo.getUrl()+".jpg").override(1000,1000).into(holder.imageView);
+            GlideApp.with(context).load(UploadInfo.getUrl()).override(1000,1000).centerCrop().into(holder.imageView);
         }
 
     }
@@ -84,12 +90,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
 
-
     class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageView;
         public TextView imageNameTextView;
-
+        public TextView species;
+        public TextView description;
+        public TextView eco;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -98,6 +105,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             imageNameTextView = (TextView) itemView.findViewById(R.id.data);
 
+            species = itemView.findViewById(R.id.photoSpecies);
+            description=itemView.findViewById(R.id.speciesName);
+            eco=itemView.findViewById(R.id.speciesEco);
 
         }
 

@@ -4,83 +4,191 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.jcca.teseandroid.Misc.editDetails">
+    tools:context="com.example.jcca.teseandroid.Misc.editDetails"
+    tools:layout_editor_absoluteY="81dp"
+    tools:layout_editor_absoluteX="0dp">
 
-    <EditText
-        android:id="@+id/descrição"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Descrição"
-        android:inputType="textMultiLine"
-        tools:ignore="MissingConstraints"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/ecologia"
-        android:layout_marginStart="16dp"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="82dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp" />
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/newImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="45dp"
+        android:elevation="10dp"
+        android:src="@drawable/img"
+        app:civ_border_color="@color/greenTese"
+        app:civ_border_width="3dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/especie"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="42dp"
-        android:ems="10"
-        android:hint="Espécie"
-        android:inputType="textMultiLine"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintTop_creator="1" />
-
-    <EditText
-        android:id="@+id/ecologia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Ecologia"
-        android:inputType="textMultiLine"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="@+id/descrição"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="234dp"
-        app:layout_constraintLeft_toLeftOf="@+id/descrição"
-        app:layout_constraintHorizontal_bias="0.0" />
-
-    <Button
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/submitData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Adicionar"
-        tools:ignore="MissingConstraints"
+        android:clickable="true"
+        app:backgroundTint="@color/greenTese"
+        app:fabSize="normal"
+        app:srcCompat="@android:drawable/ic_menu_upload"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="52dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        android:layout_marginBottom="47dp"
+        android:layout_marginRight="100dp" />
 
-    <ImageView
-        android:id="@+id/newImage"
-        android:layout_width="96dp"
-        android:layout_height="99dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:elevation="10dp"
+    <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="105dp"
+            android:layout_marginRight="9dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="9dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintHorizontal_bias="0.054"
+            app:layout_constraintVertical_bias="0.02"
+            tools:layout_constraintRight_creator="1"
+            android:layout_marginStart="9dp"
+            android:layout_marginEnd="9dp"
+            tools:layout_constraintLeft_creator="1"
+            android:id="@+id/textInputLayout4">
+
+            <AutoCompleteTextView
+                android:id="@+id/test"
+                android:layout_width="207dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/especie"
+                android:inputType="textMultiLine"
+                android:textColorLink="@color/greenTese"
+                app:layout_constraintBottom_toBottomOf="@+id/newImage"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/newImage"
+
+                app:layout_constraintVertical_bias="1.0"
+                tools:layout_constraintBottom_creator="1"
+                tools:layout_constraintLeft_creator="1"
+                tools:layout_constraintTop_creator="1" />
+        </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="222dp"
+        android:layout_height="102dp"
+        android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/common_full_open_on_phone"
-        tools:layout_constraintRight_creator="1"
+        app:layout_constraintVertical_bias="0.313"
         tools:layout_constraintTop_creator="1"
-        tools:layout_editor_absoluteX="272dp" />
+        tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:id="@+id/textInputLayout3">
+
+        <EditText
+            android:id="@+id/ecologia"
+            android:layout_width="207dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:hint="@string/ecologia"
+            android:inputType="textMultiLine"
+            app:layout_constraintBottom_toBottomOf="@+id/vulgar"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="221dp" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/denyPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="47dp"
+        android:layout_marginLeft="100dp"
+        android:clickable="true"
+        app:backgroundTint="@color/greenTese"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:srcCompat="@android:drawable/ic_input_delete" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="222dp"
+        android:layout_height="102dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.193"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:id="@+id/textInputLayout5">
+
+        <EditText
+            android:id="@+id/vulgar"
+            android:layout_width="207dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="21dp"
+            android:layout_marginStart="16dp"
+            android:ems="10"
+            android:hint="@string/vulgar"
+            android:inputType="textMultiLine"
+            app:layout_constraintLeft_toLeftOf="parent"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteY="103dp" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="231dp"
+        android:layout_height="197dp"
+        android:layout_marginLeft="1dp"
+        app:layout_constraintLeft_toLeftOf="@+id/textInputLayout3"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintTop_creator="1"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout5">
+
+        <EditText
+            android:id="@+id/descrição"
+            android:layout_width="207dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:hint="@string/descricao"
+            android:inputType="textMultiLine"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="221dp" />
+
+
+    </android.support.design.widget.TextInputLayout>
 
 </android.support.constraint.ConstraintLayout>

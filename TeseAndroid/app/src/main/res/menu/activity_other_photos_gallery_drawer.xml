@@ -5,35 +5,35 @@
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Fotos" />
+            android:title="@string/userFeed" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Galeria" />
+            android:title="@string/othersFeed" />
         <item
             android:id="@+id/nav_waitingPhotos"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Fotos Novas" />
+            android:title="@string/newPhotos" />
         <item
             android:id="@+id/nav_guide"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Guia" />
+            android:title="@string/guide" />
         <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Mapa" />
+            android:title="@string/map" />
     </group>
 
-    <item android:title="Conta">
+    <item android:title="@string/userInfo">
         <menu>
             <item
                 android:id="@+id/nav_options"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Opções" />
+                android:title="@string/options" />
             <item
                 android:id="@+id/nav_signOut"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Terminar Sessão" />
+                android:title="@string/endSession" />
         </menu>
     </item>
 
