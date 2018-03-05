@@ -16,8 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/greenTese"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            />
+            android:elevation="4dp"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -29,8 +29,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_menu_camera"
-        app:backgroundTint="@color/greenTese"/>
+        app:backgroundTint="@color/greenTese"
+        app:elevation="6dp"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
 
 
 

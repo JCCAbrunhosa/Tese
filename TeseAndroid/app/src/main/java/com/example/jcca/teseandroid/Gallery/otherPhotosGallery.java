@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
+import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
@@ -140,7 +141,7 @@ public class otherPhotosGallery extends AppCompatActivity
 
                 }
 
-                adapter = new RecyclerViewAdapter(getApplicationContext(),list);
+                adapter = new galleryFeedAdapter(getApplicationContext(),list);
                 imageViewer.setAdapter(adapter);
             }
 
@@ -321,7 +322,7 @@ public class otherPhotosGallery extends AppCompatActivity
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
                 mDatabase.child(timeStamp).setValue(image);
                 Log.d("DATABASE:", mDatabase.getRef().toString());
                 toReview.child(timeStamp).setValue(image);

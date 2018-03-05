@@ -60,7 +60,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 @Override
                 public void onClick(View view) {
                     final Bundle info = new Bundle();
-                    info.putString("Desc", UploadInfo.getDescription());
                     info.putString("Date", UploadInfo.getDate());
                     info.putString("Species", UploadInfo.getSpecies());
                     info.putString("Eco", UploadInfo.getEco());

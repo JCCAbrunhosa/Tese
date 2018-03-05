@@ -3,6 +3,7 @@ package com.example.jcca.teseandroid.Misc;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,16 +68,21 @@ public class photoDetails_activity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
+
+        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(this);*/
 
 
 
@@ -106,10 +113,13 @@ public class photoDetails_activity extends AppCompatActivity
         imagePopup.setImageOnClickClose(true);
         imagePopup.setHideCloseIcon(false);
 
-        GlideApp.with(getApplicationContext()).load(url).override(120,120).into(photo);
+        GlideApp.with(getApplicationContext()).load(url).into(photo);
+
+        Log.d("Eco:", eco);
+
         auth.setText(author.toString());
         ec.setText(eco.toString());
-        description.setText(desc.toString());
+        //description.setText(desc.toString());
         specie.setText(species.toString());
         vlgar.setText(vulgar.toString());
 
@@ -124,7 +134,7 @@ public class photoDetails_activity extends AppCompatActivity
 
         setTitle(species);
 
-        if(description.getText().toString().matches("")){
+        if(specie.getText().toString().matches("")){
             description.setText("Sem informação!");
             ec.setText("Sem informação!");
             specie.setText("Sem informação!");
@@ -138,11 +148,11 @@ public class photoDetails_activity extends AppCompatActivity
 
 
 
-        similar = (RecyclerView) findViewById(R.id.samePhotosGallery);
-        similar.setHasFixedSize(true);
+        //similar = (RecyclerView) findViewById(R.id.samePhotosGallery);
+        //similar.setHasFixedSize(true);
 
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
+        /*RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
         similar.setLayoutManager(layoutManager);
 
         mDatabase.addValueEventListener(new ValueEventListener() {
@@ -162,7 +172,7 @@ public class photoDetails_activity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        });*/
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -189,6 +199,7 @@ public class photoDetails_activity extends AppCompatActivity
                 edit.putString("Species", species);
                 edit.putString("UID", uid);
                 edit.putString("Vulgar", vulgar);
+                edit.putString("Date", date);
                 edit.putString("PreviousIntent", "photoDetails");
                 Log.d("UUID: ", uid);
                 Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
@@ -238,6 +249,9 @@ public class photoDetails_activity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if(id == android.R.id.home)
+            NavUtils.navigateUpFromSameTask(this);
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {

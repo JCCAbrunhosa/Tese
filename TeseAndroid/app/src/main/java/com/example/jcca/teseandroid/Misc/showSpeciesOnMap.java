@@ -70,12 +70,14 @@ public class showSpeciesOnMap extends FragmentActivity implements OnMapReadyCall
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if(!postSnapshot.getKey().toString().matches("description")){
+                        ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+                        Position pos = imageInfo.getLocation();
+                        String name = imageInfo.getSpecies();
+                        coord = new LatLng(pos.getLatitude(),pos.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(coord).title(name));
+                    }
 
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
-                    Position pos = imageInfo.getLocation();
-                    String name = imageInfo.getSpecies();
-                    coord = new LatLng(pos.getLatitude(),pos.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(coord).title(name));
 
                 }
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(coord));

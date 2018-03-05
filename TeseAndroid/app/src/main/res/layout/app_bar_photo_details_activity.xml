@@ -12,6 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:background="@color/greenTese"
+        android:elevation="4dp"
         android:theme="@style/AppTheme.PopupOverlay"
         app:layout_constraintHorizontal_bias="0.75"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -41,28 +42,30 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:backgroundTint="@color/greenTese"
-        app:srcCompat="@android:drawable/ic_dialog_map"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:backgroundTint="@color/greenTese"
+        app:elevation="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@android:drawable/ic_dialog_map"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintRight_creator="1" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/editDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="4dp"
         app:backgroundTint="@color/greenTese"
+        app:elevation="6dp"
         app:layout_anchor="@+id/include2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/fab"
         app:srcCompat="@android:drawable/ic_menu_edit"
         tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintRight_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintRight_toLeftOf="@+id/fab"
-        android:layout_marginRight="4dp" />
+        tools:layout_constraintRight_creator="1" />
 
 </android.support.constraint.ConstraintLayout>

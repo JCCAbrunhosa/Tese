@@ -2,9 +2,11 @@ package com.example.jcca.teseandroid.Misc;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -50,6 +52,9 @@ public class speciesDetails_activity extends AppCompatActivity
     public List<ImageInfo> list = new ArrayList<>();
     public List<Position> positions = new ArrayList<>();
     DatabaseReference mDatabase;
+    String[] urlImages = new String[10];
+    Handler handler = new Handler();
+    int i=0;
 
 
     @Override
@@ -80,36 +85,39 @@ public class speciesDetails_activity extends AppCompatActivity
         String desc = getIntent().getStringExtra("Desc");
         String ecol = getIntent().getStringExtra("Eco");
         String url = getIntent().getStringExtra("URL");
+        handler.postDelayed(runnable, 4000);
 
         setTitle(spec);
 
-        GlideApp.with(getApplicationContext()).load(url).override(120,120).into(speciesImage);
+        GlideApp.with(getApplicationContext()).load(url).into(speciesImage);
         species.setText(spec.toString());
-        description.setText(desc.toString());
+
         eco.setText(ecol.toString());
 
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Species/" + spec);
 
 
         //Photo
-        sameSpecies = (RecyclerView) findViewById(R.id.sameSpeciesGallery);
-        sameSpecies.setHasFixedSize(true);
+        //sameSpecies = (RecyclerView) findViewById(R.id.sameSpeciesGallery);
+//        sameSpecies.setHasFixedSize(true);
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
-        sameSpecies.setLayoutManager(layoutManager);
+        //RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
+        //sameSpecies.setLayoutManager(layoutManager);
 
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    description.setText(dataSnapshot.child("description").getValue().toString());
+                    urlImages[i++]= postSnapshot.child("url").getValue(String.class);
 
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+                    //ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
 
-                    list.add(imageInfo);
+                    //list.add(imageInfo);
                 }
 
-                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
-                sameSpecies.setAdapter(adapter);
+                //adapter = new RecyclerViewAdapter(getApplicationContext(), list);
+                //sameSpecies.setAdapter(adapter);
             }
 
             @Override
@@ -195,4 +203,19 @@ public class speciesDetails_activity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    //This runnable makes the images cycle
+    Runnable runnable = new Runnable() {
+        int i = 0;
+
+        public void run() {
+            GlideApp.with(getApplicationContext()).load(urlImages[i]).into(speciesImage);
+            i++;
+            if (urlImages[i]==null) {
+                i = 0;
+            }
+            handler.postDelayed(this, 4000);
+        }
+    };
+
 }

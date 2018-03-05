@@ -59,7 +59,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                 public void onClick(View view) {
                     Bundle toSend = new Bundle();
                     toSend.putString("URL", UploadInfo.getUrl());
-                    toSend.putString("Desc", UploadInfo.getDescription());
                     toSend.putString("Species", UploadInfo.getSpecies());
                     toSend.putString("Eco", UploadInfo.getEco());
                     Intent goTo = new Intent(view.getContext(), speciesDetails_activity.class);

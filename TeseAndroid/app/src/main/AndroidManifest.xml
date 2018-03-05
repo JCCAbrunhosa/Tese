@@ -57,11 +57,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Gallery.galleryFeed"
             android:label="@string/userFeed"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity
             android:name=".Gallery.otherPhotosGallery"
             android:label="@string/othersFeed"
@@ -76,7 +78,8 @@
             android:name=".Misc.editDetails"
             android:label="Novo Avistamento"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:excludeFromRecents="true"/>
 
         <service
             android:name=".Notifications.NotificationService"
@@ -135,7 +138,12 @@
             android:name=".Misc.photoDetails_activity"
             android:label="Detalhes do Avistamento"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.jcca.teseandroid.Gallery.galleryFeed"/>
+        </activity>
+
         <activity
             android:name=".Misc.speciesDetails_activity"
             android:label="Detalhes da Espécie"

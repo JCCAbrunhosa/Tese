@@ -3,6 +3,7 @@ package com.example.jcca.teseandroid.Gallery;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
@@ -107,6 +109,8 @@ public class galleryFeed extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getWindow().getDecorView().setBackgroundColor(Color.GRAY);
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -151,28 +155,7 @@ public class galleryFeed extends AppCompatActivity
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         imageViewer.setLayoutManager(layoutManager);
 
-
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-
-                    TextView name = findViewById(R.id.userName);
-                    name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
-                    list.add(imageInfo);
-                }
-
-                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
-                imageViewer.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        Toast.makeText(getApplicationContext(), "onCreate", Toast.LENGTH_LONG).show();
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -189,7 +172,6 @@ public class galleryFeed extends AppCompatActivity
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        Log.i("Refresh", "onRefresh called from SwipeRefreshLayout");
                         Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_LONG).show();
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
@@ -202,16 +184,22 @@ public class galleryFeed extends AppCompatActivity
 
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
-
+        Toast.makeText(getApplicationContext(), "onResume", Toast.LENGTH_LONG).show();
+        refreshList(mDatabase);
     }
 
     public void refreshList(DatabaseReference mDatabase){
 
         list.clear();
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        adapter = new galleryFeedAdapter(getApplicationContext(), list);
+        imageViewer.setAdapter(adapter);
+        Log.d("SizeIni:", String.valueOf(list.size()));
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
@@ -220,8 +208,8 @@ public class galleryFeed extends AppCompatActivity
 
                     list.add(imageInfo);
                 }
-
-                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
+                Log.d("SizeFin:", String.valueOf(list.size()));
+                adapter = new galleryFeedAdapter(getApplicationContext(), list);
                 imageViewer.setAdapter(adapter);
             }
 
@@ -356,7 +344,6 @@ public class galleryFeed extends AppCompatActivity
         StorageReference photosRef = storageRef.child("photos/" + FirebaseAuth.getInstance().getCurrentUser().getEmail() + "/" + file.getLastPathSegment());
         final StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
         UploadTask uploadTask = photosRef.putFile(file, metadata);
-        //photoRef= mDatabase.getKey();
 
 
         uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -367,10 +354,10 @@ public class galleryFeed extends AppCompatActivity
                 Log.d("Upload","Upload is " + progress + "% done");
                 int currentProgress = (int) progress;
                 progressBar.setProgress(currentProgress);
+
             }
 
         });
-
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -418,10 +405,8 @@ public class galleryFeed extends AppCompatActivity
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                Log.d("Image:", image.getUrl());
+                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
                 mDatabase.child(timeStamp).setValue(image);
-                Log.d("DATABASE:", mDatabase.getRef().toString());
                 toReview.child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);

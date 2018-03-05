@@ -60,16 +60,16 @@ public class map_activity extends FragmentActivity implements OnMapReadyCallback
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     for(DataSnapshot snap: snapshot.getChildren()){
-                        mDatabase.orderByChild("species");
-                        ImageInfo photo = snap.getValue(ImageInfo.class);
-                        LatLng pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
+                        if(!snap.getKey().toString().matches("description")) {
+                            mDatabase.orderByChild("species");
+                            ImageInfo photo = snap.getValue(ImageInfo.class);
+                            LatLng pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
 
 
-
-                        Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(photo.getSpecies()));
-                        marker.setTag(photo);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
-
+                            Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(photo.getSpecies()));
+                            marker.setTag(photo);
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
+                        }
                     }
 
                 }
@@ -91,7 +91,6 @@ public class map_activity extends FragmentActivity implements OnMapReadyCallback
                 Bundle toSend = new Bundle();
                 ImageInfo photo = (ImageInfo) marker.getTag();
                 toSend.putString("URL", photo.getUrl());
-                toSend.putString("Desc", photo.getDescription());
                 toSend.putString("Species", photo.getSpecies());
                 toSend.putString("Eco", photo.getEco());
                 goTo.putExtras(toSend);

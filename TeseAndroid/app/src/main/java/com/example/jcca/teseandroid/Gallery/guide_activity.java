@@ -101,10 +101,12 @@ public class guide_activity extends AppCompatActivity
                 name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     for(DataSnapshot snapshot : postSnapshot.getChildren()){
-                        Log.d("Cheguei Aqui: ", dataSnapshot.getRef().toString());
-                        ImageInfo imageInfo = snapshot.getValue(ImageInfo.class);
+                        if(!snapshot.getKey().toString().matches("description")){
+                            ImageInfo imageInfo = snapshot.getValue(ImageInfo.class);
 
-                        list.add(imageInfo);
+                            list.add(imageInfo);
+                        }
+
                         break; //this break is used for the cycle to add only one of each species
                     }
                 }

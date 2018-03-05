@@ -19,6 +19,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:elevation="16dp"
         app:headerLayout="@layout/nav_header_guide_activity"
         app:menu="@menu/activity_gallery_feed_drawer" />
 

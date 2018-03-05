@@ -20,7 +20,6 @@ public class ImageInfo {
     private String author;
     private Position location;
     private String species;
-    private String description;
     private String eco;
     private String uid;
     private String vulgar;
@@ -28,14 +27,13 @@ public class ImageInfo {
 
     public ImageInfo(){};
 
-    public ImageInfo(String date, String url, String author, Position location, String species,String vulgar, String description, String eco, String uid){
+    public ImageInfo(String date, String url, String author, Position location, String species,String vulgar, String eco, String uid){
 
         this.date=date;
         this.url=url;
         this.author=author;
         this.location=location;
         this.species=species;
-        this.description=description;
         this.eco=eco;
         this.uid=uid;
         this.vulgar=vulgar;
@@ -59,11 +57,11 @@ public class ImageInfo {
 
     public String getSpecies(){return species;}
 
-    public String getDescription(){return description;}
-
     public String getEco(){ return eco;}
 
     public String getVulgar(){return vulgar;}
+
+    public void setSpecies(String species){ this.species=species;}
 
     public void setDate(String date){
         this.date=date;
@@ -75,10 +73,6 @@ public class ImageInfo {
 
     public void setLocation(Position location){
         this.location=location;
-    }
-
-    public void setDescription(String description){
-        this.description=description;
     }
 
     public void setEco(String eco){
