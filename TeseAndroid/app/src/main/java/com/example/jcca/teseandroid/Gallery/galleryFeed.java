@@ -121,7 +121,7 @@ public class galleryFeed extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        startService(new Intent(galleryFeed.this, NewPhotoAdded.class));
+
 
         mDatabase =  FirebaseDatabase.getInstance().getReference();
         final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
@@ -354,7 +354,8 @@ public class galleryFeed extends AppCompatActivity
                 Log.d("Upload","Upload is " + progress + "% done");
                 int currentProgress = (int) progress;
                 progressBar.setProgress(currentProgress);
-
+                if(progressBar.getProgress()==100)
+                    refreshList(mDatabase);
             }
 
         });

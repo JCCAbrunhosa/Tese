@@ -419,6 +419,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+        startService(new Intent(this, NewPhotoAdded.class));
     }
 
     @Override

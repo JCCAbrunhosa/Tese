@@ -1,7 +1,11 @@
 package com.example.jcca.teseandroid.Misc;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -61,6 +65,7 @@ public class photoDetails_activity extends AppCompatActivity
     private RecyclerView.Adapter adapter;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,8 +75,7 @@ public class photoDetails_activity extends AppCompatActivity
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
 
 
@@ -115,13 +119,12 @@ public class photoDetails_activity extends AppCompatActivity
 
         GlideApp.with(getApplicationContext()).load(url).into(photo);
 
-        Log.d("Eco:", eco);
-
         auth.setText(author.toString());
         ec.setText(eco.toString());
-        //description.setText(desc.toString());
         specie.setText(species.toString());
         vlgar.setText(vulgar.toString());
+
+
 
 
         photo.setOnClickListener(new View.OnClickListener() {
@@ -133,6 +136,10 @@ public class photoDetails_activity extends AppCompatActivity
         });
 
         setTitle(species);
+        toolbar.setTitleTextColor(Color.WHITE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            toolbar.setBackgroundColor(getColor(R.color.greenTese));
+        }
 
         if(specie.getText().toString().matches("")){
             description.setText("Sem informação!");

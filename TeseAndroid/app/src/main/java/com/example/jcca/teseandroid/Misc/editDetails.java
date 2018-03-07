@@ -2,15 +2,20 @@ package com.example.jcca.teseandroid.Misc;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -63,6 +68,14 @@ public class editDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_details);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+
+
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         toDatabase = FirebaseDatabase.getInstance().getReference().child("PhotosReviewed");
@@ -74,6 +87,12 @@ public class editDetails extends AppCompatActivity {
         uid = getIntent().getStringExtra("UID");
         date = getIntent().getStringExtra("Date");
 
+        if(species.matches(""))
+            setTitle("Novo Avistamento");
+        else
+            setTitle(species);
+        toolbar.setTitleTextColor(0x00000000);
+
         submit = findViewById(R.id.submitData);
 
         especie = findViewById(R.id.test);
@@ -81,7 +100,7 @@ public class editDetails extends AppCompatActivity {
         ecologia = findViewById(R.id.ecologia);
         vulgar = findViewById(R.id.vulgar);
         submit = findViewById(R.id.submitData);
-        image = findViewById(R.id.newImage);
+        image = findViewById(R.id.app_bar_image);
 
         //This variable will always check the input on the Species field
         //If a new one is being inserted then a description will be needed
@@ -143,7 +162,7 @@ public class editDetails extends AppCompatActivity {
         });
 
         //Populate Original ImageView with Glide
-        GlideApp.with(getApplicationContext()).load(url).override(120, 120).into(image);
+        GlideApp.with(getApplicationContext()).load(url).into(image);
 
 
         //Passing values from new image notification to edit details activity
@@ -320,6 +339,24 @@ public class editDetails extends AppCompatActivity {
         }
 
     };
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if(id == android.R.id.home)
+            NavUtils.navigateUpFromSameTask(this);
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
 }

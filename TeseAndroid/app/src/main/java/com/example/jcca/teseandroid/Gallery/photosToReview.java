@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
+import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Misc.map_activity;
@@ -104,7 +105,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
                         list.add(imageInfo);
                     }
 
-                    adapter = new RecyclerViewAdapter(getApplicationContext(), list);
+                    adapter = new galleryFeedAdapter(getApplicationContext(), list);
                     imageViewer.setAdapter(adapter);
                 }
 

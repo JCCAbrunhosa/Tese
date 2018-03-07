@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ceylonlabs.imageviewpopup.ImagePopup;
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.DataObjects.Position;
@@ -55,6 +56,7 @@ public class speciesDetails_activity extends AppCompatActivity
     String[] urlImages = new String[10];
     Handler handler = new Handler();
     int i=0;
+    ImagePopup imagePopup;
 
 
     @Override
@@ -86,6 +88,24 @@ public class speciesDetails_activity extends AppCompatActivity
         String ecol = getIntent().getStringExtra("Eco");
         String url = getIntent().getStringExtra("URL");
         handler.postDelayed(runnable, 4000);
+
+        //Image pops up when user clicks on it
+        imagePopup = new ImagePopup(this);
+        imagePopup.initiatePopup(speciesImage.getDrawable());
+        //Populates pop up with image from glide - need to change this to a local fetch
+        imagePopup.initiatePopupWithGlide(url);
+        imagePopup.setFullScreen(true);
+        imagePopup.setImageOnClickClose(true);
+        imagePopup.setHideCloseIcon(false);
+
+        speciesImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                imagePopup.viewPopup();
+            }
+        });
+
 
         setTitle(spec);
 
@@ -211,6 +231,11 @@ public class speciesDetails_activity extends AppCompatActivity
         public void run() {
             GlideApp.with(getApplicationContext()).load(urlImages[i]).into(speciesImage);
             i++;
+            //Each new rotating image can be popped up
+            imagePopup.initiatePopup(speciesImage.getDrawable());
+            imagePopup.setFullScreen(true);
+            imagePopup.setImageOnClickClose(true);
+            imagePopup.setHideCloseIcon(false);
             if (urlImages[i]==null) {
                 i = 0;
             }
