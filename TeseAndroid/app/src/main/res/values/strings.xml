@@ -120,6 +120,7 @@
     <string name="relatedPhotos">Other sightings you can also like</string>
     <string name="noDescription">This species is new and has no description. Would you like to add one?</string>
     <string name="newSpecie">New Species</string>
+    <string name="newSight">New Capture</string>
 
     <string name="userFeed">Your sightings</string>
     <string name="othersFeed">Sightings Gallery</string>

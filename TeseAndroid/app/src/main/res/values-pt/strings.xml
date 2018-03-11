@@ -22,6 +22,7 @@
     <string name="relatedPhotos">Outros avistamentos que pode gostar</string>
     <string name="noDescription">Esta espécie é nova e não contém uma descrição. Deseja adicionar uma?</string>
     <string name="newSpecie">Nova Espécie</string>
+    <string name="newSight">Novo Avistamento</string>
 
 
     <!-- Activity Titles & Drawer Menu-->

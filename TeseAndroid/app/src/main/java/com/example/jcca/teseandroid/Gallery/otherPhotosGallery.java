@@ -67,6 +67,8 @@ public class otherPhotosGallery extends AppCompatActivity
     String timeStamp;
     ImageInfo image;
 
+    TextView noPhotos;
+
     //Firebase Storage Connection
     private String mCurrentPhotoPath;
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -106,6 +108,8 @@ public class otherPhotosGallery extends AppCompatActivity
 
         mDatabase =  FirebaseDatabase.getInstance().getReference();
 
+        noPhotos=findViewById(R.id.noPhotos);
+
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -140,7 +144,10 @@ public class otherPhotosGallery extends AppCompatActivity
                         list.add(imageInfo);
 
                 }
-
+                if(list.size()==0)
+                    noPhotos.setVisibility(View.VISIBLE);
+                else
+                    noPhotos.setVisibility(View.GONE);
                 adapter = new galleryFeedAdapter(getApplicationContext(),list);
                 imageViewer.setAdapter(adapter);
             }

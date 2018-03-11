@@ -1,9 +1,12 @@
 package com.example.jcca.teseandroid.Misc;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -59,6 +62,7 @@ public class speciesDetails_activity extends AppCompatActivity
     ImagePopup imagePopup;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,16 +71,20 @@ public class speciesDetails_activity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        toggle.syncState();*/
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
 
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        /*NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);*/
 
         species = findViewById(R.id.speciesName);
         description= findViewById(R.id.speciesDescription);
@@ -118,26 +126,29 @@ public class speciesDetails_activity extends AppCompatActivity
 
 
         //Photo
-        //sameSpecies = (RecyclerView) findViewById(R.id.sameSpeciesGallery);
-//        sameSpecies.setHasFixedSize(true);
+        sameSpecies = (RecyclerView) findViewById(R.id.sameSpeciesPhoto);
+        sameSpecies.setHasFixedSize(true);
 
-        //RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
-        //sameSpecies.setLayoutManager(layoutManager);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
+        sameSpecies.setLayoutManager(layoutManager);
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    description.setText(dataSnapshot.child("description").getValue().toString());
-                    urlImages[i++]= postSnapshot.child("url").getValue(String.class);
+                    if(!postSnapshot.getKey().matches("description")){
+                        description.setText(dataSnapshot.child("description").getValue().toString());
+                        urlImages[i++]= postSnapshot.child("url").getValue(String.class);
 
-                    //ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+                        ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
 
-                    //list.add(imageInfo);
+                        list.add(imageInfo);
+                    }
+
                 }
 
-                //adapter = new RecyclerViewAdapter(getApplicationContext(), list);
-                //sameSpecies.setAdapter(adapter);
+                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
+                sameSpecies.setAdapter(adapter);
             }
 
             @Override
@@ -177,12 +188,16 @@ public class speciesDetails_activity extends AppCompatActivity
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if(id == android.R.id.home)
+            NavUtils.navigateUpFromSameTask(this);
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {

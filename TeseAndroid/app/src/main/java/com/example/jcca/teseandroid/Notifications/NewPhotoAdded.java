@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.Gallery.onClickImage;
+import com.example.jcca.teseandroid.Gallery.photosToReview;
 import com.example.jcca.teseandroid.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -45,7 +46,7 @@ public class NewPhotoAdded extends Service {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 Random random = new Random();
-                final int mNotificationId= random.nextInt(9999 - 1000) + 1000;
+                final int mNotificationId= 1;
 
 
                 //Notificação para um investigador
@@ -53,11 +54,11 @@ public class NewPhotoAdded extends Service {
                 final NotificationCompat.Builder mBuilder =
                         new NotificationCompat.Builder(NewPhotoAdded.this)
                                 .setSmallIcon(R.drawable.side_nav_bar)
-                                .setContentTitle("Nova Captura!");
+                                .setContentTitle("Nova Capturas!");
 
                 mBuilder.setAutoCancel(true);
                 //Notification Action
-                Intent resultIntent = new Intent(NewPhotoAdded.this, onClickImage.class);
+                Intent resultIntent = new Intent(NewPhotoAdded.this, photosToReview.class);
                 Bundle toSend = new Bundle();
                 toSend.putString("URL", dataSnapshot.child("url").getValue().toString());
                 toSend.putString("Date", dataSnapshot.child("date").getValue().toString());
@@ -94,6 +95,9 @@ public class NewPhotoAdded extends Service {
                 whereToBuild.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getRef()==null)
+                            return ;
                         if(dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("isPro").getValue() != null)
                             mNotifyMgr.notify(mNotificationId, mBuilder.build());
                     }

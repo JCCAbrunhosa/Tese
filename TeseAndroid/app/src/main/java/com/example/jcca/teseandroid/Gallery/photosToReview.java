@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
@@ -65,6 +66,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
 
     ImageInfo image;
 
+    TextView noPhotos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +85,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
+        noPhotos=findViewById(R.id.noPhotos);
 
         //Photo
         imageViewer = (RecyclerView) findViewById(R.id.imageGallery);
@@ -104,7 +106,10 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
 
                         list.add(imageInfo);
                     }
-
+                    if(list.size()==0)
+                        noPhotos.setVisibility(View.VISIBLE);
+                    else
+                        noPhotos.setVisibility(View.GONE);
                     adapter = new galleryFeedAdapter(getApplicationContext(), list);
                     imageViewer.setAdapter(adapter);
                 }

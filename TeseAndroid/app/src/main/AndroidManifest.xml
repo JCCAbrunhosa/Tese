@@ -27,7 +27,7 @@
         android:theme="@style/AppTheme">
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.android.fileprovider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -152,7 +152,12 @@
             android:name=".Misc.speciesDetails_activity"
             android:label="Detalhes da Espécie"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.jcca.teseandroid.Gallery.guide_activity"/>
+        </activity>
+
         <activity
             android:name=".Misc.map_activity"
             android:label="@string/title_activity_map_activity"

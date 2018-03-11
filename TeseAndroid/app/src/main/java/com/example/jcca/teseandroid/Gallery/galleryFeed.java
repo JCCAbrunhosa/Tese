@@ -7,9 +7,11 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -24,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
+import com.example.jcca.teseandroid.BuildConfig;
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
@@ -70,7 +73,7 @@ import java.util.Date;
 import java.util.List;
 
 public class galleryFeed extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     //Take a picture intent
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -101,6 +104,7 @@ public class galleryFeed extends AppCompatActivity
 
     ProgressBar progressBar;
 
+    TextView noPhotos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +126,7 @@ public class galleryFeed extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        noPhotos=findViewById(R.id.noPhotos);
 
         mDatabase =  FirebaseDatabase.getInstance().getReference();
         final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
@@ -209,6 +214,11 @@ public class galleryFeed extends AppCompatActivity
                     list.add(imageInfo);
                 }
                 Log.d("SizeFin:", String.valueOf(list.size()));
+                if(list.size()==0)
+                    noPhotos.setVisibility(View.VISIBLE);
+                else
+                    noPhotos.setVisibility(View.GONE);
+
                 adapter = new galleryFeedAdapter(getApplicationContext(), list);
                 imageViewer.setAdapter(adapter);
             }
@@ -306,7 +316,12 @@ public class galleryFeed extends AppCompatActivity
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri uriSavedImage = Uri.fromFile(new File(photoFile.getAbsolutePath()));
+                Uri uriSavedImage;
+                if(Build.VERSION.SDK_INT >= 24) {
+                    uriSavedImage = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",new File(photoFile.getAbsolutePath()));
+                }else{
+                    uriSavedImage = Uri.fromFile(new File(photoFile.getAbsolutePath()));
+                }
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
@@ -338,9 +353,16 @@ public class galleryFeed extends AppCompatActivity
 
     private void uploadPhoto() {
 
+        Uri file;
+
         //Upload to Data Storage
-        Uri file = Uri.fromFile(new File(mCurrentPhotoPath));
-        Log.d("Storage ", mCurrentPhotoPath.toString());
+        if(Build.VERSION.SDK_INT >= 24) {
+          file = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",new File(mCurrentPhotoPath));
+        }else{
+            file = Uri.fromFile(new File(mCurrentPhotoPath));
+        }
+
+        Log.d("Storage ", timeStamp);
         StorageReference photosRef = storageRef.child("photos/" + FirebaseAuth.getInstance().getCurrentUser().getEmail() + "/" + file.getLastPathSegment());
         final StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
         UploadTask uploadTask = photosRef.putFile(file, metadata);

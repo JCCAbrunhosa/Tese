@@ -88,7 +88,7 @@ public class editDetails extends AppCompatActivity {
         date = getIntent().getStringExtra("Date");
 
         if(species.matches(""))
-            setTitle("Novo Avistamento");
+            setTitle(R.string.newSight);
         else
             setTitle(species);
         toolbar.setTitleTextColor(0x00000000);

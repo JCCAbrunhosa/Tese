@@ -130,6 +130,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 if (user != null) {
                     // User is signed in
                     Log.d("Login", "onAuthStateChanged:signed_in:" + user.getUid());
+                    startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
                     Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
                     startActivity(goTo);
 
@@ -419,7 +420,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-        startService(new Intent(this, NewPhotoAdded.class));
+       // startService(new Intent(this, NewPhotoAdded.class));
     }
 
     @Override

@@ -20,6 +20,7 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
+import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.R;
 
 import java.util.List;
@@ -187,7 +188,7 @@ public class settingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), settingsActivity.class));
+                startActivity(new Intent(getActivity(), galleryFeed.class));
                 return true;
             }
             return super.onOptionsItemSelected(item);
