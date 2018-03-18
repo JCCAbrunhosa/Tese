@@ -58,6 +58,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -113,7 +114,7 @@ public class galleryFeed extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getWindow().getDecorView().setBackgroundColor(Color.GRAY);
+        getWindow().getDecorView().setBackgroundColor(Color.LTGRAY);
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -202,9 +203,10 @@ public class galleryFeed extends AppCompatActivity
         list.clear();
         adapter = new galleryFeedAdapter(getApplicationContext(), list);
         imageViewer.setAdapter(adapter);
-        Log.d("SizeIni:", String.valueOf(list.size()));
 
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query orderByDate = mDatabase.orderByChild("date");
+
+        orderByDate.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
@@ -213,7 +215,6 @@ public class galleryFeed extends AppCompatActivity
 
                     list.add(imageInfo);
                 }
-                Log.d("SizeFin:", String.valueOf(list.size()));
                 if(list.size()==0)
                     noPhotos.setVisibility(View.VISIBLE);
                 else

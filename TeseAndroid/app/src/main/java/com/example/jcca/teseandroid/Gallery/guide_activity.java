@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -123,6 +124,8 @@ public class guide_activity extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        getWindow().getDecorView().setBackgroundColor(Color.LTGRAY);
+
         mDatabase =  FirebaseDatabase.getInstance().getReference();
 
         mDatabase2 =  FirebaseDatabase.getInstance().getReference().child("Species");
@@ -219,8 +222,8 @@ public class guide_activity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
+            Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+            startActivity(goTo);
         } else if (id == R.id.nav_gallery) {
             Intent goTo = new Intent(getApplicationContext(), otherPhotosGallery.class);
             startActivity(goTo);

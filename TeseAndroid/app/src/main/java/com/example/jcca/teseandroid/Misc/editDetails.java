@@ -187,6 +187,7 @@ public class editDetails extends AppCompatActivity {
 
                                     mDatabase.child("Species").child(especie.getText().toString()).child(key).child("species").setValue(especie.getText().toString());
                                     mDatabase.child("Species").child(especie.getText().toString()).child(key).child("vulgar").setValue(vulgar.getText().toString());
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("url").setValue(url);
                                     mDatabase.child("Users").child(uid).child(key).child("url").setValue(url);
                                     mDatabase.child("Users").child(uid).child(key).child("eco").setValue(ecologia.getText().toString());
                                     if(exists==false)

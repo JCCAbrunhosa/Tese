@@ -54,6 +54,7 @@ public class photoDetails_activity extends AppCompatActivity
     private TextView specie;
     private ImageView photo;
     private TextView vlgar;
+    private FloatingActionButton moreInfo;
 
     public DatabaseReference mDatabase;
     public DatabaseReference users;
@@ -63,6 +64,14 @@ public class photoDetails_activity extends AppCompatActivity
 
     RecyclerView similar;
     private RecyclerView.Adapter adapter;
+
+    String species;
+    String url;
+    String lat;
+    String lng;
+    String date ;
+    String uid;
+    String vulgar;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -98,15 +107,15 @@ public class photoDetails_activity extends AppCompatActivity
         vlgar = findViewById(R.id.vulgar);
 
         String author = getIntent().getStringExtra("Author");
-        String eco= getIntent().getStringExtra("Eco");
-        String desc = getIntent().getStringExtra("Desc");
-        final String species  = getIntent().getStringExtra("Species");
-        final String url= getIntent().getStringExtra("URL");
-        final String lat = getIntent().getStringExtra("Lat");
-        final String lng = getIntent().getStringExtra("Long");
-        final String date = getIntent().getStringExtra("Date");
-        final String uid = getIntent().getStringExtra("UID");
-        final String vulgar = getIntent().getStringExtra("Vulgar");
+        final String eco= getIntent().getStringExtra("Eco");
+        final String desc = getIntent().getStringExtra("Desc");
+        species  = getIntent().getStringExtra("Species");
+        url= getIntent().getStringExtra("URL");
+        lat = getIntent().getStringExtra("Lat");
+        lng = getIntent().getStringExtra("Long");
+        date = getIntent().getStringExtra("Date");
+        uid = getIntent().getStringExtra("UID");
+        vulgar = getIntent().getStringExtra("Vulgar");
 
         //Image pops up when user clicks on it
         final ImagePopup imagePopup = new ImagePopup(this);
@@ -136,6 +145,7 @@ public class photoDetails_activity extends AppCompatActivity
         });
 
         setTitle(species);
+        toolbar.setSubtitle(vulgar);
         toolbar.setTitleTextColor(Color.WHITE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             toolbar.setBackgroundColor(getColor(R.color.greenTese));
@@ -216,6 +226,22 @@ public class photoDetails_activity extends AppCompatActivity
             }
         });
 
+        moreInfo=findViewById(R.id.speciesInfo);
+        moreInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle edit = new Bundle();
+                edit.putString("Species", species);
+                edit.putString("Desc", desc);
+                edit.putString("Eco", eco);
+                edit.putString("URL", url);
+                Intent goTo = new Intent(photoDetails_activity.this, speciesDetails_activity.class);
+                goTo.putExtras(edit);
+                startActivity(goTo);
+
+            }
+        });
+
         base.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -263,6 +289,21 @@ public class photoDetails_activity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if(id==R.id.action_edit){
+            Bundle edit = new Bundle();
+            edit.putString("photoName", date);
+            edit.putString("URL", url);
+            edit.putString("Species", species);
+            edit.putString("UID", uid);
+            edit.putString("Vulgar", vulgar);
+            edit.putString("Date", date);
+            edit.putString("PreviousIntent", "photoDetails");
+            Log.d("UUID: ", uid);
+            Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
+            goTo.putExtras(edit);
+            startActivity(goTo);
         }
 
         return super.onOptionsItemSelected(item);

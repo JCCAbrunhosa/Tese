@@ -13,13 +13,13 @@
         completions."
     </string>
     <string name="title_activity_register" translatable="false">Registar Conta</string>
-    <string name="especie">Espécie</string>
-    <string name="vulgar">Nome vulgar</string>
-    <string name="autor">Autor</string>
-    <string name="descricao">Descrição</string>
-    <string name="ecologia">Ecologia</string>
+    <string name="especie">Espécie:</string>
+    <string name="vulgar">Nome vulgar:</string>
+    <string name="autor">Autor:</string>
+    <string name="descricao">Descrição:</string>
+    <string name="ecologia">Ecologia:</string>
     <string name="related">Avistamentos que pode gostar</string>
-    <string name="relatedPhotos">Outros avistamentos que pode gostar</string>
+    <string name="relatedPhotos">Outros avistamentos:</string>
     <string name="noDescription">Esta espécie é nova e não contém uma descrição. Deseja adicionar uma?</string>
     <string name="newSpecie">Nova Espécie</string>
     <string name="newSight">Novo Avistamento</string>
@@ -34,6 +34,9 @@
     <string name="options">Opções</string>
     <string name="endSession">Terminar Sessão</string>
     <string name="userInfo">Conta</string>
+
+    <string name="noPhotos">Não há avistamentos! :(</string>
+
 
 
 

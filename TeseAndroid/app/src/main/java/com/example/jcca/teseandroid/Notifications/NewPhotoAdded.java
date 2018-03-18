@@ -54,7 +54,8 @@ public class NewPhotoAdded extends Service {
                 final NotificationCompat.Builder mBuilder =
                         new NotificationCompat.Builder(NewPhotoAdded.this)
                                 .setSmallIcon(R.drawable.side_nav_bar)
-                                .setContentTitle("Nova Capturas!");
+                                .setContentTitle("Nova Capturas!")
+                                .setContentText("Clique para ver as novas capturas.");
 
                 mBuilder.setAutoCancel(true);
                 //Notification Action

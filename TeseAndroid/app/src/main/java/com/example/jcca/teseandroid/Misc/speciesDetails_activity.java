@@ -56,7 +56,7 @@ public class speciesDetails_activity extends AppCompatActivity
     public List<ImageInfo> list = new ArrayList<>();
     public List<Position> positions = new ArrayList<>();
     DatabaseReference mDatabase;
-    String[] urlImages = new String[10];
+    String[] urlImages;
     Handler handler = new Handler();
     int i=0;
     ImagePopup imagePopup;
@@ -129,12 +129,13 @@ public class speciesDetails_activity extends AppCompatActivity
         sameSpecies = (RecyclerView) findViewById(R.id.sameSpeciesPhoto);
         sameSpecies.setHasFixedSize(true);
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),4);
         sameSpecies.setLayoutManager(layoutManager);
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                urlImages= new String[(int)dataSnapshot.getChildrenCount()];
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     if(!postSnapshot.getKey().matches("description")){
                         description.setText(dataSnapshot.child("description").getValue().toString());

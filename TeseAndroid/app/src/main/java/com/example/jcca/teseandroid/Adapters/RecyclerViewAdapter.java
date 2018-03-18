@@ -42,7 +42,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_items, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.samespecies_items, parent, false);
 
         ViewHolder viewHolder = new ViewHolder(view);
 
@@ -53,7 +53,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final ImageInfo UploadInfo = MainImageUploadInfoList.get(position);
         if(UploadInfo!=null){
-            holder.imageNameTextView.setText(UploadInfo.getAuthor());
 
             holder.itemView.setLongClickable(true);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -100,13 +99,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public ViewHolder(View itemView) {
             super(itemView);
 
-            imageView = (ImageView) itemView.findViewById(R.id.img);
+            imageView = (ImageView) itemView.findViewById(R.id.relatedImage);
 
-            imageNameTextView = (TextView) itemView.findViewById(R.id.data);
-
-            species = itemView.findViewById(R.id.photoSpecies);
-            description=itemView.findViewById(R.id.speciesName);
-            eco=itemView.findViewById(R.id.speciesEco);
 
         }
 
