@@ -35,6 +35,7 @@ import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
+import com.example.jcca.teseandroid.Misc.cameraIntent;
 import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -71,7 +72,6 @@ public class otherPhotosGallery extends AppCompatActivity
     TextView noPhotos;
 
     //Firebase Storage Connection
-    private String mCurrentPhotoPath;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://catchabug-teste.appspot.com");
 
@@ -86,6 +86,8 @@ public class otherPhotosGallery extends AppCompatActivity
     public List<ImageInfo> list = new ArrayList<>();
 
     public RecyclerView.Adapter adapter ;
+
+    String path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +167,8 @@ public class otherPhotosGallery extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                takeAPhotoIntent();
+                Intent e = new Intent(otherPhotosGallery.this, cameraIntent.class);
+                startActivityForResult(e, REQUEST_TAKE_PHOTO);
             }
         });
 
@@ -239,51 +242,19 @@ public class otherPhotosGallery extends AppCompatActivity
     }
 
     /////////////////////////////////////Photo Functions/////////////////////////////
-    private void takeAPhotoIntent() {
 
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri uriSavedImage = Uri.fromFile(new File(photoFile.getAbsolutePath()));
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
+    //After taking a photo, the upload occurs
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            path = data.getStringExtra("photoPath");
+            timeStamp = data.getStringExtra("timeStamp");
+            uploadPhoto(path);
         }
-
-    }
-
-    //Done
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        //Saves on directory made for that day
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File dir = new File(storageDir, new SimpleDateFormat("yyyyMMdd").format(new Date()));
-        if (!dir.exists())
-            dir.mkdirs();
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpeg",         /* suffix */
-                dir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
     }
 
 
-    private void uploadPhoto() {
+    private void uploadPhoto(String mCurrentPhotoPath) {
 
         //Upload to Data Storage
         Uri file = Uri.fromFile(new File(mCurrentPhotoPath));
@@ -314,13 +285,7 @@ public class otherPhotosGallery extends AppCompatActivity
 
     }
 
-    //After taking a photo, the upload occurs
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            uploadPhoto();
-        }
-    }
+
 
     //This function will upload all data, including the position (inner class doesn't let values outside) - not the best way but it works
     private void getLocation(final UploadTask.TaskSnapshot taskSnapshot) {

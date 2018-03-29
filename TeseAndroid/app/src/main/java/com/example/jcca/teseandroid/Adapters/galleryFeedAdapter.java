@@ -17,7 +17,6 @@ import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
 import com.example.jcca.teseandroid.Misc.photoDetails_activity;
 import com.example.jcca.teseandroid.Misc.showOnMap;
-import com.example.jcca.teseandroid.Misc.speciesDetails_activity;
 import com.example.jcca.teseandroid.R;
 
 import java.util.List;

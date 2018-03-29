@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.ContextMenu;
@@ -30,6 +31,7 @@ import com.example.jcca.teseandroid.BuildConfig;
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
+import com.example.jcca.teseandroid.Misc.cameraIntent;
 import com.example.jcca.teseandroid.Misc.editDetails;
 import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.Misc.showOnMap;
@@ -68,6 +70,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Permission;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,6 +82,9 @@ public class galleryFeed extends AppCompatActivity
     //Take a picture intent
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_LOCATION=0;
+    int ACTIVITY_DONE=1;
+    int permissionCheck;
 
     //Connection between RecyclerView and Firebase variables
     public List<ImageInfo> list = new ArrayList<>();
@@ -99,23 +105,24 @@ public class galleryFeed extends AppCompatActivity
     //RecyclerView
     private RecyclerView imageViewer;
 
-    String timeStamp;
-
     ImageInfo image;
 
     ProgressBar progressBar;
 
     TextView noPhotos;
 
+    String path;
+
+    String timeStamp;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_feed);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getWindow().getDecorView().setBackgroundColor(Color.LTGRAY);
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -125,7 +132,6 @@ public class galleryFeed extends AppCompatActivity
 
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         noPhotos=findViewById(R.id.noPhotos);
 
@@ -146,6 +152,17 @@ public class galleryFeed extends AppCompatActivity
             }
         });
 
+        //Always check permissions when starting the App
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(this,"Permission not yet granted", Toast.LENGTH_LONG).show();
+            //Request Permissions (Location)
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION);
+
+        }
+
         //Photo
         imageViewer = (RecyclerView) findViewById(R.id.imageGallery);
         imageViewer.setHasFixedSize(true);
@@ -161,14 +178,13 @@ public class galleryFeed extends AppCompatActivity
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         imageViewer.setLayoutManager(layoutManager);
 
-        Toast.makeText(getApplicationContext(), "onCreate", Toast.LENGTH_LONG).show();
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              takeAPhotoIntent();
+                Intent intent=new Intent(galleryFeed.this,cameraIntent.class);
+                startActivityForResult(intent, ACTIVITY_DONE );
             }
 
         });
@@ -178,7 +194,6 @@ public class galleryFeed extends AppCompatActivity
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_LONG).show();
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
                         refreshList(mDatabase);
@@ -194,8 +209,8 @@ public class galleryFeed extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        Toast.makeText(getApplicationContext(), "onResume", Toast.LENGTH_LONG).show();
         refreshList(mDatabase);
+
     }
 
     public void refreshList(DatabaseReference mDatabase){
@@ -303,67 +318,28 @@ public class galleryFeed extends AppCompatActivity
     }
 
     /////////////////////////////////////Photo Functions/////////////////////////////
-    private void takeAPhotoIntent() {
 
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri uriSavedImage;
-                if(Build.VERSION.SDK_INT >= 24) {
-                    uriSavedImage = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",new File(photoFile.getAbsolutePath()));
-                }else{
-                    uriSavedImage = Uri.fromFile(new File(photoFile.getAbsolutePath()));
-                }
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
+    //After taking a photo, the upload occurs
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ACTIVITY_DONE && resultCode == RESULT_OK) {
+            path=  data.getStringExtra("photoPath");
+            timeStamp=data.getStringExtra("timeStamp");
+            uploadPhoto(path);
         }
-
     }
 
-    //Done
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        //Saves on directory made for that day
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File dir = new File(storageDir, new SimpleDateFormat("yyyyMMdd").format(new Date()));
-        if (!dir.exists())
-            dir.mkdirs();
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpeg",         /* suffix */
-                dir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-
-    private void uploadPhoto() {
+    private void uploadPhoto(String photoPath) {
 
         Uri file;
 
         //Upload to Data Storage
         if(Build.VERSION.SDK_INT >= 24) {
-          file = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",new File(mCurrentPhotoPath));
+          file = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",new File(photoPath));
         }else{
-            file = Uri.fromFile(new File(mCurrentPhotoPath));
+            file = Uri.fromFile(new File(photoPath));
         }
 
-        Log.d("Storage ", timeStamp);
         StorageReference photosRef = storageRef.child("photos/" + FirebaseAuth.getInstance().getCurrentUser().getEmail() + "/" + file.getLastPathSegment());
         final StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
         UploadTask uploadTask = photosRef.putFile(file, metadata);
@@ -397,6 +373,7 @@ public class galleryFeed extends AppCompatActivity
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 //progressBar.setVisibility(View.INVISIBLE);
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
+
                 getLocation(taskSnapshot);
                 progressBar.setVisibility(View.INVISIBLE);
 
@@ -410,14 +387,7 @@ public class galleryFeed extends AppCompatActivity
 
     }
 
-    //After taking a photo, the upload occurs
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            uploadPhoto();
 
-        }
-    }
 
     //This function will upload all data, including the position (inner class doesn't let values outside) - not the best way but it works
     private void getLocation(final UploadTask.TaskSnapshot taskSnapshot) {

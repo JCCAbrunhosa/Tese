@@ -1,6 +1,7 @@
 package com.example.jcca.teseandroid.Gallery;
 
 import android.Manifest;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,8 +19,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -30,6 +33,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -99,6 +103,9 @@ public class guide_activity extends AppCompatActivity
 
     TextView noPhotos;
 
+    SearchView searchView;
+    ListAdapter listAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +140,7 @@ public class guide_activity extends AppCompatActivity
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         imageViewer.setLayoutManager(layoutManager);
         imageViewer.setHasFixedSize(true);
+
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -180,7 +188,6 @@ public class guide_activity extends AppCompatActivity
             }
         });
 
-
     }
 
     @Override
@@ -197,6 +204,30 @@ public class guide_activity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.guide_activity, menu);
+
+        searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(!newText.matches("")){
+                    adapter.setFilterOn(newText);
+                }
+
+                else
+                    adapter.setFilterOff();
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -211,6 +242,9 @@ public class guide_activity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
+
+        if(id==R.id.action_search){}
+
 
         return super.onOptionsItemSelected(item);
     }

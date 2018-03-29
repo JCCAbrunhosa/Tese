@@ -16,6 +16,7 @@ public class showOnMap extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     String lat;
     String lng;
+    String species;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,7 @@ public class showOnMap extends FragmentActivity implements OnMapReadyCallback {
 
         lat = getIntent().getStringExtra("Lat");
         lng = getIntent().getStringExtra("Long");
+        species=getIntent().getStringExtra("Species");
     }
 
 
@@ -46,7 +48,7 @@ public class showOnMap extends FragmentActivity implements OnMapReadyCallback {
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.addMarker(new MarkerOptions().position(sydney).title(species));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         mMap.setMaxZoomPreference(20);
         mMap.setMinZoomPreference(10);

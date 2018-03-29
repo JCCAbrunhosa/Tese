@@ -58,6 +58,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         mPasswordView1 = (EditText) findViewById(R.id.pwd1);
         mPasswordView2 = (EditText) findViewById(R.id.pwd2);
+
+        mName = findViewById(R.id.name);
         isPro = findViewById(R.id.isPro);
 
         isPro = findViewById(R.id.isPro);

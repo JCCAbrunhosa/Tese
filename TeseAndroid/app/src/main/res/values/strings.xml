@@ -3,6 +3,7 @@
     <string name="action_settings" translatable="false">Settings</string>
     <string name="title_activity_login" translatable="false">Sign in</string>
     <string name="action_edit">Edit Photo</string>
+    <string name="action_info">Information</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email" translatable="false">Email</string>
@@ -123,17 +124,18 @@
     <string name="newSpecie">New Species</string>
     <string name="newSight">New Capture</string>
 
-    <string name="userFeed">Your sightings</string>
+    <string name="userFeed">My sightings</string>
     <string name="othersFeed">Sightings Gallery</string>
     <string name="newPhotos">New Sightings</string>
     <string name="guide">Guide</string>
-    <string name="map">Species Map</string>
+    <string name="map">Sightings Map</string>
     <string name="options">Options</string>
     <string name="endSession">Log off</string>
     <string name="userInfo">Account</string>
 
     <string name="noPhotos">No sightings! :(</string>
-
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 
 
 </resources>

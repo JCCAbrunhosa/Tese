@@ -72,6 +72,10 @@ public class photoDetails_activity extends AppCompatActivity
     String date ;
     String uid;
     String vulgar;
+    String eco;
+    String author;
+
+    MenuItem edit;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -101,14 +105,12 @@ public class photoDetails_activity extends AppCompatActivity
 
         auth = findViewById(R.id.photoAuthor);
         ec = findViewById(R.id.photoEco);
-        description = findViewById(R.id.speciesName);
         specie = findViewById(R.id.photoSpecies);
         photo = findViewById(R.id.photoDasSpecies);
         vlgar = findViewById(R.id.vulgar);
 
-        String author = getIntent().getStringExtra("Author");
-        final String eco= getIntent().getStringExtra("Eco");
-        final String desc = getIntent().getStringExtra("Desc");
+        author = getIntent().getStringExtra("Author");
+        eco= getIntent().getStringExtra("Eco");
         species  = getIntent().getStringExtra("Species");
         url= getIntent().getStringExtra("URL");
         lat = getIntent().getStringExtra("Lat");
@@ -116,6 +118,8 @@ public class photoDetails_activity extends AppCompatActivity
         date = getIntent().getStringExtra("Date");
         uid = getIntent().getStringExtra("UID");
         vulgar = getIntent().getStringExtra("Vulgar");
+
+        edit = findViewById(R.id.action_edit);
 
         //Image pops up when user clicks on it
         final ImagePopup imagePopup = new ImagePopup(this);
@@ -134,8 +138,6 @@ public class photoDetails_activity extends AppCompatActivity
         vlgar.setText(vulgar.toString());
 
 
-
-
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,7 +154,6 @@ public class photoDetails_activity extends AppCompatActivity
         }
 
         if(specie.getText().toString().matches("")){
-            description.setText("Sem informação!");
             ec.setText("Sem informação!");
             specie.setText("Sem informação!");
         }
@@ -164,33 +165,6 @@ public class photoDetails_activity extends AppCompatActivity
 
 
 
-
-        //similar = (RecyclerView) findViewById(R.id.samePhotosGallery);
-        //similar.setHasFixedSize(true);
-
-
-        /*RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
-        similar.setLayoutManager(layoutManager);
-
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
-                    list.add(imageInfo);
-                }
-
-                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
-                similar.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });*/
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,6 +172,7 @@ public class photoDetails_activity extends AppCompatActivity
                 Bundle pos = new Bundle();
                 pos.putString("Lat", lat);
                 pos.putString("Long", lng);
+                pos.putString("Species", species);
                 Intent k = new Intent(photoDetails_activity.this, showOnMap.class);
                 k.putExtras(pos);
                 startActivity(k);
@@ -205,48 +180,28 @@ public class photoDetails_activity extends AppCompatActivity
             }
         });
 
-
-        final FloatingActionButton editDetails = (FloatingActionButton) findViewById(R.id.editDetails);
-        editDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle edit = new Bundle();
-                edit.putString("photoName", date);
-                edit.putString("URL", url);
-                edit.putString("Species", species);
-                edit.putString("UID", uid);
-                edit.putString("Vulgar", vulgar);
-                edit.putString("Date", date);
-                edit.putString("PreviousIntent", "photoDetails");
-                Log.d("UUID: ", uid);
-                Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
-                goTo.putExtras(edit);
-                startActivity(goTo);
-
-            }
-        });
-
-        moreInfo=findViewById(R.id.speciesInfo);
-        moreInfo.setOnClickListener(new View.OnClickListener() {
+        specie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle edit = new Bundle();
                 edit.putString("Species", species);
-                edit.putString("Desc", desc);
                 edit.putString("Eco", eco);
                 edit.putString("URL", url);
+                edit.putString("Vulgar", vulgar);
                 Intent goTo = new Intent(photoDetails_activity.this, speciesDetails_activity.class);
                 goTo.putExtras(edit);
                 startActivity(goTo);
-
             }
         });
+
+
+
 
         base.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getValue()==null)
-                    editDetails.setVisibility(View.INVISIBLE);
+                   edit.setVisible(false);
             }
 
             @Override
@@ -302,6 +257,16 @@ public class photoDetails_activity extends AppCompatActivity
             edit.putString("PreviousIntent", "photoDetails");
             Log.d("UUID: ", uid);
             Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
+            goTo.putExtras(edit);
+            startActivity(goTo);
+        }
+        if(id==R.id.action_info){
+            Bundle edit = new Bundle();
+            edit.putString("Species", species);
+            edit.putString("Eco", eco);
+            edit.putString("URL", url);
+            edit.putString("Vulgar", vulgar);
+            Intent goTo = new Intent(photoDetails_activity.this, speciesDetails_activity.class);
             goTo.putExtras(edit);
             startActivity(goTo);
         }

@@ -50,6 +50,7 @@ public class speciesDetails_activity extends AppCompatActivity
     TextView description;
     TextView eco;
     ImageView speciesImage;
+    TextView vulgar;
 
     RecyclerView sameSpecies;
     public RecyclerView.Adapter adapter;
@@ -90,11 +91,13 @@ public class speciesDetails_activity extends AppCompatActivity
         description= findViewById(R.id.speciesDescription);
         eco = findViewById(R.id.speciesEco);
         speciesImage = findViewById(R.id.speciesImage);
+        vulgar = findViewById(R.id.vulgarName);
 
         final String spec = getIntent().getStringExtra("Species");
         String desc = getIntent().getStringExtra("Desc");
         String ecol = getIntent().getStringExtra("Eco");
         String url = getIntent().getStringExtra("URL");
+        String vulgarName = getIntent().getStringExtra("Vulgar");
         handler.postDelayed(runnable, 4000);
 
         //Image pops up when user clicks on it
@@ -121,6 +124,8 @@ public class speciesDetails_activity extends AppCompatActivity
         species.setText(spec.toString());
 
         eco.setText(ecol.toString());
+
+        vulgar.setText(vulgarName.toString());
 
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Species/" + spec);
 

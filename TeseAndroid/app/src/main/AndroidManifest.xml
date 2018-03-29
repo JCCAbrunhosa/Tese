@@ -51,17 +51,12 @@
             android:label="@string/title_activity_register"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Gallery.galleryFeed"
             android:label="@string/userFeed"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Gallery.otherPhotosGallery"
             android:label="@string/othersFeed"
@@ -83,33 +78,15 @@
                 android:value="com.example.jcca.teseandroid.Gallery.galleryFeed" />
         </activity>
 
-        <service
-            android:name=".Notifications.NotificationService"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <service
-            android:name=".Notifications.GetTokenService"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
+        <activity
+            android:name=".Misc.cameraIntent"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <service
             android:name=".Notifications.NewPhotoAdded"
             android:enabled="true"
             android:exported="true" />
-
-        <activity
-            android:name=".Gallery.onClickImage"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_on_click_image"
-            android:screenOrientation="portrait"
-            android:theme="@style/FullscreenTheme" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -161,6 +138,16 @@
         <activity
             android:name=".Login_Registering.settingsActivity"
             android:label="@string/title_activity_settings" />
+
+        <receiver android:name=".Misc.appWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/app_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

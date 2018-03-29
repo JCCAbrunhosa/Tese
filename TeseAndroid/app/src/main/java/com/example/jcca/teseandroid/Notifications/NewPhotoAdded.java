@@ -4,13 +4,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.example.jcca.teseandroid.Gallery.galleryFeed;
-import com.example.jcca.teseandroid.Gallery.onClickImage;
 import com.example.jcca.teseandroid.Gallery.photosToReview;
 import com.example.jcca.teseandroid.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,7 +39,8 @@ public class NewPhotoAdded extends Service {
         newPhotoAdded = FirebaseDatabase.getInstance().getReference().child("toReview");
         final DatabaseReference whereToBuild = FirebaseDatabase.getInstance().getReference().child("Accounts");
         int counter=0;
-
+        final SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final boolean check = sharedPreferences.getBoolean("notifications_new_message",false);
 
         newPhotoAdded.addChildEventListener(new ChildEventListener() {
             @Override
@@ -48,6 +49,7 @@ public class NewPhotoAdded extends Service {
                 Random random = new Random();
                 final int mNotificationId= 1;
 
+                Log.d("BOOLEAN", String.valueOf(check));
 
                 //Notificação para um investigador
                 //Enviar notificação
@@ -55,7 +57,8 @@ public class NewPhotoAdded extends Service {
                         new NotificationCompat.Builder(NewPhotoAdded.this)
                                 .setSmallIcon(R.drawable.side_nav_bar)
                                 .setContentTitle("Nova Capturas!")
-                                .setContentText("Clique para ver as novas capturas.");
+                                .setContentText("Clique para ver as novas capturas.")
+                                .setCategory(NotificationCompat.CATEGORY_MESSAGE);
 
                 mBuilder.setAutoCancel(true);
                 //Notification Action
@@ -100,6 +103,7 @@ public class NewPhotoAdded extends Service {
                         if(dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getRef()==null)
                             return ;
                         if(dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("isPro").getValue() != null)
+                           if(check)
                             mNotifyMgr.notify(mNotificationId, mBuilder.build());
                     }
 

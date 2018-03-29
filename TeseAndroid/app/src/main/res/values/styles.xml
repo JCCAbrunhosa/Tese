@@ -34,4 +34,8 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <style name="mapsAppBar">
+        <item name="android:colorBackground">@color/greenTese</item>
+    </style>
+
 </resources>
