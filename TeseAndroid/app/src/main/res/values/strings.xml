@@ -18,7 +18,7 @@
         completions."
     </string>
     <string name="title_activity_register" translatable="false">Register Account</string>
-    <string name="title_activity_asdsadasd" translatable="false">asdsadasd</string>
+    <string name="email_validation" >Validate your email to continue</string>
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>

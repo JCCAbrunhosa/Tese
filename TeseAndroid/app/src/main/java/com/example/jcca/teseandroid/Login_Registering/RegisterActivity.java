@@ -17,7 +17,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -79,8 +78,11 @@ public class RegisterActivity extends AppCompatActivity {
 
                                     if(isPro.isChecked()){
                                         sendVerificationEmail();
+                                        mDatabase.child("Accounts").child(user.getUid()).child("isPro").setValue(true);
+                                        mDatabase.child("Accounts").child(user.getUid()).child("userName").setValue(mName.getText().toString());
                                         Toast.makeText( RegisterActivity.this,"Email de Verificação Enviado",Toast.LENGTH_SHORT).show();
                                     }
+                                    mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
                                     Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
                                     startActivity(goTo);
 

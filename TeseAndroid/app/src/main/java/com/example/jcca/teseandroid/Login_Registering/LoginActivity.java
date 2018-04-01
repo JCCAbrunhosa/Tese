@@ -43,8 +43,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -123,23 +126,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
 
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d("Login", "onAuthStateChanged:signed_in:" + user.getUid());
-                    startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
-                    Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
-                    startActivity(goTo);
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                } else {
-                    // User is signed out
-                    Log.d("Login", "onAuthStateChanged:signed_out");
+                    if (user != null && user.isEmailVerified()) {
+                            // User is signed in
+                            Log.d("Login", "onAuthStateChanged:signed_in:" + user.getUid());
+                            startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
+                            Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+                            startActivity(goTo);
 
-                }
-                // ...
+                    } else {
+                        // User is signed out
+                        Log.d("Login", "onAuthStateChanged:signed_out");
+
+                    }
+                    // ...
+
             }
         };
 
@@ -255,7 +261,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             Toast.makeText(LoginActivity.this, "Authentication Failed",
                     Toast.LENGTH_SHORT).show();
         }
-
         loginExisting(email,password);
     }
 
@@ -433,31 +438,42 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     public void loginExisting(String email, String password){
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+        if(!email.matches("") && !password.matches("") ){
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                        if(mDatabase.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()) != null)
-                         if(checkIfEmailVerified()== false)
-                            return;
+                            if(task.isSuccessful()){
+                                if(mDatabase.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()) != null)
+                                    if(user.isEmailVerified()){
 
-                        Log.d("Login", "signInWithEmail:onComplete:" + task.isSuccessful());
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        Intent goToMain = new Intent(LoginActivity.this, galleryFeed.class);
-                        startActivity(goToMain);
+                                        Log.d("Login", "signInWithEmail:onComplete:" + task.isSuccessful());
+                                        // If sign in fails, display a message to the user. If sign in succeeds
+                                        // the auth state listener will be notified and logic to handle the
+                                        // signed in user can be handled in the listener.
+                                        Intent goToMain = new Intent(LoginActivity.this, galleryFeed.class);
+                                        startActivity(goToMain);
 
-                        if (!task.isSuccessful()) {
-                            Log.w("Login", "signInWithEmail:failed", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication Failed",
-                                    Toast.LENGTH_SHORT).show();
+                                        if (!task.isSuccessful()) {
+                                            Log.w("Login", "signInWithEmail:failed", task.getException());
+                                            Toast.makeText(LoginActivity.this, "Authentication Failed",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        // ...
+                                    }else{
+                                        Toast.makeText(LoginActivity.this, "Email não verificado!", Toast.LENGTH_LONG).show();
+                                    }
+
+
+                            }
+
                         }
+                    });
+        }
 
-                        // ...
-                    }
-                });
 
     }
 
@@ -468,6 +484,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         if (user.isEmailVerified())
         {
+            Log.d("isEmailVerified", String.valueOf(user.isEmailVerified()));
             // user is verified, so you can finish this activity or send user to activity which you want.
             mDatabase.child("Accounts").child(user.getUid()).child("isPro").setValue(true);
 

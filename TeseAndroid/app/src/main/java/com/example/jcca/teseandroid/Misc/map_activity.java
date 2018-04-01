@@ -87,24 +87,24 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                LatLng pos=null;
+                ImageInfo photo=null;
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     for(DataSnapshot snap: snapshot.getChildren()){
                         if(!snap.getKey().toString().matches("description")) {
-                            mDatabase.orderByChild("species");
-                            ImageInfo photo = snap.getValue(ImageInfo.class);
-                            LatLng pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
+                            photo = snap.getValue(ImageInfo.class);
+                            pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
 
-
-                            Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(photo.getSpecies()));
-                            marker.setTag(photo);
-                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360)));
-                            markers.add(marker);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
                         }
                     }
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(photo.getSpecies()));
+                    marker.setTag(photo);
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360)));
+                    markers.add(marker);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
 
                 }
             }
@@ -133,7 +133,6 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        Log.d("Size of Markers:", String.valueOf(markers.size()));
     }
 
     @Override
@@ -152,7 +151,39 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onQueryTextChange(final String newText) {
+                Log.d("Markers", String.valueOf(markers.size()));
+
+                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        mMap.clear();
+                        ImageInfo photo=null;
+                        LatLng pos=null;
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            Log.d("SnapshotToString", snapshot.getKey());
+                            if(snapshot.getKey().toLowerCase().contains(newText.toLowerCase())){
+                                Log.d("Contains",String.valueOf(snapshot.toString().toLowerCase().contains(newText.toLowerCase())));
+                                for(DataSnapshot snap: snapshot.getChildren()){
+                                    if(!snap.getKey().toString().matches("description")) {
+                                        photo= snap.getValue(ImageInfo.class);
+                                        pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
+
+                                    }
+                                }
+                                Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(photo.getSpecies()));
+                                marker.setTag(photo);
+                                mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+
                 return false;
             }
         });

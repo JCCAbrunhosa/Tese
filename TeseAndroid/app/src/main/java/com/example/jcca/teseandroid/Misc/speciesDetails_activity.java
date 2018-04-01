@@ -94,7 +94,6 @@ public class speciesDetails_activity extends AppCompatActivity
         vulgar = findViewById(R.id.vulgarName);
 
         final String spec = getIntent().getStringExtra("Species");
-        String desc = getIntent().getStringExtra("Desc");
         String ecol = getIntent().getStringExtra("Eco");
         String url = getIntent().getStringExtra("URL");
         String vulgarName = getIntent().getStringExtra("Vulgar");

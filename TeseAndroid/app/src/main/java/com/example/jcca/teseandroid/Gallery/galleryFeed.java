@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -29,6 +30,7 @@ import android.view.MenuItem;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.BuildConfig;
 import com.example.jcca.teseandroid.DataObjects.Position;
+import com.example.jcca.teseandroid.Glide_Module.GlideApp;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
 import com.example.jcca.teseandroid.Misc.cameraIntent;
@@ -80,11 +82,8 @@ public class galleryFeed extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     //Take a picture intent
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_TAKE_PHOTO = 1;
     static final int REQUEST_LOCATION=0;
     int ACTIVITY_DONE=1;
-    int permissionCheck;
 
     //Connection between RecyclerView and Firebase variables
     public List<ImageInfo> list = new ArrayList<>();
@@ -114,6 +113,8 @@ public class galleryFeed extends AppCompatActivity
     String path;
 
     String timeStamp;
+
+    Handler handler = new Handler();
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -161,6 +162,10 @@ public class galleryFeed extends AppCompatActivity
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION);
 
+        }
+
+        if(getIntent().getStringExtra("From")!=null){
+            Log.d("Innn", getIntent().getStringExtra("From"));
         }
 
         //Photo
@@ -215,15 +220,12 @@ public class galleryFeed extends AppCompatActivity
 
     public void refreshList(DatabaseReference mDatabase){
 
-        list.clear();
-        adapter = new galleryFeedAdapter(getApplicationContext(), list);
-        imageViewer.setAdapter(adapter);
-
         Query orderByDate = mDatabase.orderByChild("date");
 
-        orderByDate.addListenerForSingleValueEvent(new ValueEventListener() {
+        orderByDate.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                list.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
                     ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
@@ -353,8 +355,8 @@ public class galleryFeed extends AppCompatActivity
                 Log.d("Upload","Upload is " + progress + "% done");
                 int currentProgress = (int) progress;
                 progressBar.setProgress(currentProgress);
-                if(progressBar.getProgress()==100)
-                    refreshList(mDatabase);
+
+
             }
 
         });
@@ -382,11 +384,7 @@ public class galleryFeed extends AppCompatActivity
 
         });
 
-
-
-
     }
-
 
 
     //This function will upload all data, including the position (inner class doesn't let values outside) - not the best way but it works
@@ -428,7 +426,6 @@ public class galleryFeed extends AppCompatActivity
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
     }
-
 
 
 }

@@ -1,10 +1,20 @@
 package com.example.jcca.teseandroid.Gallery;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,14 +25,21 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
+import com.example.jcca.teseandroid.BuildConfig;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
+import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
+import com.example.jcca.teseandroid.Misc.cameraIntent;
 import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,8 +47,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +69,8 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
 
     //Firebase Storage Connection
     private String mCurrentPhotoPath;
+    int ACTIVITY_DONE=1;
+    String path;
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -60,7 +83,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
     //RecyclerView
     private RecyclerView imageViewer;
 
-
+    ProgressBar progressBar;
 
     String timeStamp;
 
@@ -87,17 +110,21 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
 
         noPhotos=findViewById(R.id.noPhotos);
 
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
+
         //Photo
         imageViewer = (RecyclerView) findViewById(R.id.imageGallery);
         imageViewer.setHasFixedSize(true);
 
-        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/toReview");
+        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+        toReview = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/toReview");
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         imageViewer.setLayoutManager(layoutManager);
 
-        if(mDatabase.getRef() != null){
-            mDatabase.addValueEventListener(new ValueEventListener() {
+        if(toReview.getRef() != null){
+            toReview.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
@@ -127,7 +154,8 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //takeAPhotoIntent();
+                Intent intent=new Intent(photosToReview.this,cameraIntent.class);
+                startActivityForResult(intent, ACTIVITY_DONE );
             }
 
         });
@@ -166,4 +194,112 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    /////////////////////////////////////Photo Functions/////////////////////////////
+
+    //After taking a photo, the upload occurs
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ACTIVITY_DONE && resultCode == RESULT_OK) {
+            path=  data.getStringExtra("photoPath");
+            timeStamp=data.getStringExtra("timeStamp");
+            uploadPhoto(path);
+        }
+    }
+
+    private void uploadPhoto(String photoPath) {
+
+        Uri file;
+
+        //Upload to Data Storage
+        if(Build.VERSION.SDK_INT >= 24) {
+            file = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",new File(photoPath));
+        }else{
+            file = Uri.fromFile(new File(photoPath));
+        }
+
+        StorageReference photosRef = storageRef.child("photos/" + FirebaseAuth.getInstance().getCurrentUser().getEmail() + "/" + file.getLastPathSegment());
+        final StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
+        UploadTask uploadTask = photosRef.putFile(file, metadata);
+
+
+        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                progressBar.setVisibility(View.VISIBLE);
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                Log.d("Upload","Upload is " + progress + "% done");
+                int currentProgress = (int) progress;
+                progressBar.setProgress(currentProgress);
+
+            }
+
+        });
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                //progressBar.setVisibility(View.INVISIBLE);
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
+
+                getLocation(taskSnapshot);
+                progressBar.setVisibility(View.INVISIBLE);
+
+
+            }
+
+        });
+
+    }
+
+
+    //This function will upload all data, including the position (inner class doesn't let values outside) - not the best way but it works
+    private void getLocation(final UploadTask.TaskSnapshot taskSnapshot) {
+        // Acquire a reference to the system Location Manager
+        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                mDatabase.child(timeStamp).setValue(image);
+                toReview.child(timeStamp).setValue(image);
+                //Immediately stops updates - get's position only once
+                locationManager.removeUpdates(this);
+
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return ;
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+    }
+
+
 }
