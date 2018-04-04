@@ -116,6 +116,7 @@ public class cameraIntent extends AppCompatActivity {
                 }
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                Log.d("Yeah", "Yeah");
             }
         }
 
@@ -144,6 +145,7 @@ public class cameraIntent extends AppCompatActivity {
         bundle.putString("photoPath", mCurrentPhotoPath);
         bundle.putString("timeStamp", timeStamp);
         intent.putExtras(bundle);
+
 
         setResult(Activity.RESULT_OK, intent);
         finish();

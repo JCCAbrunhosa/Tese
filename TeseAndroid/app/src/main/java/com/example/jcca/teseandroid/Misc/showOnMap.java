@@ -2,6 +2,8 @@ package com.example.jcca.teseandroid.Misc;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
 
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,4 +56,5 @@ public class showOnMap extends FragmentActivity implements OnMapReadyCallback {
         mMap.setMinZoomPreference(10);
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
     }
+
 }

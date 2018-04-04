@@ -20,10 +20,13 @@ import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -136,7 +139,6 @@ public class settingsActivity extends AppCompatPreferenceActivity {
         super.onCreate(savedInstanceState);
         setupActionBar();
 
-        ;
     }
 
     /**
@@ -148,8 +150,22 @@ public class settingsActivity extends AppCompatPreferenceActivity {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.greenTese)));
+
         }
+
     }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            startActivity(new Intent(this, galleryFeed.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     /**
      * {@inheritDoc}

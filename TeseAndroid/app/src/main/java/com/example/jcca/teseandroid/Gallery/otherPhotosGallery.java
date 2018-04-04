@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
@@ -37,6 +38,7 @@ import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Misc.cameraIntent;
 import com.example.jcca.teseandroid.Misc.map_activity;
+import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,6 +47,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
@@ -106,6 +109,7 @@ public class otherPhotosGallery extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
         imageViewer=(RecyclerView) findViewById(R.id.imageGallery1);
         imageViewer.setHasFixedSize(true);
 
@@ -172,7 +176,50 @@ public class otherPhotosGallery extends AppCompatActivity
             }
         });
 
+        mySwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        refreshList(mDatabase);
+                        mySwipeRefreshLayout.setRefreshing(false);
 
+                    }
+                }
+        );
+
+
+    }
+
+    public void refreshList(DatabaseReference mDatabase){
+
+        Query orderByDate = mDatabase.orderByChild("date");
+
+        orderByDate.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                list.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+
+                    list.add(imageInfo);
+                }
+                if(list.size()==0)
+                    noPhotos.setVisibility(View.VISIBLE);
+                else
+                    noPhotos.setVisibility(View.GONE);
+
+                adapter = new galleryFeedAdapter(getApplicationContext(), list);
+                imageViewer.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -233,6 +280,7 @@ public class otherPhotosGallery extends AppCompatActivity
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            stopService(new Intent(getApplicationContext(), NewPhotoAdded.class));
             startActivity(goTo);
         }
 

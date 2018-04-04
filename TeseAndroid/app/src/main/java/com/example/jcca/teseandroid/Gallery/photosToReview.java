@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +39,7 @@ import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Misc.cameraIntent;
 import com.example.jcca.teseandroid.Misc.map_activity;
+import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,6 +48,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -108,10 +112,14 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        getWindow().getDecorView().setBackgroundColor(Color.LTGRAY);
+
         noPhotos=findViewById(R.id.noPhotos);
 
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
+
+        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
 
         //Photo
         imageViewer = (RecyclerView) findViewById(R.id.imageGallery);
@@ -160,6 +168,49 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
 
         });
 
+        mySwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        refreshList(toReview);
+                        mySwipeRefreshLayout.setRefreshing(false);
+
+                    }
+                }
+        );
+
+    }
+
+    public void refreshList(DatabaseReference toReview){
+
+        Query orderByDate = toReview.orderByChild("date");
+
+        orderByDate.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                list.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+
+                    list.add(imageInfo);
+                }
+                if(list.size()==0)
+                    noPhotos.setVisibility(View.VISIBLE);
+                else
+                    noPhotos.setVisibility(View.GONE);
+
+                adapter = new galleryFeedAdapter(getApplicationContext(), list);
+                imageViewer.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -187,6 +238,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            stopService(new Intent(getApplicationContext(), NewPhotoAdded.class));
             startActivity(goTo);
         }
 

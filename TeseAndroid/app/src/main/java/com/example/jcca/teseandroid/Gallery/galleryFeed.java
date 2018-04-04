@@ -346,7 +346,6 @@ public class galleryFeed extends AppCompatActivity
         final StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
         UploadTask uploadTask = photosRef.putFile(file, metadata);
 
-
         uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
@@ -355,7 +354,6 @@ public class galleryFeed extends AppCompatActivity
                 Log.d("Upload","Upload is " + progress + "% done");
                 int currentProgress = (int) progress;
                 progressBar.setProgress(currentProgress);
-
 
             }
 
@@ -400,6 +398,7 @@ public class galleryFeed extends AppCompatActivity
                 image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
                 mDatabase.child(timeStamp).setValue(image);
                 toReview.child(timeStamp).setValue(image);
+                Log.d("Imagem", image.getDate());
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">TeseAndroid</string>
+    <string name="app_name" translatable="false">bioDiversidade</string>
     <string name="action_settings" translatable="false">Settings</string>
     <string name="title_activity_login" translatable="false">Sign in</string>
     <string name="action_edit">Edit Photo</string>

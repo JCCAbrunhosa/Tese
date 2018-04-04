@@ -37,7 +37,7 @@
 
         <activity
             android:name=".Login_Registering.LoginActivity"
-            android:label="Login"
+            android:label="bioDiversidade"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -110,7 +110,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".Gallery.guide_activity"
-            android:label="Guia"
+            android:label="Guia de Espécies"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

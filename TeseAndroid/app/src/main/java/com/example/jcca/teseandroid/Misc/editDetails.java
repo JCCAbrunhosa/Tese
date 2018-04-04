@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -68,6 +69,7 @@ public class editDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_details);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -179,6 +181,7 @@ public class editDetails extends AppCompatActivity {
                                     toDatabase.child(key).child("description").setValue(descricao.getText().toString());
                                     toDatabase.child(key).child("species").setValue(especie.getText().toString());
                                     toDatabase.child(key).child("vulgar").setValue(vulgar.getText().toString());
+                                    toDatabase.child(key).child("url").setValue(url);
                                     mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(dataSnapshot.getValue());
                                     mDatabase.child("Users").child(uid).child(key).setValue(dataSnapshot.getValue());
                                     mDatabase.child("Users").child(uid).child(key).child("date").setValue(date);

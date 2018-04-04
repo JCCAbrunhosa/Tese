@@ -45,6 +45,7 @@ import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.Misc.showSpeciesOnMap;
+import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -273,6 +274,7 @@ public class guide_activity extends AppCompatActivity
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            stopService(new Intent(getApplicationContext(), NewPhotoAdded.class));
             startActivity(goTo);
         }
 
