@@ -110,6 +110,7 @@ public class photoDetails_activity extends AppCompatActivity
 
         edit = findViewById(R.id.action_edit);
 
+
         //Image pops up when user clicks on it
         final ImagePopup imagePopup = new ImagePopup(this);
         imagePopup.initiatePopup(photo.getDrawable());
@@ -138,9 +139,6 @@ public class photoDetails_activity extends AppCompatActivity
         setTitle(species);
         toolbar.setSubtitle(vulgar);
         toolbar.setTitleTextColor(Color.WHITE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            toolbar.setBackgroundColor(getColor(R.color.greenTese));
-        }
 
         if(specie.getText().toString().matches("")){
             ec.setText("Sem informação!");
@@ -183,23 +181,6 @@ public class photoDetails_activity extends AppCompatActivity
             }
         });
 
-
-
-
-        base.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getValue()==null)
-                   edit.setVisible(false);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
     }
 
 
@@ -214,9 +195,29 @@ public class photoDetails_activity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.photo_details_activity, menu);
+        base.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getValue()==null)
+                    menu.findItem(R.id.action_edit).setVisible(false);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        if(specie.getText().equals("Sem informação!")){
+            menu.findItem(R.id.action_info).setVisible(false);
+        }
+
+
+
         return true;
     }
 

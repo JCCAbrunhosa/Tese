@@ -36,6 +36,7 @@ import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
+import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
 import com.example.jcca.teseandroid.Misc.cameraIntent;
 import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
@@ -182,7 +183,7 @@ public class otherPhotosGallery extends AppCompatActivity
                     public void onRefresh() {
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
-                        refreshList(mDatabase);
+                        refreshList(mReviewed);
                         mySwipeRefreshLayout.setRefreshing(false);
 
                     }
@@ -276,6 +277,9 @@ public class otherPhotosGallery extends AppCompatActivity
             startActivity(goTo);
         } else if (id == R.id.nav_map) {
             Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            startActivity(goTo);
+        }else if (id == R.id.nav_options){
+            Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);
             startActivity(goTo);
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();

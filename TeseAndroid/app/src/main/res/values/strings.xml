@@ -127,7 +127,7 @@
     <string name="userFeed">My sightings</string>
     <string name="othersFeed">Sightings Gallery</string>
     <string name="newPhotos">New Sightings</string>
-    <string name="guide">Guide</string>
+    <string name="guide">Species Guide</string>
     <string name="map">Sightings Map</string>
     <string name="options">Options</string>
     <string name="endSession">Log off</string>
@@ -136,6 +136,9 @@
     <string name="noPhotos">No sightings! :(</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+
+    <string name="takenBy">Taken by: </string>
+    <string name="mapCardView">Map</string>
 
 
 </resources>

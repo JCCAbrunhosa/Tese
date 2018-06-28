@@ -132,19 +132,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                    if (user != null && user.isEmailVerified()) {
-                            // User is signed in
-                            Log.d("Login", "onAuthStateChanged:signed_in:" + user.getUid());
-                            startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
-                            Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
-                            startActivity(goTo);
-
-                    } else {
-                        // User is signed out
-                        Log.d("Login", "onAuthStateChanged:signed_out");
+                    if(user!=null){
+                        // User is signed in
+                        Log.d("Login", "onAuthStateChanged:signed_in:" + user.getUid());
+                        startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
+                        Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+                        startActivity(goTo);
 
                     }
-                    // ...
+
+
 
             }
         };

@@ -11,7 +11,7 @@
         android:id="@+id/guideList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -24,7 +24,7 @@
         card_view:cardElevation="2dp"
         card_view:contentPadding="1dp"
         card_view:layout_constraintBottom_toBottomOf="parent"
-        card_view:layout_constraintHorizontal_bias="0.545"
+        card_view:layout_constraintHorizontal_bias="0.538"
         card_view:layout_constraintLeft_toLeftOf="parent"
         card_view:layout_constraintRight_toRightOf="parent"
         card_view:layout_constraintTop_toTopOf="parent"
@@ -72,16 +72,18 @@
                 android:id="@+id/info"
                 android:layout_width="88dp"
                 android:layout_height="48dp"
-                android:layout_marginLeft="7dp"
+                android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="62dp"
+                android:layout_marginTop="46dp"
                 android:background="@color/cardview_light_background"
                 android:backgroundTint="@color/cardview_light_background"
                 android:elevation="2dp"
                 android:text="Info"
                 android:textColor="@color/greenTese"
                 card_view:layout_constraintLeft_toRightOf="@+id/map"
-                card_view:layout_constraintTop_toBottomOf="@+id/species_name" />
+                card_view:layout_constraintTop_toBottomOf="@+id/species_name"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="8dp" />
 
             <Button
                 android:id="@+id/map"
@@ -89,14 +91,16 @@
                 android:layout_height="48dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="62dp"
+                android:layout_marginTop="46dp"
                 android:background="@color/cardview_light_background"
                 android:backgroundTint="@color/cardview_light_background"
                 android:elevation="2dp"
-                android:text="Mapa"
+                android:text="@string/mapCardView"
                 android:textColor="@color/greenTese"
                 card_view:layout_constraintLeft_toLeftOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@+id/species_name" />
+                card_view:layout_constraintTop_toBottomOf="@+id/species_name"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -106,7 +110,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:text="Tirada por:"
+                android:text="@string/takenBy"
                 android:textStyle="bold"
                 card_view:layout_constraintBottom_toTopOf="@+id/map"
                 card_view:layout_constraintLeft_toLeftOf="parent"

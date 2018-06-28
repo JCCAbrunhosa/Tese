@@ -59,7 +59,6 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_map_activity);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.greenTese)));
 
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -98,17 +97,17 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
                 ImageInfo photo=null;
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     for(DataSnapshot snap: snapshot.getChildren()){
-                        if(!snap.getKey().toString().matches("description")) {
-                            photo = snap.getValue(ImageInfo.class);
-                            pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
+                        if(!snap.getKey().toString().matches("description") && !snap.getKey().toString().matches("vulgar")) {
+                                photo = snap.getValue(ImageInfo.class);
+                                pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
 
                         }
                     }
-                    Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(photo.getSpecies()));
-                    marker.setTag(photo);
-                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360)));
-                    markers.add(marker);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
+                        Marker marker = mMap.addMarker(new MarkerOptions().position(pos).title(photo.getSpecies()));
+                        marker.setTag(photo);
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360)));
+                        markers.add(marker);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
 
                 }
             }
@@ -169,7 +168,7 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
                             if(snapshot.getKey().toLowerCase().contains(newText.toLowerCase())){
                                 Log.d("Contains",String.valueOf(snapshot.toString().toLowerCase().contains(newText.toLowerCase())));
                                 for(DataSnapshot snap: snapshot.getChildren()){
-                                    if(!snap.getKey().toString().matches("description")) {
+                                    if(!snap.getKey().toString().matches("description") && !snap.getKey().toString().matches("vulgar")) {
                                         photo= snap.getValue(ImageInfo.class);
                                         pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
 
@@ -204,7 +203,7 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
 
         //noinspection SimplifiableIfStatement
         if(id == android.R.id.home){
-            startActivity(new Intent(this, galleryFeed.class));
+            NavUtils.navigateUpFromSameTask(this);
         }
 
 

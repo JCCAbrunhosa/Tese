@@ -16,6 +16,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -299,30 +300,6 @@ public class editDetails extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton deny = findViewById(R.id.denyPhoto);
-        deny.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new AlertDialog.Builder(editDetails.this)
-                        .setTitle("Rejeitar Avistamento")
-                        .setMessage("Confirme se deseja rejeitar o avistamento:")
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                mDatabase.child("toReview").child(key).getRef().removeValue();
-                                mDatabase.child("Users").child(uid).child(key).getRef().removeValue();
-                                mDatabase.child("Species").child(species).child(key).getRef().removeValue();
-                                mDatabase.child("PhotosReviewed").child(key).getRef().removeValue();
-                                Intent goBack = new Intent(getApplicationContext(), galleryFeed.class);
-                                startActivity(goBack);
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, null).show();
-
-            }
-        });
-
     }
 
     final long delay = 500; // 1 seconds after user stops typing
@@ -351,6 +328,13 @@ public class editDetails extends AppCompatActivity {
     };
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.edit_details, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -361,8 +345,24 @@ public class editDetails extends AppCompatActivity {
             NavUtils.navigateUpFromSameTask(this);
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_reject) {
+                new AlertDialog.Builder(editDetails.this)
+                        .setTitle("Rejeitar Avistamento")
+                        .setMessage("Confirme se deseja rejeitar o avistamento:")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                mDatabase.child("toReview").child(key).getRef().removeValue();
+                                mDatabase.child("Users").child(uid).child(key).getRef().removeValue();
+                                mDatabase.child("Species").child(species).child(key).getRef().removeValue();
+                                mDatabase.child("PhotosReviewed").child(key).getRef().removeValue();
+                                Intent goBack = new Intent(getApplicationContext(), galleryFeed.class);
+                                startActivity(goBack);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null).show();
+
         }
 
         return super.onOptionsItemSelected(item);

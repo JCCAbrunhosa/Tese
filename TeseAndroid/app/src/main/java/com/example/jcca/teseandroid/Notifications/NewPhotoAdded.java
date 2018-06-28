@@ -1,5 +1,6 @@
 package com.example.jcca.teseandroid.Notifications;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -41,6 +42,7 @@ public class NewPhotoAdded extends Service {
         int counter=0;
         final SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final boolean check = sharedPreferences.getBoolean("notifications_new_message",false);
+        final boolean checkVibration = sharedPreferences.getBoolean("notifications_new_message_vibrate", true);
 
         newPhotoAdded.addChildEventListener(new ChildEventListener() {
             @Override
@@ -59,6 +61,20 @@ public class NewPhotoAdded extends Service {
                                 .setContentTitle("Nova Capturas!")
                                 .setContentText("Clique para ver as novas capturas.")
                                 .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                    Notification noti = new Notification.Builder(NewPhotoAdded.this)
+                            .setContentTitle("Nova Captura!")
+                            .setContentText("Clique para ver as novas capturas.")
+                            .setSmallIcon(R.drawable.side_nav_bar)
+                            .build();
+                }
+
+                if(checkVibration){
+                    mBuilder.setVibrate(new long[] { 1000, 1000});
+                }
+
 
                 mBuilder.setAutoCancel(true);
                 //Notification Action

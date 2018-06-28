@@ -3,8 +3,10 @@ package com.example.jcca.teseandroid.Misc;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.GridLayoutManager;
@@ -60,10 +62,9 @@ public class speciesDetails_activity extends AppCompatActivity
     String[] urlImages;
     Handler handler = new Handler();
     int i=0;
-    ImagePopup imagePopup;
 
 
-
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,20 +73,10 @@ public class speciesDetails_activity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();*/
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
-
-
-        /*NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);*/
 
         species = findViewById(R.id.speciesName);
         description= findViewById(R.id.speciesDescription);
@@ -97,16 +88,18 @@ public class speciesDetails_activity extends AppCompatActivity
         String ecol = getIntent().getStringExtra("Eco");
         String url = getIntent().getStringExtra("URL");
         String vulgarName = getIntent().getStringExtra("Vulgar");
-        handler.postDelayed(runnable, 4000);
+
 
         //Image pops up when user clicks on it
-        imagePopup = new ImagePopup(this);
+        final ImagePopup imagePopup = new ImagePopup(this);
         imagePopup.initiatePopup(speciesImage.getDrawable());
         //Populates pop up with image from glide - need to change this to a local fetch
         imagePopup.initiatePopupWithGlide(url);
         imagePopup.setFullScreen(true);
         imagePopup.setImageOnClickClose(true);
         imagePopup.setHideCloseIcon(false);
+        GlideApp.with(getApplicationContext()).load(url).into(speciesImage);
+        //handler.postDelayed(runnable, 4000);
 
         speciesImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,8 +111,9 @@ public class speciesDetails_activity extends AppCompatActivity
 
 
         setTitle(spec);
+        toolbar.setTitleTextColor(Color.WHITE);
 
-        GlideApp.with(getApplicationContext()).load(url).into(speciesImage);
+
         species.setText(spec.toString());
 
         eco.setText(ecol.toString());
@@ -141,7 +135,7 @@ public class speciesDetails_activity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 urlImages= new String[(int)dataSnapshot.getChildrenCount()];
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    if(!postSnapshot.getKey().matches("description")){
+                    if(!postSnapshot.getKey().matches("description") && !postSnapshot.getKey().toString().matches("vulgar")){
                         description.setText(dataSnapshot.child("description").getValue().toString());
                         urlImages[i++]= postSnapshot.child("url").getValue(String.class);
 
@@ -252,14 +246,11 @@ public class speciesDetails_activity extends AppCompatActivity
             GlideApp.with(getApplicationContext()).load(urlImages[i]).into(speciesImage);
             i++;
             //Each new rotating image can be popped up
-            imagePopup.initiatePopup(speciesImage.getDrawable());
-            imagePopup.setFullScreen(true);
-            imagePopup.setImageOnClickClose(true);
-            imagePopup.setHideCloseIcon(false);
             if (urlImages[i]==null) {
                 i = 0;
             }
             handler.postDelayed(this, 4000);
+
         }
     };
 

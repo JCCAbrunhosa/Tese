@@ -1,10 +1,12 @@
 package com.example.jcca.teseandroid.Misc;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -57,4 +59,20 @@ public class showOnMap extends FragmentActivity implements OnMapReadyCallback {
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if(id == android.R.id.home){
+            startActivity(new Intent(this, galleryFeed.class));
+        }
+
+
+
+        return super.onOptionsItemSelected(item);
+    }
 }

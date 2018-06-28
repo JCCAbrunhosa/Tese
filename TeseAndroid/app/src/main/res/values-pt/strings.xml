@@ -27,7 +27,7 @@
     <string name="userFeed">Meus avistamentos</string>
     <string name="othersFeed">Galeria de Avistamentos</string>
     <string name="newPhotos">Novos Avistamentos</string>
-    <string name="guide">Guia</string>
+    <string name="guide">Guia de Espécies</string>
     <string name="map">Mapa de Avistamentos</string>
     <string name="options">Opções</string>
     <string name="endSession">Terminar Sessão</string>
@@ -37,5 +37,10 @@
 
 
     <string name="email_validation" >Valide o seu email para continuar!</string>
+
+    <string name="takenBy">Tirada por: </string>
+
+    <string name="mapCardView">Mapa</string>
+
 
 </resources>

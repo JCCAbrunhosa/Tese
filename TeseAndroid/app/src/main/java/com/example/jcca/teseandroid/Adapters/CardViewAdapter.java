@@ -119,10 +119,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     public void setFilter(String filter){
         for(int i=0; i< MainImageUploadInfoList.size();i++ ){
             if(MainImageUploadInfoList.get(i).getSpecies().toLowerCase().contains(filter.toLowerCase())){
-                filteredItems.add(MainImageUploadInfoList.get(i));
+                if(!filteredItems.contains(MainImageUploadInfoList.get(i)))
+                    filteredItems.add(MainImageUploadInfoList.get(i));
             }
             if(MainImageUploadInfoList.get(i).getVulgar().toLowerCase().contains(filter.toLowerCase())){
-                filteredItems.add(MainImageUploadInfoList.get(i));
+                if(!filteredItems.contains(MainImageUploadInfoList.get(i)))
+                    filteredItems.add(MainImageUploadInfoList.get(i));
             }
 
         }

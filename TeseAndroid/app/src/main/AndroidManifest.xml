@@ -107,7 +107,12 @@
         <activity
             android:name=".Misc.showSpeciesOnMap"
             android:label="@string/title_activity_show_species_on_map"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.jcca.teseandroid.Misc.showSpeciesOnMap" />
+            />
+        </activity>
         <activity
             android:name=".Gallery.guide_activity"
             android:label="Guia de Espécies"
@@ -134,7 +139,12 @@
         <activity
             android:name=".Misc.map_activity"
             android:label="@string/title_activity_map_activity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.jcca.teseandroid.Gallery.galleryFeed" />
+        </activity>
+
         <activity
             android:name=".Login_Registering.settingsActivity"
             android:label="@string/title_activity_settings" />
