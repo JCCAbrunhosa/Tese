@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:visibility="visible"
     card_view:cardCornerRadius="5dp"
-    card_view:cardElevation="0dp"
+    card_view:cardElevation="2dp"
     card_view:cardMaxElevation="5dp"
     card_view:contentPadding="5dp"
     >

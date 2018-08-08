@@ -1,7 +1,9 @@
 <resources>
-    <string name="app_name" translatable="false">TeseAndroid</string>
+    <string name="app_name" translatable="false">bioDiversidade</string>
     <string name="action_settings" translatable="false">Settings</string>
     <string name="title_activity_login" translatable="false">Sign in</string>
+    <string name="action_edit">Edit Photo</string>
+    <string name="action_info">Information</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email" translatable="false">Email</string>
@@ -16,7 +18,7 @@
         completions."
     </string>
     <string name="title_activity_register" translatable="false">Register Account</string>
-    <string name="title_activity_asdsadasd" translatable="false">asdsadasd</string>
+    <string name="email_validation" >Validate your email to continue</string>
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
@@ -111,22 +113,32 @@
 
     <string name="pref_title_vibrate" translatable="false">Vibrate</string>
 
-    <string name="especie">Species</string>
-    <string name="vulgar">Vulgar Name</string>
+    <string name="especie">Species:</string>
+    <string name="vulgar">Vulgar Name:</string>
     <string name="autor">Author:</string>
-    <string name="descricao">Description</string>
-    <string name="ecologia">Ecology</string>
+    <string name="descricao">Description:</string>
+    <string name="ecologia">Ecology:</string>
     <string name="related">Sightings you can also like</string>
-    <string name="relatedPhotos">Other sightings you can also like</string>
+    <string name="relatedPhotos">Other sightings:</string>
+    <string name="noDescription">This species is new and has no description. Would you like to add one?</string>
+    <string name="newSpecie">New Species</string>
+    <string name="newSight">New Capture</string>
 
-
-    <string name="userFeed">Your sightings</string>
+    <string name="userFeed">My sightings</string>
     <string name="othersFeed">Sightings Gallery</string>
     <string name="newPhotos">New Sightings</string>
-    <string name="guide">Guide</string>
-    <string name="map">Species Map</string>
+    <string name="guide">Species Guide</string>
+    <string name="map">Sightings Map</string>
     <string name="options">Options</string>
     <string name="endSession">Log off</string>
     <string name="userInfo">Account</string>
+
+    <string name="noPhotos">No sightings! :(</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+
+    <string name="takenBy">Taken by: </string>
+    <string name="mapCardView">Map</string>
+
 
 </resources>

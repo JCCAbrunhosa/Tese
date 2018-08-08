@@ -12,10 +12,6 @@
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="Notificações" />
 
-    <header
-        android:fragment="com.example.jcca.teseandroid.Login_Registering.settingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="Opções de Conta" />
 
 
 </preference-headers>

@@ -1,8 +1,13 @@
 package com.example.jcca.teseandroid.Misc;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +41,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +53,8 @@ public class photoDetails_activity extends AppCompatActivity
     private TextView description;
     private TextView specie;
     private ImageView photo;
+    private TextView vlgar;
+    private FloatingActionButton moreInfo;
 
     public DatabaseReference mDatabase;
     public DatabaseReference users;
@@ -57,7 +65,20 @@ public class photoDetails_activity extends AppCompatActivity
     RecyclerView similar;
     private RecyclerView.Adapter adapter;
 
+    String species;
+    String url;
+    String lat;
+    String lng;
+    String date ;
+    String uid;
+    String vulgar;
+    String eco;
+    String author;
 
+    MenuItem edit;
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,34 +86,30 @@ public class photoDetails_activity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
 
 
         auth = findViewById(R.id.photoAuthor);
         ec = findViewById(R.id.photoEco);
-        description = findViewById(R.id.speciesName);
         specie = findViewById(R.id.photoSpecies);
         photo = findViewById(R.id.photoDasSpecies);
+        vlgar = findViewById(R.id.vulgar);
 
-        String author = getIntent().getStringExtra("Author");
-        String eco= getIntent().getStringExtra("Eco");
-        String desc = getIntent().getStringExtra("Desc");
-        final String species  = getIntent().getStringExtra("Species");
-        final String url= getIntent().getStringExtra("URL");
-        final String lat = getIntent().getStringExtra("Lat");
-        final String lng = getIntent().getStringExtra("Long");
-        final String date = getIntent().getStringExtra("Date");
-        final String uid = getIntent().getStringExtra("UID");
+        author = getIntent().getStringExtra("Author");
+        eco= getIntent().getStringExtra("Eco");
+        species  = getIntent().getStringExtra("Species");
+        url= getIntent().getStringExtra("URL");
+        lat = getIntent().getStringExtra("Lat");
+        lng = getIntent().getStringExtra("Long");
+        date = getIntent().getStringExtra("Date");
+        uid = getIntent().getStringExtra("UID");
+        vulgar = getIntent().getStringExtra("Vulgar");
+
+        edit = findViewById(R.id.action_edit);
+
 
         //Image pops up when user clicks on it
         final ImagePopup imagePopup = new ImagePopup(this);
@@ -103,11 +120,13 @@ public class photoDetails_activity extends AppCompatActivity
         imagePopup.setImageOnClickClose(true);
         imagePopup.setHideCloseIcon(false);
 
-        GlideApp.with(getApplicationContext()).load(url).override(120,120).into(photo);
+        GlideApp.with(getApplicationContext()).load(url).into(photo);
+
         auth.setText(author.toString());
         ec.setText(eco.toString());
-        description.setText(desc.toString());
         specie.setText(species.toString());
+        vlgar.setText(vulgar.toString());
+
 
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,9 +137,10 @@ public class photoDetails_activity extends AppCompatActivity
         });
 
         setTitle(species);
+        toolbar.setSubtitle(vulgar);
+        toolbar.setTitleTextColor(Color.WHITE);
 
-        if(description.getText().toString().matches("")){
-            description.setText("Sem informação!");
+        if(specie.getText().toString().matches("")){
             ec.setText("Sem informação!");
             specie.setText("Sem informação!");
         }
@@ -132,33 +152,6 @@ public class photoDetails_activity extends AppCompatActivity
 
 
 
-
-        similar = (RecyclerView) findViewById(R.id.samePhotosGallery);
-        similar.setHasFixedSize(true);
-
-
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
-        similar.setLayoutManager(layoutManager);
-
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
-                    list.add(imageInfo);
-                }
-
-                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
-                similar.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,6 +159,7 @@ public class photoDetails_activity extends AppCompatActivity
                 Bundle pos = new Bundle();
                 pos.putString("Lat", lat);
                 pos.putString("Long", lng);
+                pos.putString("Species", species);
                 Intent k = new Intent(photoDetails_activity.this, showOnMap.class);
                 k.putExtras(pos);
                 startActivity(k);
@@ -173,37 +167,23 @@ public class photoDetails_activity extends AppCompatActivity
             }
         });
 
-
-        final FloatingActionButton editDetails = (FloatingActionButton) findViewById(R.id.editDetails);
-        editDetails.setOnClickListener(new View.OnClickListener() {
+        specie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle edit = new Bundle();
-                edit.putString("photoName", date);
-                edit.putString("URL", url);
-                edit.putString("Species", species);
-                edit.putString("UID", uid);
-                Log.d("UUID: ", uid);
-                Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
-                goTo.putExtras(edit);
-                startActivity(goTo);
+                if(specie.getText()!="Sem informação!"){
+                    Bundle edit = new Bundle();
+                    edit.putString("Species", species);
+                    edit.putString("Eco", eco);
+                    edit.putString("URL", url);
+                    edit.putString("Vulgar", vulgar);
+
+                        Intent goTo = new Intent(photoDetails_activity.this, speciesDetails_activity.class);
+                        goTo.putExtras(edit);
+                        startActivity(goTo);
+                }
 
             }
         });
-
-        base.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getValue()==null)
-                    editDetails.setVisibility(View.INVISIBLE);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
 
     }
 
@@ -219,9 +199,29 @@ public class photoDetails_activity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.photo_details_activity, menu);
+        base.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getValue()==null)
+                    menu.findItem(R.id.action_edit).setVisible(false);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        if(specie.getText().equals("Sem informação!")){
+            menu.findItem(R.id.action_info).setVisible(false);
+        }
+
+
+
         return true;
     }
 
@@ -232,9 +232,37 @@ public class photoDetails_activity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if(id == android.R.id.home)
+            NavUtils.navigateUpFromSameTask(this);
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if(id==R.id.action_edit){
+            Bundle edit = new Bundle();
+            edit.putString("photoName", date);
+            edit.putString("URL", url);
+            edit.putString("Species", species);
+            edit.putString("UID", uid);
+            edit.putString("Vulgar", vulgar);
+            edit.putString("Date", date);
+            edit.putString("PreviousIntent", "photoDetails");
+            Log.d("UUID: ", uid);
+            Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
+            goTo.putExtras(edit);
+            startActivity(goTo);
+        }
+        if(id==R.id.action_info){
+            Bundle edit = new Bundle();
+            edit.putString("Species", species);
+            edit.putString("Eco", eco);
+            edit.putString("URL", url);
+            edit.putString("Vulgar", vulgar);
+            Intent goTo = new Intent(photoDetails_activity.this, speciesDetails_activity.class);
+            goTo.putExtras(edit);
+            startActivity(goTo);
         }
 
         return super.onOptionsItemSelected(item);

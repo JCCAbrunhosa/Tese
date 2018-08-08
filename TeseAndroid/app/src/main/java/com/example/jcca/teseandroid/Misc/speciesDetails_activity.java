@@ -1,10 +1,17 @@
 package com.example.jcca.teseandroid.Misc;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +24,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ceylonlabs.imageviewpopup.ImagePopup;
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.DataObjects.Position;
@@ -44,14 +52,19 @@ public class speciesDetails_activity extends AppCompatActivity
     TextView description;
     TextView eco;
     ImageView speciesImage;
+    TextView vulgar;
 
     RecyclerView sameSpecies;
     public RecyclerView.Adapter adapter;
     public List<ImageInfo> list = new ArrayList<>();
     public List<Position> positions = new ArrayList<>();
     DatabaseReference mDatabase;
+    String[] urlImages;
+    Handler handler = new Handler();
+    int i=0;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,52 +73,77 @@ public class speciesDetails_activity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
-
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
         species = findViewById(R.id.speciesName);
         description= findViewById(R.id.speciesDescription);
         eco = findViewById(R.id.speciesEco);
         speciesImage = findViewById(R.id.speciesImage);
+        vulgar = findViewById(R.id.vulgarName);
 
         final String spec = getIntent().getStringExtra("Species");
-        String desc = getIntent().getStringExtra("Desc");
         String ecol = getIntent().getStringExtra("Eco");
         String url = getIntent().getStringExtra("URL");
+        String vulgarName = getIntent().getStringExtra("Vulgar");
+
+
+        //Image pops up when user clicks on it
+        final ImagePopup imagePopup = new ImagePopup(this);
+        imagePopup.initiatePopup(speciesImage.getDrawable());
+        //Populates pop up with image from glide - need to change this to a local fetch
+        imagePopup.initiatePopupWithGlide(url);
+        imagePopup.setFullScreen(true);
+        imagePopup.setImageOnClickClose(true);
+        imagePopup.setHideCloseIcon(false);
+        GlideApp.with(getApplicationContext()).load(url).into(speciesImage);
+        //handler.postDelayed(runnable, 4000);
+
+        speciesImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                imagePopup.viewPopup();
+            }
+        });
+
 
         setTitle(spec);
+        toolbar.setTitleTextColor(Color.WHITE);
 
-        GlideApp.with(getApplicationContext()).load(url).override(120,120).into(speciesImage);
+
         species.setText(spec.toString());
-        description.setText(desc.toString());
+
         eco.setText(ecol.toString());
+
+        vulgar.setText(vulgarName.toString());
 
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Species/" + spec);
 
 
         //Photo
-        sameSpecies = (RecyclerView) findViewById(R.id.sameSpeciesGallery);
+        sameSpecies = (RecyclerView) findViewById(R.id.sameSpeciesPhoto);
         sameSpecies.setHasFixedSize(true);
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),4);
         sameSpecies.setLayoutManager(layoutManager);
 
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                urlImages= new String[(int)dataSnapshot.getChildrenCount()];
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if(!postSnapshot.getKey().matches("description") && !postSnapshot.getKey().toString().matches("vulgar")){
+                        description.setText(dataSnapshot.child("description").getValue().toString());
+                        urlImages[i++]= postSnapshot.child("url").getValue(String.class);
 
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+                        ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
 
-                    list.add(imageInfo);
+                        list.add(imageInfo);
+                    }
+
                 }
 
                 adapter = new RecyclerViewAdapter(getApplicationContext(), list);
@@ -149,12 +187,16 @@ public class speciesDetails_activity extends AppCompatActivity
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if(id == android.R.id.home)
+            NavUtils.navigateUpFromSameTask(this);
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
@@ -195,4 +237,21 @@ public class speciesDetails_activity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    //This runnable makes the images cycle
+    Runnable runnable = new Runnable() {
+        int i = 0;
+
+        public void run() {
+            GlideApp.with(getApplicationContext()).load(urlImages[i]).into(speciesImage);
+            i++;
+            //Each new rotating image can be popped up
+            if (urlImages[i]==null) {
+                i = 0;
+            }
+            handler.postDelayed(this, 4000);
+
+        }
+    };
+
 }

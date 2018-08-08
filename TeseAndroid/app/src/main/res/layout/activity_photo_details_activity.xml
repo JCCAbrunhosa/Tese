@@ -20,6 +20,7 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         android:visibility="visible"
+        android:elevation="16dp"
         app:headerLayout="@layout/nav_header_photo_details_activity"
         app:menu="@menu/activity_photo_details_activity_drawer" />
 

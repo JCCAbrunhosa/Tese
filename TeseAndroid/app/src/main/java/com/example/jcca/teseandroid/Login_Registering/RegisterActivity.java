@@ -17,12 +17,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -58,6 +58,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         mPasswordView1 = (EditText) findViewById(R.id.pwd1);
         mPasswordView2 = (EditText) findViewById(R.id.pwd2);
+
+        mName = findViewById(R.id.name);
         isPro = findViewById(R.id.isPro);
 
         isPro = findViewById(R.id.isPro);
@@ -77,15 +79,25 @@ public class RegisterActivity extends AppCompatActivity {
 
                                     if(isPro.isChecked()){
                                         sendVerificationEmail();
+                                        mDatabase.child("Accounts").child(user.getUid()).child("isPro").setValue(true);
+                                        mDatabase.child("Accounts").child(user.getUid()).child("userName").setValue(mName.getText().toString());
                                         Toast.makeText( RegisterActivity.this,"Email de Verificação Enviado",Toast.LENGTH_SHORT).show();
                                     }
+                                    mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
                                     Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
                                     startActivity(goTo);
 
                                 } else {
                                     // If sign in fails, display a message to the user.
+                                    try{
+                                        throw task.getException();
+                                    } catch (FirebaseAuthUserCollisionException e) {
+                                        Toast.makeText( RegisterActivity.this,"Conta já existente!",Toast.LENGTH_SHORT).show();
+                                    } catch (Exception e) {
+                                        Toast.makeText( RegisterActivity.this,"Verifique a rede e tente outra vez!",Toast.LENGTH_SHORT).show();
+                                    }
 
-                                    Toast.makeText( RegisterActivity.this,"Conta já existente!",Toast.LENGTH_SHORT).show();
+
                                     mPasswordView1.clearComposingText();
                                     mPasswordView2.clearComposingText();
                                 }

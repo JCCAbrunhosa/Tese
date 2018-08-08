@@ -2,9 +2,12 @@ package com.example.jcca.teseandroid.Login_Registering;
 
 
 import android.annotation.TargetApi;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -13,13 +16,24 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.jcca.teseandroid.Gallery.galleryFeed;
+import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 
 import java.util.List;
@@ -36,6 +50,9 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class settingsActivity extends AppCompatPreferenceActivity {
+
+
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -122,6 +139,7 @@ public class settingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+
     }
 
     /**
@@ -132,8 +150,19 @@ public class settingsActivity extends AppCompatPreferenceActivity {
         if (actionBar != null) {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.greenTese)));
+
         }
+
+    }public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpTo(this, NavUtils.getParentActivityIntent(this));
+            return true;
+        }
+        return onOptionsItemSelected(item);
     }
+
 
     /**
      * {@inheritDoc}
@@ -180,14 +209,14 @@ public class settingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            //bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), settingsActivity.class));
+
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -200,24 +229,27 @@ public class settingsActivity extends AppCompatPreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class NotificationPreferenceFragment extends PreferenceFragment {
+        @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_notification);
             setHasOptionsMenu(true);
 
+            SwitchPreference pref= (SwitchPreference) findPreference("notifications_new_message") ;
+
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+            //bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         }
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), settingsActivity.class));
+
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -247,7 +279,7 @@ public class settingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), settingsActivity.class));
+
                 return true;
             }
             return super.onOptionsItemSelected(item);
