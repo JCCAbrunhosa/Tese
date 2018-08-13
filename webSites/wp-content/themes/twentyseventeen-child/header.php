@@ -27,6 +27,7 @@
 		<li><a href="/">Blog</a></li>
 		<li><a href="/lista-de-especies/">Espécies</a></li>
 		<li><a href="/mapa/">Mapa</a></li>
+		<li id="pending"><a href="/pending/">Por Avaliar</a></li>
 		<li id="login" style="float:right"><a href="/login/">Login/SignIn</a></li>
 		<li id="logout" style="float:right" onclick="logOut()"><a>LogOut</a></li>
 		<li id="userAccount" style="float:right"><a href="/conta/">Conta</a></li>

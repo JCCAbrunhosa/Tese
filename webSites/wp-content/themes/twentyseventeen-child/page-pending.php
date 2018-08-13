@@ -18,7 +18,7 @@
 get_header(); ?>
 
 
-<div id="photos">Avistamentos da Espécie:</div>
+<div id="photos">Avistamentos por Avaliar</div>
 <br>
 <div class="row" id="myGrid" style="margin-bottom:128px">
   <div class="column" id="gridCol">
@@ -32,11 +32,36 @@ get_header(); ?>
   <div class="modal-content">
     <span class="close">&times;</span>
 
-      <div class="buttonDiv">
-        <button class="button" id="Avaliar">Avaliar</button>
-        <br>
-        <button class="button" id="Apagar">Apagar</button>
-      </div>
+    <div class="wrap">
+    	<div id="primary" class="content-area">
+    		<main id="main" class="site-main" role="main">
+    			<div id="Name">
+    			  Espécie:
+    			</div>
+    			<p id="speciesName" contenteditable="true"><br>
+    				<div id="Vulgar">
+    				  Nome Vulgar:
+    				</div><br>
+    			<p id="speciesVulgar" contenteditable="true"><br>
+    				<div id="Ecology">
+    				  Ecologia:
+    				</div>
+    			<p id="speciesEcology" contenteditable="true"><br>
+    				<div id="Description">
+    				  Descrição:
+    				</div>
+    			<p id="speciesDescription" contenteditable="true"><br>
+
+    				<div class="buttonDiv">
+    	        <button class="button" style="float:right" id="Guardar">Guardar</button>
+    	        <br>
+    	        <button class="button" style="float:left"id="Cancelar">Cancelar</button>
+    	      </div>
+
+    		</main><!-- #main -->
+
+    	</div><!-- #primary -->
+    </div><!-- .wrap -->
     <br>
   </div>
 

@@ -1,11 +1,13 @@
 
 var ref = firebase.database().ref('toReview');
 
+var imgLocation={latitude:"",longitude:""};
+var imgObject = {author:"",date:"",eco:"",location:"",species:"",uid:"",url:"",vulgar:""};
+
 ref.once('value', function(snapshot){
   snapshot.forEach(function(child){
 
             var img = new Image(250,250);
-            var overallImage =
             smallImg = new Image(150,150);
 
             var button = document.createElement("button");
@@ -25,10 +27,18 @@ ref.once('value', function(snapshot){
             img.style.width='250px';
             img.style.flex='50%';
             img.style.padding='4px';
-            img.onclick=showOptions;
 
 
-            document.getElementById('image').appendChild(img);
+
+            document.getElementById('image').appendChild(img).onclick = function(){
+              showOptions(img);
+              imgLocation.latitude=child.child('location').child('latitude').val();
+              imgLocation.longitude=child.child('location').child('longitude').val();
+              imgObject.author=child.child('author').val();
+              imgObject.date=child.child('date').val();
+              imgObject.uid=child.child('uid').val();
+            };
+
 
         });
 
@@ -56,9 +66,12 @@ firebase.auth().onAuthStateChanged(function(user) {
 });
 
 
-function showOptions(){
+function showOptions(img){
   // Get the modal
+
   var modal = document.getElementById('anotherModal');
+  imgObject.url=img.src;
+  imgObject.location=imgLocation;
 
   // When the user clicks the button, open the modal
   modal.style.display = "block";
@@ -76,6 +89,56 @@ function showOptions(){
       if (event.target == modal) {
           modal.style.display = "none";
       }
+
   }
-  //alert(smallImg);
+
+  document.getElementById('Guardar').onclick = function() {
+      //Upload information to Firebase database
+      var reviewedPhotos = firebase.database().ref('PhotosReviewed'); //This is going to add the photo to the reviewed group
+      var addToUser = firebase.database().ref('Users'); //This is going to add the photo to the user portfolio
+      var addToSpecies = firebase.database().ref('Species'); //This is going to add to an existing species or create a new one
+
+      imgObject.eco=document.getElementById('speciesEcology').textContent;
+      imgObject.species=document.getElementById('speciesName').textContent;
+      imgObject.vulgar=document.getElementById('speciesVulgar').textContent;
+
+      addToSpecies.child(document.getElementById('speciesName').textContent).child(imgObject.date).set({
+        author: imgObject.author,
+        date: imgObject.date,
+        eco: imgObject.eco,
+        location: imgLocation,
+        species: imgObject.species,
+        uid: imgObject.uid,
+        url: img.src,
+        vulgar: imgObject.vulgar
+      });
+
+      addToUser.child(imgObject.uid).child(imgObject.date).set({
+        author: imgObject.author,
+        date: imgObject.date,
+        eco: imgObject.eco,
+        location: imgLocation,
+        species: imgObject.species,
+        uid: imgObject.uid,
+        url: img.src,
+        vulgar: imgObject.vulgar
+      });
+
+      reviewedPhotos.child(imgObject.date).set({
+        author: imgObject.author,
+        date: imgObject.date,
+        eco: imgObject.eco,
+        location: imgLocation,
+        species: imgObject.species,
+        uid: imgObject.uid,
+        url: img.src,
+        vulgar: imgObject.vulgar
+      });
+
+      ref.child(imgObject.date).remove();
+  }
+}
+
+function checkIfExists(){
+  
 }
