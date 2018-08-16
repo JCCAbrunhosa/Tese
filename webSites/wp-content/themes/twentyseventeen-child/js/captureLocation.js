@@ -12,8 +12,6 @@ function captureLocation(){
   var ref = firebase.database().ref('Species');
   var positions=[];
 
-  var str = "Ver página das Espécie";
-
   ref.once('value', function(snapshot){
     snapshot.forEach(function(child){
       child.forEach(function(photos){

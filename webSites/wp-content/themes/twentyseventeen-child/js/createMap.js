@@ -3,6 +3,7 @@
   var positions=[];
 
   var str = "Ver página das Espécie";
+  alert("estou a ler este js");
 
   ref.once('value', function(snapshot){
     snapshot.forEach(function(child){

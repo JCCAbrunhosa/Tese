@@ -8,12 +8,16 @@
       wp_enqueue_script('firebase-database','https://www.gstatic.com/firebasejs/4.9.0/firebase-database.js');
       wp_enqueue_script('connectToFirebase', get_stylesheet_directory_uri() . '/js/connectToFirebase.js');
       wp_enqueue_script('checkLogin', get_stylesheet_directory_uri() . '/js/checkLogin.js');
-      wp_enqueue_script('createMap', get_stylesheet_directory_uri() . '/js/createMap.js');
+      if(is_page('mapa')){
+        wp_enqueue_script('createMap', get_stylesheet_directory_uri() . '/js/createMap.js');
+      }
+      if(is_page('upload')){
+        wp_enqueue_script('uploadPhoto', get_stylesheet_directory_uri() . '/js/uploadPhoto.js');
+      }
       wp_enqueue_script('fetchSpecies', get_stylesheet_directory_uri() . '/js/fetchSpecies.js');
       wp_enqueue_script('login', get_stylesheet_directory_uri() . '/js/login.js');
       wp_enqueue_script('fetchPhotos', get_stylesheet_directory_uri() . '/js/fetchPhotos.js');
       wp_enqueue_script('getUserInfo', get_stylesheet_directory_uri() . '/js/getUserInfo.js');
-      wp_enqueue_script('uploadPhoto', get_stylesheet_directory_uri() . '/js/uploadPhoto.js');
       wp_enqueue_script('captureLocation', get_stylesheet_directory_uri() . '/js/captureLocation.js');
       wp_enqueue_script('getPending', get_stylesheet_directory_uri() . '/js/getPending.js');
 

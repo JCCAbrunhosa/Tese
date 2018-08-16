@@ -102,6 +102,7 @@ function showOptions(img){
       imgObject.species=document.getElementById('speciesName').textContent;
       imgObject.vulgar=document.getElementById('speciesVulgar').textContent;
 
+      //Adds photo to Species tree
       addToSpecies.child(document.getElementById('speciesName').textContent).child(imgObject.date).set({
         author: imgObject.author,
         date: imgObject.date,
@@ -113,6 +114,7 @@ function showOptions(img){
         vulgar: imgObject.vulgar
       });
 
+      //Adds photo to Users tree
       addToUser.child(imgObject.uid).child(imgObject.date).set({
         author: imgObject.author,
         date: imgObject.date,
@@ -124,6 +126,7 @@ function showOptions(img){
         vulgar: imgObject.vulgar
       });
 
+      //Adds photo to PhotosReviewed tree
       reviewedPhotos.child(imgObject.date).set({
         author: imgObject.author,
         date: imgObject.date,
@@ -136,9 +139,12 @@ function showOptions(img){
       });
 
       ref.child(imgObject.date).remove();
+
+      //Reloads the page
+      location.reload();
   }
 }
 
 function checkIfExists(){
-  
+
 }

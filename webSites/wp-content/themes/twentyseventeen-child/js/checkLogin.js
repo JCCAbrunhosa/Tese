@@ -19,4 +19,7 @@ firebase.auth().onAuthStateChanged(function(user){
     document.getElementById("userAccount").style.display="none";
     document.getElementById("uploadPhoto").style.display="none";
   }
+
+  window.localStorage.setItem("userLogged", user.email);
+  window.localStorage.setItem("userUID", user.uid);
   });

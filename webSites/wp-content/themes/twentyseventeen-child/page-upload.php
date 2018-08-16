@@ -18,7 +18,7 @@
 get_header(); ?>
 
 <style type="text/css">
-#getLocation {
+#map {
 
 	width:    100%;
 	height:   500px;
@@ -50,20 +50,19 @@ get_header(); ?>
 
 
 		</main><!-- #main -->
-		<input type="file" id="myFile" multiple size="50" onchange="uploadPhoto()">
-		<div id="getLocation"></div>
-		<script>
-		var getLocation = new google.maps.Map(document.getElementById('getLocation'), {
-				zoom: 8
-			});
-			google.maps.event.addDomListener(window, "load", captureLocation);
+		<div id="map"></div>
+		<input type="file" id='file-select' class="file-select" accept="image/*"/>
 
-		</script>
+
+		<button id='file-submit' class="file-submit">Upload</button>
 
 	</div><!-- #primary -->
 </div><!-- .wrap -->
-
-
+<script type="text/javascript">
+	var map = new google.maps.Map(document.getElementById('map'), {
+		zoom: 8
+	});
+</script>
 
 
 <?php get_footer();
