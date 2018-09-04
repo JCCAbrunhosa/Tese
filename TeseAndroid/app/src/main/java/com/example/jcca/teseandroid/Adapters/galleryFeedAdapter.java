@@ -63,7 +63,28 @@ public class galleryFeedAdapter extends RecyclerView.Adapter<galleryFeedAdapter.
             GlideApp.with(context).load(UploadInfo.getUrl()).into(holder.speciesPhoto);
 
             holder.author.setText(UploadInfo.getAuthor());
-            holder.itemView.setLongClickable(true);
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Bundle info= new Bundle();
+                    Log.d("URL", UploadInfo.getUrl());
+                    info.putString("Date", UploadInfo.getDate());
+                    info.putString("Species", UploadInfo.getSpecies());
+                    info.putString("Eco", UploadInfo.getEco());
+                    info.putString("Vulgar", UploadInfo.getVulgar());
+                    info.putString("Author", UploadInfo.getAuthor());
+                    info.putString("URL", UploadInfo.getUrl());
+                    info.putString("Lat", String.valueOf(UploadInfo.getLocation().getLatitude()));
+                    info.putString("Long", String.valueOf(UploadInfo.getLocation().getLongitude()));
+                    info.putString("UID", UploadInfo.getUid());
+                    Intent goTo = new Intent(view.getContext(), photoDetails_activity.class);
+                    goTo.putExtras(info);
+                    goTo.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    view.getContext().startActivity(goTo);
+                }
+            });
+
             holder.info.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

@@ -4,7 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -16,6 +18,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.ceylonlabs.imageviewpopup.ImagePopup;
@@ -40,6 +44,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.app.PendingIntent.getActivity;
 
 public class editDetails extends AppCompatActivity {
 
@@ -105,6 +111,92 @@ public class editDetails extends AppCompatActivity {
         vulgar = findViewById(R.id.vulgar);
         submit = findViewById(R.id.submitData);
         image = findViewById(R.id.app_bar_image);
+
+        //Alert Boxes for data input
+
+
+
+        //Description
+        descricao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(editDetails.this);
+                LayoutInflater li = LayoutInflater.from(editDetails.this);
+                View promptsView = li.inflate(R.layout.prompts, null);
+
+                alertDialogBuilder.setView(promptsView);
+                alertDialogBuilder.setMessage(R.string.descDialog);
+
+                final EditText userInput = (EditText) promptsView
+                        .findViewById(R.id.editTextDialogUserInput);
+                if(descricao.getText()!=null)
+                    userInput.setText(descricao.getText());
+                // set dialog message
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        // get user input and set it to result
+                                        // edit text
+                                        descricao.setText(userInput.getText());
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        dialog.cancel();
+
+                                    }
+                                });
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                alertDialog.show();
+            }
+        });
+
+        //Ecology
+        ecologia.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(editDetails.this);
+                LayoutInflater li = LayoutInflater.from(editDetails.this);
+                View promptsView = li.inflate(R.layout.prompts, null);
+
+                alertDialogBuilder.setView(promptsView);
+                alertDialogBuilder.setMessage(R.string.ecoDialog);
+
+                final EditText userInput = (EditText) promptsView
+                        .findViewById(R.id.editTextDialogUserInput);
+                if(ecologia.getText()!=null)
+                    userInput.setText(ecologia.getText());
+                // set dialog message
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        // get user input and set it to result
+                                        // edit text
+                                        ecologia.setText(userInput.getText());
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+
+                alertDialog.show();
+            }
+        });
+
 
         //This variable will always check the input on the Species field
         //If a new one is being inserted then a description will be needed
@@ -358,6 +450,5 @@ public class editDetails extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
 }

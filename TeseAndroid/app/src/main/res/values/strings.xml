@@ -126,8 +126,8 @@
 
     <string name="userFeed">My sightings</string>
     <string name="othersFeed">Sightings Gallery</string>
-    <string name="newPhotos">New Sightings</string>
-    <string name="guide">Species Guide</string>
+    <string name="newPhotos">Pending Sightings</string>
+    <string name="guide">Species List</string>
     <string name="map">Sightings Map</string>
     <string name="options">Options</string>
     <string name="endSession">Log off</string>
@@ -139,6 +139,9 @@
 
     <string name="takenBy">Taken by: </string>
     <string name="mapCardView">Map</string>
+
+    <string name="descDialog"> Description </string>
+    <string name="ecoDialog"> Ecology </string>
 
 
 </resources>

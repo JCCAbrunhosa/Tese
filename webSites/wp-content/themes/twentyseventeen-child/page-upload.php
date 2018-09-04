@@ -31,10 +31,15 @@ get_header(); ?>
 <div class="wrap">
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
+			<h1>Carregar Avistamento</h1>
+
 			<div id="Name">
 			  Espécie:
 			</div>
-			<p id="speciesName" contenteditable="true"><br>
+			<div class="ui-widget">
+				<p id="speciesName" contenteditable="true"><br>
+			</div>
+
 				<div id="Vulgar">
 				  Nome Vulgar:
 				</div><br>
@@ -63,6 +68,7 @@ get_header(); ?>
 		zoom: 8
 	});
 </script>
+
 
 
 <?php get_footer();

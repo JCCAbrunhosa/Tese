@@ -22,8 +22,7 @@ get_header(); ?>
 
 	width:    100%;
 	height:   500px;
-	padding-left: 20px;
-	padding-right: 20px;
+
 
 }
 </style>
@@ -31,21 +30,9 @@ get_header(); ?>
 <div class="wrap">
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
-
-
-			<?php
-			while ( have_posts() ) : the_post();
-
-				get_template_part( 'template-parts/page/content', 'page' );
-
-				// If comments are open or we have at least one comment, load up the comment template.
-				if ( comments_open() || get_comments_number() ) :
-					comments_template();
-				endif;
-
-			endwhile; // End of the loop.
-			?>
-
+				<h1>Mapa</h1>
+				<input type="text" id="myInput" onfocus="searchSpecies()" placeholder="Espécie">
+				<br>
 		</main><!-- #main -->
 	</div><!-- #primary -->
 </div><!-- .wrap -->

@@ -1,0 +1,44 @@
+********************************************************************************
+DUPLICATOR-LITE PACKAGE-LOG: 30 August, 2018 16:53
+NOTICE: Do NOT post to public sites or forums 
+********************************************************************************
+VERSION:	1.2.42
+WORDPRESS:	4.9.8
+PHP INFO:	7.2.7 | SAPI: apache2handler
+SERVER:		Apache/2.2.34 (Unix) mod_wsgi/3.5 Python/2.7.13 PHP/7.2.7 mod_ssl/2.2.34 OpenSSL/1.0.2o DAV/2 mod_fastcgi/mod_fastcgi-SNAP-0910052141 mod_perl/2.0.9 Perl/v5.24.0 
+PHP TIME LIMIT: (0) no time limit imposed 
+PHP MAX MEMORY: 2048M (128M default) 
+MEMORY STACK: 16MB 
+
+********************************************************************************
+DATABASE:
+********************************************************************************
+BUILD MODE:   MYSQLDUMP
+MYSQLTIMEOUT: 5000
+MYSQLDUMP:    Is Supported 
+FILTERED: [] 
+RESPONSE: mysqldump: [Warning] Using a password on the command line interface can be insecure.
+mysqldump: Got error: 1045: Access denied for user 'joao'@'localhost' (using password: YES) when trying to connect
+ 
+TABLES: total:21 | filtered:0 | create:21 
+SQL CREATED: DiversidadeID_2098ca264414fde61923180830165341_database.sql 
+SQL FILE SIZE: 90B (90) 
+
+==================================================================================
+DUPLICATOR ERROR
+Please try again! If the error persists see the Duplicator 'Help' menu.
+---------------------------------------------------------------------------------
+MESSAGE:
+	SQL file size too low.
+DETAILS:
+	File does not look complete.  Check permission on file and parent directory at [/Users/JCCA/webSites/wp-snapshots/tmp/DiversidadeID_2098ca264414fde61923180830165341_database.sql]
+TRACE:
+	 1. class.pack.database.php : Error (94)
+	 2. class.pack.php : build (236)
+	 3. ctrl.package.php : runBuild (61)
+	 4. class-wp-hook.php : duplicator_package_build (286)
+	 5. class-wp-hook.php : apply_filters (310)
+	 6. plugin.php : do_action (453)
+	 7. admin-ajax.php : do_action (100)
+==================================================================================
+

@@ -16,7 +16,20 @@
  */
 
 get_header(); ?>
+<style type="text/css">
+#map {
 
+	width:    100%;
+	height:   250px;
+
+
+}
+</style>
+
+
+
+<h1>Galeria</h1>
+<br>
 <br>
 <div id="speciesName">
   Espécie:<br>
@@ -43,6 +56,7 @@ get_header(); ?>
   <p id="ecology"></p>
 </div>
 <br>
+<button class="button" id="proceedToBlog">Blog</button>
 
 <div id="photos">Avistamentos da Espécie:</div>
 <br>
@@ -76,13 +90,20 @@ get_header(); ?>
       </div>
       <div id="authorMH">
         <p id="authorM"></p>
+      </div>
       <div class="buttonDiv">
-        <button class="button" id="seeMap">Ver no Mapa</button>
         <br>
         <button class="button" id="moreAuthor">Mais avistamentos deste utilizador</button>
       </div>
     <br>
+    <div id="map"></div>
   </div>
+  <script type="text/javascript">
+
+  var map = new google.maps.Map(document.getElementById('map'), {
+  		zoom: 8
+  	});
+  </script>
 
 </div>
 

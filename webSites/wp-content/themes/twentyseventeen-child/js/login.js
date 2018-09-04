@@ -32,7 +32,7 @@ function login(){
     var errorMessage = error.message;
   });
 
-  window.setTimeout(goToHome, 2000);
+  window.setTimeout(goToHome, 4000);
 }
 
 function logOut(){

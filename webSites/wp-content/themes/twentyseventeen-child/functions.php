@@ -6,6 +6,8 @@
       wp_enqueue_script('firebase-all', 'https://www.gstatic.com/firebasejs/4.12.1/firebase.js');
       wp_enqueue_script('firebase-auth', 'https://www.gstatic.com/firebasejs/4.10.1/firebase-auth.js');
       wp_enqueue_script('firebase-database','https://www.gstatic.com/firebasejs/4.9.0/firebase-database.js');
+      wp_enqueue_script('jquery', "https://code.jquery.com/jquery-1.12.4.js");
+      wp_enqueue_script('jqueryUI', "https://code.jquery.com/ui/1.12.1/jquery-ui.js");
       wp_enqueue_script('connectToFirebase', get_stylesheet_directory_uri() . '/js/connectToFirebase.js');
       wp_enqueue_script('checkLogin', get_stylesheet_directory_uri() . '/js/checkLogin.js');
       if(is_page('mapa')){

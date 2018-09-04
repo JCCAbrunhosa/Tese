@@ -18,7 +18,7 @@
 get_header(); ?>
 
 
-<div id="photos">Avistamentos por Avaliar</div>
+<h1>Avistamentos por Avaliar</h1>
 <br>
 <div class="row" id="myGrid" style="margin-bottom:128px">
   <div class="column" id="gridCol">

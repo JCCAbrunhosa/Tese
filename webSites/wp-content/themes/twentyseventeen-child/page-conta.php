@@ -16,6 +16,8 @@
  */
 
 get_header(); ?>
+<h1> Detalhes da Conta</h1>
+<br>
 <div id="userName">
     User Name:<br>
 </div>
@@ -33,7 +35,7 @@ get_header(); ?>
 <br>
 <div class="row" id="myGrid" style="margin-bottom:128px">
   <div class="column" id="gridCol">
-      <div class ="container" id="imageCont">
+      <div class ="container" id="ownPics">
   </div>
 </div>
 

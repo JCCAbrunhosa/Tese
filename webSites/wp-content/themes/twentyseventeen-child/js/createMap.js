@@ -3,22 +3,28 @@
   var positions=[];
 
   var str = "Ver página das Espécie";
-  alert("estou a ler este js");
+
+  var markers = [];
+
+  var selectedLat = window.localStorage.getItem("photoLat");
+  var selectedLng = window.localStorage.getItem("photoLng");
 
   ref.once('value', function(snapshot){
     snapshot.forEach(function(child){
       child.forEach(function(photos){
         if(photos.hasChild('location')){
+
             var myLatLng = {};
+
             myLatLng.lng=parseFloat(photos.child('location').child('longitude').val());
             myLatLng.lat=parseFloat(photos.child('location').child('latitude').val());
-
 
             var marker = new google.maps.Marker({
               position: myLatLng,
               map: map,
               title: photos.child('species').val()
             });
+            markers.push(marker);
             google.maps.event.trigger(map, "resize");
             map.panTo(myLatLng);
 
@@ -40,3 +46,17 @@
       });
     });
   });
+
+//Cleans the map when the search function is focused
+function searchSpecies(){
+   setMapOnAll(null);
+   if(document.activeElement.tagName != "INPUT"){
+     setMapOnAll(map);
+   }
+}
+
+function setMapOnAll(map) {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
