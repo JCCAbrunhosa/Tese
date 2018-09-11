@@ -38,6 +38,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.jcca.teseandroid.Adapters.CardViewAdapter;
 import com.example.jcca.teseandroid.BuildConfig;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
@@ -139,7 +140,7 @@ public class guide_activity extends AppCompatActivity
 
         mDatabase2 =  FirebaseDatabase.getInstance().getReference().child("Species");
         imageViewer = (RecyclerView)findViewById(R.id.speciesList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(guide_activity.this);
         imageViewer.setLayoutManager(layoutManager);
         imageViewer.setHasFixedSize(true);
 
@@ -180,7 +181,7 @@ public class guide_activity extends AppCompatActivity
                     }
                 }
 
-                adapter = new CardViewAdapter(getApplicationContext(), list);
+                adapter = new CardViewAdapter(guide_activity.this, list);
                 imageViewer.setAdapter(adapter);
             }
 
@@ -448,5 +449,19 @@ public class guide_activity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
+    @Override public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+    @Override public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Glide.get(this).trimMemory(level);
+    }
 
 }

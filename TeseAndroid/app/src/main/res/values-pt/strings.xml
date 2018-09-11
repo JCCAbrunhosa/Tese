@@ -45,5 +45,12 @@
     <string name="descDialog"> Descrição </string>
     <string name="ecoDialog"> Ecologia </string>
 
+    <string name="ecoLayout">Já tem ecologia!</string>
+    <string name="descLayout">Já tem descrição!</string>
+    <string name="vulgarLayout">Já tem nome vulgar!</string>
+
+    <string name="acceptUpload">Confirmar</string>
+    <string name="denyUpload">Rejeitar</string>
+
 
 </resources>

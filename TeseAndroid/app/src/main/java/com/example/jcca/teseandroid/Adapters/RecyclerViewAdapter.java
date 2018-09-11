@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Misc.photoDetails_activity;
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
@@ -76,7 +77,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             });
 
             //Loading image from Glide library.
-            GlideApp.with(context).load(UploadInfo.getUrl()).override(1000,1000).centerCrop().into(holder.imageView);
+            GlideApp.with(context).load(UploadInfo.getUrl()).thumbnail(0.5f).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).skipMemoryCache(true).centerCrop().into(holder.imageView);
         }
 
     }

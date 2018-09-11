@@ -29,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bumptech.glide.Glide;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.BuildConfig;
 import com.example.jcca.teseandroid.DataObjects.Position;
@@ -187,7 +188,7 @@ public class galleryFeed extends AppCompatActivity
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
         toReview = FirebaseDatabase.getInstance().getReference().child("toReview");
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(galleryFeed.this);
         imageViewer.setLayoutManager(layoutManager);
 
 
@@ -247,7 +248,7 @@ public class galleryFeed extends AppCompatActivity
                     noPhotos.setVisibility(View.GONE);
 
                 Collections.reverse(list);
-                adapter = new galleryFeedAdapter(getApplicationContext(), list);
+                adapter = new galleryFeedAdapter(galleryFeed.this, list);
                 imageViewer.setAdapter(adapter);
             }
 
@@ -442,5 +443,21 @@ public class galleryFeed extends AppCompatActivity
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+
+        adapter=null;
+    }
+
+    @Override public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+    @Override public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Glide.get(this).trimMemory(level);
+    }
 
 }

@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.BuildConfig;
@@ -129,7 +130,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
         toReview = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/toReview");
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(photosToReview.this);
         imageViewer.setLayoutManager(layoutManager);
 
         if(toReview.getRef() != null){
@@ -146,7 +147,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
                         noPhotos.setVisibility(View.VISIBLE);
                     else
                         noPhotos.setVisibility(View.GONE);
-                    adapter = new galleryFeedAdapter(getApplicationContext(), list);
+                    adapter = new galleryFeedAdapter(photosToReview.this, list);
                     imageViewer.setAdapter(adapter);
                 }
 
@@ -203,7 +204,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
                 else
                     noPhotos.setVisibility(View.GONE);
 
-                adapter = new galleryFeedAdapter(getApplicationContext(), list);
+                adapter = new galleryFeedAdapter(photosToReview.this, list);
                 imageViewer.setAdapter(adapter);
             }
 
@@ -357,6 +358,21 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
+    @Override public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+    @Override public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Glide.get(this).trimMemory(level);
     }
 
 

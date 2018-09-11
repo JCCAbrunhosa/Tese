@@ -1,5 +1,6 @@
 package com.example.jcca.teseandroid.Misc;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.ceylonlabs.imageviewpopup.ImagePopup;
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
@@ -77,6 +79,8 @@ public class photoDetails_activity extends AppCompatActivity
 
     MenuItem edit;
 
+    Context context;
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -90,10 +94,10 @@ public class photoDetails_activity extends AppCompatActivity
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
-
+        context=this;
 
         auth = findViewById(R.id.photoAuthor);
-        ec = findViewById(R.id.photoEco);
+        //ec = findViewById(R.id.photoEco);
         specie = findViewById(R.id.photoSpecies);
         photo = findViewById(R.id.photoDasSpecies);
         vlgar = findViewById(R.id.vulgar);
@@ -120,10 +124,10 @@ public class photoDetails_activity extends AppCompatActivity
         imagePopup.setImageOnClickClose(true);
         imagePopup.setHideCloseIcon(false);
 
-        GlideApp.with(getApplicationContext()).load(url).into(photo);
+        GlideApp.with(context).load(url).into(photo);
 
         auth.setText(author.toString());
-        ec.setText(eco.toString());
+        //ec.setText(eco.toString());
         specie.setText(species.toString());
         vlgar.setText(vulgar.toString());
 
@@ -141,7 +145,7 @@ public class photoDetails_activity extends AppCompatActivity
         toolbar.setTitleTextColor(Color.WHITE);
 
         if(specie.getText().toString().matches("")){
-            ec.setText("Sem informação!");
+            vlgar.setText("Sem informação!");
             specie.setText("Sem informação!");
         }
 
@@ -298,5 +302,14 @@ public class photoDetails_activity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+    @Override public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Glide.get(this).trimMemory(level);
     }
 }

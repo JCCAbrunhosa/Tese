@@ -1,5 +1,6 @@
 package com.example.jcca.teseandroid.Misc;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -24,6 +25,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ceylonlabs.imageviewpopup.ImagePopup;
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
@@ -63,6 +66,8 @@ public class speciesDetails_activity extends AppCompatActivity
     Handler handler = new Handler();
     int i=0;
 
+    Context context;
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -71,6 +76,7 @@ public class speciesDetails_activity extends AppCompatActivity
         setContentView(R.layout.activity_species_details_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        context=this;
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -85,9 +91,9 @@ public class speciesDetails_activity extends AppCompatActivity
         vulgar = findViewById(R.id.vulgarName);
 
         final String spec = getIntent().getStringExtra("Species");
-        String ecol = getIntent().getStringExtra("Eco");
+        //String ecol = getIntent().getStringExtra("Eco");
         String url = getIntent().getStringExtra("URL");
-        String vulgarName = getIntent().getStringExtra("Vulgar");
+        //String vulgarName = getIntent().getStringExtra("Vulgar");
 
 
         //Image pops up when user clicks on it
@@ -98,7 +104,7 @@ public class speciesDetails_activity extends AppCompatActivity
         imagePopup.setFullScreen(true);
         imagePopup.setImageOnClickClose(true);
         imagePopup.setHideCloseIcon(false);
-        GlideApp.with(getApplicationContext()).load(url).into(speciesImage);
+        GlideApp.with(speciesDetails_activity.this).load(url).thumbnail(0.5f).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).into(speciesImage);
         //handler.postDelayed(runnable, 4000);
 
         speciesImage.setOnClickListener(new View.OnClickListener() {
@@ -116,9 +122,7 @@ public class speciesDetails_activity extends AppCompatActivity
 
         species.setText(spec.toString());
 
-        eco.setText(ecol.toString());
-
-        vulgar.setText(vulgarName.toString());
+        //vulgar.setText(vulgarName.toString());
 
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Species/" + spec);
 
@@ -127,7 +131,7 @@ public class speciesDetails_activity extends AppCompatActivity
         sameSpecies = (RecyclerView) findViewById(R.id.sameSpeciesPhoto);
         sameSpecies.setHasFixedSize(true);
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),4);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(speciesDetails_activity.this,4);
         sameSpecies.setLayoutManager(layoutManager);
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -135,8 +139,10 @@ public class speciesDetails_activity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 urlImages= new String[(int)dataSnapshot.getChildrenCount()];
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    if(!postSnapshot.getKey().matches("description") && !postSnapshot.getKey().toString().matches("vulgar")){
+                    if(!postSnapshot.getKey().matches("description") && !postSnapshot.getKey().toString().matches("vulgar") && !postSnapshot.getKey().toString().matches("ecology")){
                         description.setText(dataSnapshot.child("description").getValue().toString());
+                        eco.setText(dataSnapshot.child("ecology").getValue().toString());
+                        vulgar.setText(dataSnapshot.child("vulgar").getValue().toString());
                         urlImages[i++]= postSnapshot.child("url").getValue(String.class);
 
                         ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
@@ -146,7 +152,7 @@ public class speciesDetails_activity extends AppCompatActivity
 
                 }
 
-                adapter = new RecyclerViewAdapter(getApplicationContext(), list);
+                adapter = new RecyclerViewAdapter(speciesDetails_activity.this, list);
                 sameSpecies.setAdapter(adapter);
             }
 
@@ -238,20 +244,20 @@ public class speciesDetails_activity extends AppCompatActivity
         return true;
     }
 
-    //This runnable makes the images cycle
-    Runnable runnable = new Runnable() {
-        int i = 0;
 
-        public void run() {
-            GlideApp.with(getApplicationContext()).load(urlImages[i]).into(speciesImage);
-            i++;
-            //Each new rotating image can be popped up
-            if (urlImages[i]==null) {
-                i = 0;
-            }
-            handler.postDelayed(this, 4000);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
 
-        }
-    };
+    @Override public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+    @Override public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Glide.get(this).trimMemory(level);
+    }
 
 }

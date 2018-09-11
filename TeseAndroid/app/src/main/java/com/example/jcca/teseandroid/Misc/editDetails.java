@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -59,7 +61,8 @@ public class editDetails extends AppCompatActivity {
     EditText ecologia;
     EditText vulgar;
 
-    FloatingActionButton submit;
+    Button submit;
+    Button reject;
 
     List<String> listOfSpecies = new ArrayList<>();
     boolean exists = false;
@@ -72,6 +75,10 @@ public class editDetails extends AppCompatActivity {
     String uid;
     String vulg;
     String date;
+
+    TextInputLayout layoutEco;
+    TextInputLayout layoutDesc;
+    TextInputLayout layoutVulgar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,10 +93,11 @@ public class editDetails extends AppCompatActivity {
         toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
 
-
+        //Database references
         mDatabase = FirebaseDatabase.getInstance().getReference();
         toDatabase = FirebaseDatabase.getInstance().getReference().child("PhotosReviewed");
 
+        //Get intents from previous activity
         final String url = getIntent().getStringExtra("URL");
         key = getIntent().getStringExtra("photoName");
         data = getIntent().getStringExtra("photoName");
@@ -97,14 +105,16 @@ public class editDetails extends AppCompatActivity {
         uid = getIntent().getStringExtra("UID");
         date = getIntent().getStringExtra("Date");
 
+        //If the species exist they are put on top of the activity
         if(species.matches(""))
             setTitle(R.string.newSight);
         else
             setTitle(species);
         toolbar.setTitleTextColor(0x00000000);
 
+        //Fetch elements id
         submit = findViewById(R.id.submitData);
-
+        reject = findViewById(R.id.rejectData);
         especie = findViewById(R.id.test);
         descricao = findViewById(R.id.descrição);
         ecologia = findViewById(R.id.ecologia);
@@ -112,9 +122,11 @@ public class editDetails extends AppCompatActivity {
         submit = findViewById(R.id.submitData);
         image = findViewById(R.id.app_bar_image);
 
+        layoutDesc = (TextInputLayout) findViewById(R.id.descricaoLayout);
+        layoutEco= (TextInputLayout) findViewById(R.id.ecologiaLayout);
+        layoutVulgar= (TextInputLayout) findViewById(R.id.vulgarLayout);
+
         //Alert Boxes for data input
-
-
 
         //Description
         descricao.setOnClickListener(new View.OnClickListener() {
@@ -202,16 +214,16 @@ public class editDetails extends AppCompatActivity {
         //If a new one is being inserted then a description will be needed
         checkInputFinished.run();
 
-        if(getIntent().getStringExtra("PreviousIntent").matches("onClickImage"))
+        /*if(getIntent().getStringExtra("PreviousIntent").matches("onClickImage"))
             descricao.setVisibility(View.GONE);
         else
-            descricao.setVisibility(View.VISIBLE);
+            descricao.setVisibility(View.VISIBLE);*/
 
+        //Gets the image clicked from Firebase
         mDatabase.child("Species").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    //Log.d("Species: ", postSnapshot.getKey());
                     listOfSpecies.add(postSnapshot.getKey());
 
                 }
@@ -238,6 +250,7 @@ public class editDetails extends AppCompatActivity {
         imagePopup.setImageOnClickClose(true);
         imagePopup.setHideCloseIcon(false);
 
+        //Checks if the species exist or not (handler on the bottom)
         especie.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -262,11 +275,12 @@ public class editDetails extends AppCompatActivity {
 
 
         //Passing values from new image notification to edit details activity
+        //Submit the data to the Firebase database
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                     if (species.matches("")) {
-                        if (!especie.getText().toString().matches("") && !ecologia.getText().toString().matches("")) {
+                        if (!especie.getText().toString().matches("")) {
                             mDatabase.child("toReview").addChildEventListener(new ChildEventListener() {
                                 @Override
                                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -290,6 +304,7 @@ public class editDetails extends AppCompatActivity {
                                     if(exists==false){
                                         mDatabase.child("Species").child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());
                                         mDatabase.child("Species").child(especie.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
+                                        mDatabase.child("Species").child(especie.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
 
                                     }
 
@@ -353,6 +368,7 @@ public class editDetails extends AppCompatActivity {
                                     if(!descricao.getText().toString().matches("")){
                                         mDatabase.child("Species").child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());
                                         mDatabase.child("Species").child(especie.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
+                                        mDatabase.child("Species").child(especie.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
                                     }
 
 
@@ -374,7 +390,30 @@ public class editDetails extends AppCompatActivity {
 
         });
 
+        reject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(editDetails.this)
+                        .setTitle("Rejeitar Avistamento")
+                        .setMessage("Confirme se deseja rejeitar o avistamento:")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                mDatabase.child("toReview").child(key).getRef().removeValue();
+                                mDatabase.child("Users").child(uid).child(key).getRef().removeValue();
+                                mDatabase.child("Species").child(species).child(key).getRef().removeValue();
+                                mDatabase.child("PhotosReviewed").child(key).getRef().removeValue();
+                                Intent goBack = new Intent(getApplicationContext(), photosToReview.class);
+                                startActivity(goBack);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null).show();
+
+            }
+        });
+
+        //Image popup
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -385,20 +424,34 @@ public class editDetails extends AppCompatActivity {
 
     }
 
+
+    //Runnable - waits 1 second and checks if the description/ecology/vulgar already exists
+    //If the species exist then the user doesn't need to write those fields(and hides them)
+
     final long delay = 500; // 1 seconds after user stops typing
     long lastTextEdition = 0;
     Handler handler = new Handler();
-
     private Runnable checkInputFinished = new Runnable() {
         @Override
         public void run() {
             if (System.currentTimeMillis() > lastTextEdition + delay - 500) {
                 if (!listOfSpecies.contains(especie.getText().toString()) && especie.getText().length()>0) {
                     descricao.setVisibility(View.VISIBLE);
+                    ecologia.setVisibility(View.VISIBLE);
+                    vulgar.setVisibility(View.VISIBLE);
+
+                    layoutDesc.setHint(getResources().getString(R.string.descricao));
+                    layoutEco.setHint(getResources().getString(R.string.ecologia));
+                    layoutVulgar.setHint(getResources().getString(R.string.vulgar));
                     exists=false;
                 } else{
-                    descricao.setHint(null);
+
+                    layoutDesc.setHint(getResources().getString(R.string.descLayout));
+                    layoutEco.setHint(getResources().getString(R.string.ecoLayout));
+                    layoutVulgar.setHint(getResources().getString(R.string.vulgarLayout));
                     descricao.setVisibility(View.GONE);
+                    ecologia.setVisibility(View.GONE);
+                    vulgar.setVisibility(View.GONE);
                     exists=true;
 
                 }
@@ -410,6 +463,7 @@ public class editDetails extends AppCompatActivity {
 
     };
 
+    //Options menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -451,4 +505,12 @@ public class editDetails extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
 }
+
+

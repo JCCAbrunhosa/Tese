@@ -97,7 +97,7 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
                 ImageInfo photo=null;
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     for(DataSnapshot snap: snapshot.getChildren()){
-                        if(!snap.getKey().toString().matches("description") && !snap.getKey().toString().matches("vulgar")) {
+                        if(!snap.getKey().toString().matches("description") && !snap.getKey().toString().matches("vulgar") && !snap.getKey().toString().matches("ecology")) {
                                 photo = snap.getValue(ImageInfo.class);
                                 pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
 

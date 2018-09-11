@@ -31,6 +31,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
@@ -158,7 +159,7 @@ public class otherPhotosGallery extends AppCompatActivity
                     noPhotos.setVisibility(View.VISIBLE);
                 else
                     noPhotos.setVisibility(View.GONE);
-                adapter = new galleryFeedAdapter(getApplicationContext(),list);
+                adapter = new galleryFeedAdapter(otherPhotosGallery.this,list);
                 imageViewer.setAdapter(adapter);
             }
 
@@ -212,7 +213,7 @@ public class otherPhotosGallery extends AppCompatActivity
                 else
                     noPhotos.setVisibility(View.GONE);
 
-                adapter = new galleryFeedAdapter(getApplicationContext(), list);
+                adapter = new galleryFeedAdapter(otherPhotosGallery.this, list);
                 imageViewer.setAdapter(adapter);
             }
 
@@ -380,5 +381,20 @@ public class otherPhotosGallery extends AppCompatActivity
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
+    @Override public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+    @Override public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Glide.get(this).trimMemory(level);
     }
 }

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
 import com.example.jcca.teseandroid.Misc.photoDetails_activity;
@@ -60,7 +61,7 @@ public class galleryFeedAdapter extends RecyclerView.Adapter<galleryFeedAdapter.
                 holder.speciesName.setText(UploadInfo.getSpecies());
 
             //Loading image from Glide library.
-            GlideApp.with(context).load(UploadInfo.getUrl()).into(holder.speciesPhoto);
+            GlideApp.with(context).load(UploadInfo.getUrl()).thumbnail(0.5f).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).skipMemoryCache(true).into(holder.speciesPhoto);
 
             holder.author.setText(UploadInfo.getAuthor());
 
