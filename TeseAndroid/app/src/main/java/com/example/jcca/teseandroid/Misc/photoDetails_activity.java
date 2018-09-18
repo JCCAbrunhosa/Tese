@@ -236,8 +236,10 @@ public class photoDetails_activity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if(id == android.R.id.home)
-            NavUtils.navigateUpFromSameTask(this);
+        if(id == android.R.id.home){
+            super.onBackPressed();
+            return true;
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {

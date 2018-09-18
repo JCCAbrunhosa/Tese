@@ -10,19 +10,17 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -32,7 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.DataObjects.Position;
@@ -57,10 +54,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class otherPhotosGallery extends AppCompatActivity
@@ -266,25 +260,31 @@ public class otherPhotosGallery extends AppCompatActivity
         if (id == R.id.nav_camera) {
             // Handle the camera action
             Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_gallery) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_waitingPhotos) {
             Intent goTo = new Intent(getApplicationContext(), photosToReview.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_guide) {
             Intent goTo = new Intent(getApplicationContext(), guide_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_map) {
             Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         }else if (id == R.id.nav_options){
             Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             stopService(new Intent(getApplicationContext(), NewPhotoAdded.class));
             startActivity(goTo);
         }

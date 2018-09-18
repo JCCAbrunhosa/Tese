@@ -16,23 +16,22 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -46,7 +45,6 @@ import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
 import com.example.jcca.teseandroid.Misc.map_activity;
-import com.example.jcca.teseandroid.Misc.showSpeciesOnMap;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -171,7 +169,7 @@ public class guide_activity extends AppCompatActivity
                 name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     for(DataSnapshot snapshot : postSnapshot.getChildren()){
-                        if(!snapshot.getKey().toString().matches("description")){
+                        if(!snapshot.getKey().toString().matches("description") && !snapshot.getKey().toString().matches("ecology") && !snapshot.getKey().toString().matches("vulgar")){
                             ImageInfo imageInfo = snapshot.getValue(ImageInfo.class);
 
                             list.add(imageInfo);
@@ -263,23 +261,28 @@ public class guide_activity extends AppCompatActivity
             startActivity(goTo);
         } else if (id == R.id.nav_gallery) {
             Intent goTo = new Intent(getApplicationContext(), otherPhotosGallery.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_waitingPhotos) {
             Intent goTo = new Intent(getApplicationContext(), photosToReview.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_guide) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_map) {
             Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             stopService(new Intent(getApplicationContext(), NewPhotoAdded.class));
             startActivity(goTo);
         }else if (id == R.id.nav_options){
             Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         }
 

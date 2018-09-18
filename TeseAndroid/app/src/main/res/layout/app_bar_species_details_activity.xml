@@ -109,4 +109,14 @@
 
     </android.support.v4.widget.NestedScrollView>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/editSpecies"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:backgroundTint="@color/greenTese"
+        app:layout_anchor="@+id/info2"
+        app:layout_anchorGravity="left|top"
+        app:srcCompat="@drawable/ic_menu_manage" />
+
 </android.support.design.widget.CoordinatorLayout>

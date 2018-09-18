@@ -25,7 +25,7 @@ public class ImageInfo {
     private String vulgar;
 
 
-    public ImageInfo(){};
+    public ImageInfo(){}
 
     public ImageInfo(String date, String url, String author, Position location, String species,String vulgar, String eco, String uid){
 

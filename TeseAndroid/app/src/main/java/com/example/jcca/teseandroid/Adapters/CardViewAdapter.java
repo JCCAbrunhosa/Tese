@@ -156,10 +156,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         public ViewHolder(View itemView) {
             super(itemView);
 
-            species = (CardView)itemView.findViewById(R.id.guideList);
-            vulgarName = (TextView)itemView.findViewById(R.id.vulgar_name);
-            speciesName= (TextView)itemView.findViewById(R.id.species_name);
-            speciesPhoto = (ImageView)itemView.findViewById(R.id.species_photo);
+            species = itemView.findViewById(R.id.guideList);
+            vulgarName = itemView.findViewById(R.id.vulgar_name);
+            speciesName= itemView.findViewById(R.id.species_name);
+            speciesPhoto = itemView.findViewById(R.id.species_photo);
 
 
         }

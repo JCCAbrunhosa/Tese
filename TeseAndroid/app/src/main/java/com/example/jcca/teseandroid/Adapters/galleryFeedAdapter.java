@@ -145,12 +145,12 @@ public class galleryFeedAdapter extends RecyclerView.Adapter<galleryFeedAdapter.
         public ViewHolder(View itemView) {
             super(itemView);
 
-            species = (CardView)itemView.findViewById(R.id.guideList);
-            speciesName = (TextView)itemView.findViewById(R.id.species_name);
-            author=(TextView)itemView.findViewById(R.id.author);
-            map = (Button)itemView.findViewById(R.id.map);
-            info = (Button) itemView.findViewById(R.id.info);
-            speciesPhoto = (ImageView)itemView.findViewById(R.id.species_photo);
+            species = itemView.findViewById(R.id.guideList);
+            speciesName = itemView.findViewById(R.id.species_name);
+            author= itemView.findViewById(R.id.author);
+            map = itemView.findViewById(R.id.map);
+            info = itemView.findViewById(R.id.info);
+            speciesPhoto = itemView.findViewById(R.id.species_photo);
 
 
         }

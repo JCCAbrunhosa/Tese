@@ -9,19 +9,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NavUtils;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -174,6 +171,18 @@ public class speciesDetails_activity extends AppCompatActivity
             }
         });
 
+        FloatingActionButton editSpecies = (FloatingActionButton) findViewById(R.id.editSpecies);
+        editSpecies.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle sendSpecies = new Bundle();
+                sendSpecies.putString("Species", spec.toString());
+                Intent edit = new Intent(speciesDetails_activity.this, editSpeciesDetails.class);
+                edit.putExtras(sendSpecies);
+                startActivity(edit);
+            }
+        });
+
     }
 
     @Override
@@ -201,8 +210,10 @@ public class speciesDetails_activity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if(id == android.R.id.home)
-            NavUtils.navigateUpFromSameTask(this);
+        if(id == android.R.id.home){
+            super.onBackPressed();
+            return true;
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
@@ -220,22 +231,29 @@ public class speciesDetails_activity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             // Handle the camera action
             Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_gallery) {
             Intent goTo = new Intent(getApplicationContext(), otherPhotosGallery.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_waitingPhotos) {
             Intent goTo = new Intent(getApplicationContext(), photosToReview.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_guide) {
             Intent goTo = new Intent(getApplicationContext(), guide_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_map) {
             Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
+
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         }
 

@@ -2,62 +2,51 @@ package com.example.jcca.teseandroid.Gallery;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.ContextMenu;
-import android.view.MenuInflater;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-
-import com.bumptech.glide.Glide;
-import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
-import com.example.jcca.teseandroid.BuildConfig;
-import com.example.jcca.teseandroid.DataObjects.Position;
-import com.example.jcca.teseandroid.Glide_Module.GlideApp;
-import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
-import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
-import com.example.jcca.teseandroid.Misc.cameraIntent;
-import com.example.jcca.teseandroid.Misc.editDetails;
-import com.example.jcca.teseandroid.Misc.map_activity;
-import com.example.jcca.teseandroid.Misc.showOnMap;
-import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
-import com.example.jcca.teseandroid.R;
-
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+import com.bumptech.glide.Glide;
+import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
+import com.example.jcca.teseandroid.BuildConfig;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
-import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
+import com.example.jcca.teseandroid.DataObjects.Position;
+import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
+import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
+import com.example.jcca.teseandroid.Misc.cameraIntent;
+import com.example.jcca.teseandroid.Misc.map_activity;
+import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
+import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,12 +63,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.Permission;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 public class galleryFeed extends AppCompatActivity
@@ -303,25 +288,31 @@ public class galleryFeed extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_gallery) {
             Intent goTo = new Intent(getApplicationContext(), otherPhotosGallery.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_waitingPhotos) {
             Intent goTo = new Intent(getApplicationContext(), photosToReview.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_guide) {
             Intent goTo = new Intent(getApplicationContext(), guide_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
 
         } else if (id == R.id.nav_map) {
             Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
 
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             stopService(new Intent(galleryFeed.this, NewPhotoAdded.class));
             startActivity(goTo);
         }else if (id == R.id.nav_options){
             Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         }
 
@@ -415,7 +406,7 @@ public class galleryFeed extends AppCompatActivity
                 }
                 mDatabase.child(timeStamp).setValue(image);
                 toReview.child(timeStamp).setValue(image);
-                Log.d("Imagem", image.getDate());
+
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
 

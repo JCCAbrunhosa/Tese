@@ -157,7 +157,7 @@ public class settingsActivity extends AppCompatPreferenceActivity {
     }public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            NavUtils.navigateUpTo(this, NavUtils.getParentActivityIntent(this));
+            super.onBackPressed();
             return true;
         }
         return onOptionsItemSelected(item);

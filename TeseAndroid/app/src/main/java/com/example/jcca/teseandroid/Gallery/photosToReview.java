@@ -29,10 +29,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.BuildConfig;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
@@ -223,27 +221,33 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-           Intent c = new Intent (getApplicationContext(), galleryFeed.class);
-            startActivity(c);
+           Intent goTo = new Intent (getApplicationContext(), galleryFeed.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(goTo);
         } else if (id == R.id.nav_gallery) {
             Intent goTo = new Intent(getApplicationContext(), otherPhotosGallery.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_waitingPhotos) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_guide) {
             Intent goTo = new Intent(getApplicationContext(), guide_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_map) {
             Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             stopService(new Intent(getApplicationContext(), NewPhotoAdded.class));
             startActivity(goTo);
         }else if (id == R.id.nav_options){
             Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         }
 
