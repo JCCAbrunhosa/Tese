@@ -8,26 +8,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.ceylonlabs.imageviewpopup.ImagePopup;
-import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.Gallery.guide_activity;
@@ -42,7 +37,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +71,7 @@ public class photoDetails_activity extends AppCompatActivity
     String eco;
     String author;
 
-    MenuItem edit;
+    FloatingActionButton edit;
 
     Context context;
 
@@ -112,7 +106,7 @@ public class photoDetails_activity extends AppCompatActivity
         uid = getIntent().getStringExtra("UID");
         vulgar = getIntent().getStringExtra("Vulgar");
 
-        edit = findViewById(R.id.action_edit);
+        edit = (FloatingActionButton) findViewById(R.id.editPhotos);
 
 
         //Image pops up when user clicks on it
@@ -168,6 +162,24 @@ public class photoDetails_activity extends AppCompatActivity
                 k.putExtras(pos);
                 startActivity(k);
 
+            }
+        });
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle edit = new Bundle();
+                edit.putString("photoName", date);
+                edit.putString("URL", url);
+                edit.putString("Species", species);
+                edit.putString("UID", uid);
+                edit.putString("Vulgar", vulgar);
+                edit.putString("Date", date);
+                edit.putString("PreviousIntent", "photoDetails");
+                Log.d("UUID: ", uid);
+                Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
+                goTo.putExtras(edit);
+                startActivity(goTo);
             }
         });
 

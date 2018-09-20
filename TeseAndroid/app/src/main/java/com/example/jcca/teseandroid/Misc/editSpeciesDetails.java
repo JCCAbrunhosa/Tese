@@ -23,8 +23,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
-import com.example.jcca.teseandroid.Gallery.guide_activity;
+import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,6 +52,7 @@ public class editSpeciesDetails extends AppCompatActivity {
     String species;
 
     DatabaseReference mDatabase;
+    DatabaseReference genReference;
 
     List<String> listOfSpecies = new ArrayList<>();
     boolean exists = false;
@@ -71,6 +73,7 @@ public class editSpeciesDetails extends AppCompatActivity {
         toolbar.setTitleTextColor(Color.WHITE);
 
         mDatabase= FirebaseDatabase.getInstance().getReference().child("Species");
+        genReference=FirebaseDatabase.getInstance().getReference();
 
         descricao= findViewById(R.id.newDescription);
         ecologia=findViewById(R.id.newEcology);
@@ -127,8 +130,8 @@ public class editSpeciesDetails extends AppCompatActivity {
         });
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.uploadDetails);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton uploadDetails = (FloatingActionButton) findViewById(R.id.uploadDetails);
+        uploadDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(checkIfFilled()==true){
@@ -267,15 +270,13 @@ public class editSpeciesDetails extends AppCompatActivity {
     //Uploads new data
     private void uploadNewData(){
         //If the name edit text is empty then the species name maintains
-        if(name.getText().toString().matches("")){
-            mDatabase.child(species).child("ecology").setValue(ecologia.getText().toString());
-            mDatabase.child(species).child("description").setValue(descricao.getText().toString());
-        }else{
+
             //In this case then the species name changes, creating a new database entry for the new specie name and copy all the
             //nodes to it
             mDatabase.child(name.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
             mDatabase.child(name.getText().toString()).child("description").setValue(descricao.getText().toString());
             mDatabase.child(name.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
+
             mDatabase.child(species).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -296,9 +297,41 @@ public class editSpeciesDetails extends AppCompatActivity {
 
                 }
             });
+            genReference.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        for(DataSnapshot data: snapshot.getChildren()){
+                            if(data.getKey().matches(species)){
+                                genReference.child("Users").child(snapshot.getKey()).child(name.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
+                                genReference.child("Users").child(snapshot.getKey()).child(name.getText().toString()).child("description").setValue(descricao.getText().toString());
+                                genReference.child("Users").child(snapshot.getKey()).child(name.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
+                                for(DataSnapshot images: data.getChildren()){
+                                    if(!images.getKey().toString().matches("description") && !images.getKey().toString().matches("ecology") && !images.getKey().toString().matches("vulgar")) {
+                                        ImageInfo capture = images.getValue(ImageInfo.class);
+                                        capture.setVulgar(vulgar.getText().toString());
+                                        capture.setSpecies(name.getText().toString());
+                                        genReference.child("Users").child(snapshot.getKey()).child(name.getText().toString()).child(images.getKey()).setValue(capture);
+                                        genReference.child("Users").child(snapshot.getKey()).child(species).removeValue();
+                                        genReference.removeEventListener(this);
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
             mDatabase.child(species).removeValue();
-        }
-        Intent goTo = new Intent(editSpeciesDetails.this, guide_activity.class);
+
+        Intent goTo = new Intent(editSpeciesDetails.this, galleryFeed.class);
+        goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goTo);
     }
 
@@ -340,4 +373,21 @@ public class editSpeciesDetails extends AppCompatActivity {
         }
 
     };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+
+    }
+
+    @Override public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+    @Override public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Glide.get(this).trimMemory(level);
+    }
+
 }

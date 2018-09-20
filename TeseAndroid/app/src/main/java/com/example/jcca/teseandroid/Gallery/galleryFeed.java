@@ -222,10 +222,15 @@ public class galleryFeed extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    for(DataSnapshot allImages: postSnapshot.getChildren()){
+                        if(!allImages.getKey().toString().matches("description") && !allImages.getKey().toString().matches("ecology") && !allImages.getKey().toString().matches("vulgar")){
+                            ImageInfo imageInfo = allImages.getValue(ImageInfo.class);
 
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+                            list.add(imageInfo);
+                        }
 
-                    list.add(imageInfo);
+                    }
+
                 }
                 if(list.size()==0)
                     noPhotos.setVisibility(View.VISIBLE);
@@ -402,11 +407,10 @@ public class galleryFeed extends AppCompatActivity
 
                 }else{
                     image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), "",new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
-
                 }
-                mDatabase.child(timeStamp).setValue(image);
-                toReview.child(timeStamp).setValue(image);
 
+                mDatabase.child("ToReview").child(timeStamp).setValue(image);
+                toReview.child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
 

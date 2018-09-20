@@ -63,6 +63,7 @@ public class speciesDetails_activity extends AppCompatActivity
     Handler handler = new Handler();
     int i=0;
 
+    private DatabaseReference isPro;
     Context context;
 
 
@@ -122,7 +123,7 @@ public class speciesDetails_activity extends AppCompatActivity
         //vulgar.setText(vulgarName.toString());
 
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Species/" + spec);
-
+        isPro=FirebaseDatabase.getInstance().getReference();
 
         //Photo
         sameSpecies = (RecyclerView) findViewById(R.id.sameSpeciesPhoto);
@@ -171,7 +172,7 @@ public class speciesDetails_activity extends AppCompatActivity
             }
         });
 
-        FloatingActionButton editSpecies = (FloatingActionButton) findViewById(R.id.editSpecies);
+        final FloatingActionButton editSpecies = (FloatingActionButton) findViewById(R.id.editSpecies);
         editSpecies.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -180,6 +181,20 @@ public class speciesDetails_activity extends AppCompatActivity
                 Intent edit = new Intent(speciesDetails_activity.this, editSpeciesDetails.class);
                 edit.putExtras(sendSpecies);
                 startActivity(edit);
+            }
+        });
+
+        isPro.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("isPro").getValue() == null){
+                   editSpecies.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 

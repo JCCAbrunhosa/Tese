@@ -79,30 +79,26 @@
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/editPhotos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:clickable="true"
         app:backgroundTint="@color/greenTese"
-        app:fabSize="normal"
-        app:layout_anchor="@+id/info"
-        app:layout_anchorGravity="bottom|right"
+        app:layout_anchor="@+id/appbar"
+        app:layout_anchorGravity="right|center"
         app:srcCompat="@android:drawable/ic_menu_edit" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:layout_marginRight="0dp"
+        android:layout_gravity="center_vertical|left"
         app:backgroundTint="@color/greenTese"
-        app:elevation="4dp"
-        app:fabSize="normal"
-        app:layout_anchor="@+id/info"
-        app:layout_anchorGravity="bottom|right"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:srcCompat="@android:drawable/ic_dialog_map" />
+        app:elevation="6dp"
+        app:layout_anchor="@+id/appbar"
+        app:layout_anchorGravity="bottom|end"
+        app:srcCompat="@android:drawable/ic_dialog_map"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

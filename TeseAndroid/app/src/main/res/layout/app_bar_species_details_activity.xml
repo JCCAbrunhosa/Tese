@@ -115,8 +115,9 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         app:backgroundTint="@color/greenTese"
-        app:layout_anchor="@+id/info2"
-        app:layout_anchorGravity="left|top"
+        app:elevation="6dp"
+        app:layout_anchor="@+id/appbar"
+        app:layout_anchorGravity="right|center"
         app:srcCompat="@drawable/ic_menu_manage" />
 
 </android.support.design.widget.CoordinatorLayout>
