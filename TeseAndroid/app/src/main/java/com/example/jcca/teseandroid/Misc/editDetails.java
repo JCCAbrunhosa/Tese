@@ -274,18 +274,14 @@ public class editDetails extends AppCompatActivity {
                             mDatabase.child("toReview").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    toDatabase.child(key).setValue(dataSnapshot.getValue());
-                                    toDatabase.child(key).child("eco").setValue(ecologia.getText().toString());
-                                    toDatabase.child(key).child("description").setValue(descricao.getText().toString());
-                                    toDatabase.child(key).child("species").setValue(especie.getText().toString());
-                                    toDatabase.child(key).child("vulgar").setValue(vulgar.getText().toString());
-                                    toDatabase.child(key).child("url").setValue(url);
 
                                     ImageInfo newImage = dataSnapshot.child(key).getValue(ImageInfo.class);
                                     newImage.setVulgar(vulgar.getText().toString());
                                     newImage.setSpecies(especie.getText().toString());
                                     newImage.setEco(ecologia.getText().toString());
 
+
+                                    toDatabase.child(key).setValue(newImage);
                                     mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(newImage);
                                     mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).setValue(newImage);
 
