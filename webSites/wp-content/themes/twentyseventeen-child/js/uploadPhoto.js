@@ -14,23 +14,48 @@ var userUID = window.localStorage.getItem('userUID');
 var url;
 var speciesAvailable=[];
 
+var alreadyExists;
+
 //The page loads scripts only after being fully loaded
 window.onload = function (){
 
   var fileButton = document.getElementById('file-select');
   var uploadButton = document.getElementById('file-submit');
+  var speciesInput = document.getElementById('speciesName');
+
 
   //Autocomplete that checks if species already exists and description, ecology and vulgar name are automatically filled
-  addToSpecies.once('value', function(snapshot){
-    snapshot.forEach(function(child){
-      speciesAvailable.push(child.key);
-      jQuery( function() {
-        jQuery( "#speciesName" ).autocomplete({
-          source: speciesAvailable
-        });
-      } );
-    });
+
+    addToSpecies.once('value', function(snapshot){
+      snapshot.forEach(function(child){
+        speciesAvailable.push(child.key);
+        speciesInput.addEventListener('input',function(){
+          jQuery( function() {
+            jQuery( "#speciesName" ).autocomplete({
+              source: speciesAvailable,
+              select: function( event , ui ) {
+                if((ui.item.label != null)==true){
+                  document.getElementById("speciesVulgar").disabled=true;
+                  document.getElementById("speciesVulgar").value="Já existe";
+                  document.getElementById("speciesEcology").disabled=true;
+                  document.getElementById("speciesEcology").value="Já existe";
+                  document.getElementById("speciesDescription").disabled=true;
+                  document.getElementById("speciesDescription").value="Já existe";
+                }
+              }
+            });
+          });
+          document.getElementById("speciesVulgar").disabled=false;
+          document.getElementById("speciesVulgar").value="";
+          document.getElementById("speciesEcology").disabled=false;
+          document.getElementById("speciesEcology").value="";
+          document.getElementById("speciesDescription").disabled=false;
+          document.getElementById("speciesDescription").value="";
+      });
+    } );
   });
+
+
   //
   fileButton.addEventListener('change', function(e){
 
@@ -39,9 +64,8 @@ window.onload = function (){
       var task;
 
       uploadButton.onclick=function(){
-        //task = storageRef.put(file);
-        //uploadInfo(storageRef, imgLocation.latitude, imgLocation.longitude);
-        autoCompleteInput();
+        task = storageRef.put(file);
+        uploadInfo(storageRef, imgLocation.latitude, imgLocation.longitude);
       };
     });
 
@@ -83,9 +107,9 @@ function uploadInfo(storageRef, latitude, longitude){
   var addToSpecies = firebase.database().ref('Species'); //This is going to add to an existing species or create a new one
   var imgLocation={latitude:"",longitude:""};
 
-  imgObject.eco = document.getElementById('speciesEcology').textContent;
+  imgObject.eco = document.getElementById('speciesEcology').value;
   imgObject.species= document.getElementById('speciesName').textContent;
-  imgObject.vulgar = document.getElementById('speciesVulgar').textContent;
+  imgObject.vulgar = document.getElementById('speciesVulgar').value;
   imgObject.author=window.localStorage.getItem('userLogged');
   imgObject.uid=window.localStorage.getItem('userUID');
   storageRef.getDownloadURL().then(function(url){
@@ -107,7 +131,7 @@ function uploadInfo(storageRef, latitude, longitude){
     });
 
     //Adds photo to Users tree
-    addToUser.child(imgObject.uid).child(imgObject.date).set({
+    addToUser.child(imgObject.uid).child(document.getElementById('speciesName').textContent).child(imgObject.date).set({
       author: imgObject.author,
       date: imgObject.date,
       eco: imgObject.eco,
@@ -130,6 +154,15 @@ function uploadInfo(storageRef, latitude, longitude){
       vulgar: imgObject.vulgar
     });
 
-    ref.child(imgObject.date).remove();
+
+    if(document.getElementById("speciesDescription").value.trim()!="Já existe"){
+      addToSpecies.child(document.getElementById('speciesName').textContent).child("description").set(document.getElementById("speciesDescription").value);
+      addToSpecies.child(document.getElementById('speciesName').textContent).child("ecology").set(imgObject.eco);
+      addToSpecies.child(document.getElementById('speciesName').textContent).child("vulgar").set(imgObject.vulgar);
+      addToUser.child(imgObject.uid).child(document.getElementById('speciesName').textContent).child("description").set(document.getElementById("speciesDescription").value);
+      addToUser.child(imgObject.uid).child(document.getElementById('speciesName').textContent).child("ecology").set(imgObject.eco);
+      addToUser.child(imgObject.uid).child(document.getElementById('speciesName').textContent).child("vulgar").set(imgObject.vulgar);
+    }
+
   });
 }

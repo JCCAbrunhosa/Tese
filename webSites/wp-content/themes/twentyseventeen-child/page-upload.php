@@ -39,19 +39,18 @@ get_header(); ?>
 			<div class="ui-widget">
 				<p id="speciesName" contenteditable="true"><br>
 			</div>
-
 				<div id="Vulgar">
 				  Nome Vulgar:
 				</div><br>
-			<p id="speciesVulgar" contenteditable="true"><br>
+			<input id="speciesVulgar"><br>
 				<div id="Ecology">
 				  Ecologia:
 				</div>
-			<p id="speciesEcology" contenteditable="true"><br>
+			<input id="speciesEcology"><br>
 				<div id="Description">
 				  Descrição:
 				</div>
-			<p id="speciesDescription" contenteditable="true"><br>
+			<input id="speciesDescription" ><br>
 
 
 		</main><!-- #main -->

@@ -57,6 +57,7 @@ get_header(); ?>
 </div>
 <br>
 <button class="button" id="proceedToBlog">Blog</button>
+<button class="button" id="editSpecies" onclick="editNewInfo()">Editar Espécie</button>
 
 <div id="photos">Avistamentos da Espécie:</div>
 <br>
@@ -65,7 +66,41 @@ get_header(); ?>
       <div class ="container" id="imageCont">
   </div>
 </div>
-  <!-- The Modal -->
+<!--Modal for data edition-->
+<div id="editData" style = "display:none" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<h1>Editar Informações</h1>
+		<br>
+		<div id="editDescription">
+			Descrição:<br>
+		</div>
+		<div id="newDescription">
+			<input type="text" id="descriptionN">
+		</div>
+		<div id="editEcology">
+			Ecologia:<br>
+		</div>
+		<div id="newEcology">
+      <input type="text" id="ecologyN">
+    </div>
+		<div id="editVulgar">
+			Nome Vulgar:<br>
+		</div>
+		<div id="newVulgar">
+      <input type="text" id="vulgarN">
+    </div>
+		<div id="editSpecies">
+			Espécie:<br>
+		</div>
+		<div id="newSpecies">
+      <input type="text" id="speciesN">
+    </div>
+		<button class="button" id="cancelEdit">Cancel</button>
+		<button class="button" id="uploadNewInfo" onclick="uploadNewInfo()">Confirmar edições</button>
+</div>
+
+  <!-- The Modal regarding images -->
 <div id="myModal" style = "display:none" class="modal">
 
   <!-- Modal content -->

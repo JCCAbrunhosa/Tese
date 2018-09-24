@@ -1,5 +1,8 @@
 
 var ref = firebase.database().ref('toReview');
+var addToSpecies = firebase.database().ref('Species');
+
+var speciesAvailable=[];
 
 var imgLocation={latitude:"",longitude:""};
 var imgObject = {author:"",date:"",eco:"",location:"",species:"",uid:"",url:"",vulgar:""};
@@ -92,15 +95,49 @@ function showOptions(img){
 
   }
 
+  var speciesInput = document.getElementById('speciesName');
+
+  addToSpecies.once('value', function(snapshot){
+    snapshot.forEach(function(child){
+      speciesAvailable.push(child.key);
+      speciesInput.addEventListener('input',function(){
+        jQuery( function() {
+          jQuery( "#speciesName" ).autocomplete({
+            source: speciesAvailable,
+            select: function( event , ui ) {
+              if((ui.item.label != null)==true){
+                document.getElementById("speciesVulgar").disabled=true;
+                document.getElementById("speciesVulgar").value="Já existe";
+                document.getElementById("speciesEcology").disabled=true;
+                document.getElementById("speciesEcology").value="Já existe";
+                document.getElementById("speciesDescription").disabled=true;
+                document.getElementById("speciesDescription").value="Já existe";
+              }
+            }
+          });
+        });
+        document.getElementById("speciesVulgar").disabled=false;
+        document.getElementById("speciesVulgar").value="";
+        document.getElementById("speciesEcology").disabled=false;
+        document.getElementById("speciesEcology").value="";
+        document.getElementById("speciesDescription").disabled=false;
+        document.getElementById("speciesDescription").value="";
+    });
+  } );
+  });
+
+
+
+
   document.getElementById('Guardar').onclick = function() {
       //Upload information to Firebase database
       var reviewedPhotos = firebase.database().ref('PhotosReviewed'); //This is going to add the photo to the reviewed group
       var addToUser = firebase.database().ref('Users'); //This is going to add the photo to the user portfolio
       var addToSpecies = firebase.database().ref('Species'); //This is going to add to an existing species or create a new one
 
-      imgObject.eco=document.getElementById('speciesEcology').textContent;
+      imgObject.eco=document.getElementById('speciesEcology').value;
       imgObject.species=document.getElementById('speciesName').textContent;
-      imgObject.vulgar=document.getElementById('speciesVulgar').textContent;
+      imgObject.vulgar=document.getElementById('speciesVulgar').value;
 
       //Adds photo to Species tree
       addToSpecies.child(document.getElementById('speciesName').textContent).child(imgObject.date).set({
@@ -114,8 +151,17 @@ function showOptions(img){
         vulgar: imgObject.vulgar
       });
 
+      //Add description to the species branch
+      if(document.getElementById("speciesDescription").value.trim()!="Já existe"){
+        addToSpecies.child(document.getElementById('speciesName').textContent).child("description").set(document.getElementById("speciesDescription").value);
+        addToSpecies.child(document.getElementById('speciesName').textContent).child("ecology").set(imgObject.eco);
+        addToSpecies.child(document.getElementById('speciesName').textContent).child("vulgar").set(imgObject.vulgar);
+        addToUser.child(imgObject.uid).child(document.getElementById('speciesName').textContent).child("description").set(document.getElementById("speciesDescription").value);
+        addToUser.child(imgObject.uid).child(document.getElementById('speciesName').textContent).child("ecology").set(imgObject.eco);
+        addToUser.child(imgObject.uid).child(document.getElementById('speciesName').textContent).child("vulgar").set(imgObject.vulgar);
+      }
       //Adds photo to Users tree
-      addToUser.child(imgObject.uid).child(imgObject.date).set({
+      addToUser.child(imgObject.uid).child(document.getElementById('speciesName').textContent).child(imgObject.date).set({
         author: imgObject.author,
         date: imgObject.date,
         eco: imgObject.eco,
@@ -125,6 +171,17 @@ function showOptions(img){
         url: img.src,
         vulgar: imgObject.vulgar
       });
+
+      addToUser.child(document.getElementById('speciesName').textContent).once("value", function(data){
+        addToUser.child(imgObject.uid).child(document.getElementById('speciesName').textContent).child(imgObject.date).update({
+          eco: data.child("ecology").val(),
+          vulgar: data.child("vulgar").val()
+
+      });
+    });
+
+      //remove from the ToReview Tree on the User branch
+      addToUser.child(imgObject.uid).child("ToReview").child(imgObject.date).remove();
 
       //Adds photo to PhotosReviewed tree
       reviewedPhotos.child(imgObject.date).set({
@@ -143,8 +200,4 @@ function showOptions(img){
       //Reloads the page
       location.reload();
   }
-}
-
-function checkIfExists(){
-
 }

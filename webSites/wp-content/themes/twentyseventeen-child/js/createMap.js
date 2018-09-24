@@ -5,9 +5,23 @@
   var str = "Ver página das Espécie";
 
   var markers = [];
+  var speciesAvailable=[];
+  var searchSpecies={name:"", marker:""};
 
   var selectedLat = window.localStorage.getItem("photoLat");
   var selectedLng = window.localStorage.getItem("photoLng");
+
+
+  ref.once('value', function(snapshot){
+    snapshot.forEach(function(child){
+      speciesAvailable.push(child.key);
+      jQuery( function() {
+        jQuery( "#myInput" ).autocomplete({
+          source: speciesAvailable
+        });
+      } );
+    });
+  });
 
   ref.once('value', function(snapshot){
     snapshot.forEach(function(child){
@@ -24,7 +38,11 @@
               map: map,
               title: photos.child('species').val()
             });
-            markers.push(marker);
+
+            searchSpecies.name=photos.child('species').val();
+            searchSpecies.markers=marker;
+
+            markers.push(searchSpecies);
             google.maps.event.trigger(map, "resize");
             map.panTo(myLatLng);
 
@@ -47,16 +65,19 @@
     });
   });
 
-//Cleans the map when the search function is focused
+  //Cleans the map when the search function is focused
 function searchSpecies(){
-   setMapOnAll(null);
-   if(document.activeElement.tagName != "INPUT"){
-     setMapOnAll(map);
-   }
+    var specie = document.getElementById("myInput").value;
+    alert("hey");
+
 }
 
-function setMapOnAll(map) {
-        for (var i = 0; i < markers.length; i++) {
-          markers[i].setMap(map);
-        }
-      }
+function showMarkers(){
+  setMapOnAll(map,null);
+}
+
+function setMapOnAll(map,markerSearched) {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].marker.setMap(null);
+    }
+}
