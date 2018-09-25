@@ -325,7 +325,7 @@ public class editDetails extends AppCompatActivity {
                         mDatabase.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                    ImageInfo image = dataSnapshot.child(uid).child(data).getValue(ImageInfo.class);
+                                    ImageInfo image = dataSnapshot.child(uid).child(species).child(data).getValue(ImageInfo.class);
 
                                     mDatabase.child("Species").child(image.getSpecies()).child(data).removeValue();
 
@@ -333,9 +333,10 @@ public class editDetails extends AppCompatActivity {
                                     image.setVulgar(vulgar.getText().toString());
                                     image.setSpecies(especie.getText().toString());
 
-                                    mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(data).setValue(image);
+                                    mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).setValue(image);
                                     mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(image);
                                     mDatabase.child("Species").child(species).child(key).removeValue();
+                                    mDatabase.child("Users").child(uid).child(species).child(key).removeValue();
 
                                     if(!descricao.getText().toString().matches("")){
                                         mDatabase.child("Species").child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());

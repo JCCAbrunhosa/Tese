@@ -223,7 +223,7 @@ function uploadNewInfo(){
     });
   });
 
-  addToUser.on('value', function(user){
+  addToUser.once('value', function(user){
     user.forEach(function(userID){
       if(userID.child(species).exists()){
         userID.child(species).forEach(function (captures){

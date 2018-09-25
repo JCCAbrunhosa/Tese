@@ -130,23 +130,28 @@ public class otherPhotosGallery extends AppCompatActivity
             }
         });
 
-        mReviewed= FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/PhotosReviewed");
+        mReviewed= FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Species");
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
         toReview = FirebaseDatabase.getInstance().getReference().child("toReview");
 
         RecyclerView.LayoutManager layoutManager= new LinearLayoutManager(getApplicationContext());
         imageViewer.setLayoutManager(layoutManager);
 
-        mReviewed.addValueEventListener(new ValueEventListener() {
+        mReviewed.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        TextView name = findViewById(R.id.userName);
-                        name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                    for(DataSnapshot captures: postSnapshot.getChildren()){
+                        if(!captures.getKey().matches("description") && !captures.getKey().matches("ecology") && !captures.getKey().matches("vulgar")){
+                            TextView name = findViewById(R.id.userName);
+                            name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
-                        ImageInfo imageInfo=postSnapshot.getValue(ImageInfo.class);
+                            ImageInfo imageInfo=captures.getValue(ImageInfo.class);
 
-                        list.add(imageInfo);
+                            list.add(imageInfo);
+                        }
+
+                    }
 
                 }
                 if(list.size()==0)
@@ -192,15 +197,20 @@ public class otherPhotosGallery extends AppCompatActivity
 
         Query orderByDate = mDatabase.orderByChild("date");
 
-        orderByDate.addValueEventListener(new ValueEventListener() {
+        orderByDate.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    for(DataSnapshot captures: postSnapshot.getChildren()){
+                        if(!captures.getKey().matches("description") && !captures.getKey().matches("ecology") && !captures.getKey().matches("vulgar")){
 
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+                            ImageInfo imageInfo=captures.getValue(ImageInfo.class);
 
-                    list.add(imageInfo);
+                            list.add(imageInfo);
+                        }
+
+                    }
                 }
                 if(list.size()==0)
                     noPhotos.setVisibility(View.VISIBLE);
