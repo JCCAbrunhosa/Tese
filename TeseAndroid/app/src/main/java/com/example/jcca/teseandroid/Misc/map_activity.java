@@ -2,21 +2,13 @@ package com.example.jcca.teseandroid.Misc;
 
 import android.app.SearchManager;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +20,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -97,7 +88,7 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
                 ImageInfo photo=null;
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     for(DataSnapshot snap: snapshot.getChildren()){
-                        if(!snap.getKey().toString().matches("description") && !snap.getKey().toString().matches("vulgar")) {
+                        if(!snap.getKey().toString().matches("description") && !snap.getKey().toString().matches("vulgar") && !snap.getKey().toString().matches("ecology")) {
                                 photo = snap.getValue(ImageInfo.class);
                                 pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
 
@@ -168,7 +159,7 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
                             if(snapshot.getKey().toLowerCase().contains(newText.toLowerCase())){
                                 Log.d("Contains",String.valueOf(snapshot.toString().toLowerCase().contains(newText.toLowerCase())));
                                 for(DataSnapshot snap: snapshot.getChildren()){
-                                    if(!snap.getKey().toString().matches("description") && !snap.getKey().toString().matches("vulgar")) {
+                                    if(!snap.getKey().toString().matches("description") && !snap.getKey().toString().matches("vulgar") && !snap.getKey().toString().matches("ecology")) {
                                         photo= snap.getValue(ImageInfo.class);
                                         pos = new LatLng(photo.getLocation().getLatitude(), photo.getLocation().getLongitude());
 
@@ -203,7 +194,8 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
 
         //noinspection SimplifiableIfStatement
         if(id == android.R.id.home){
-            NavUtils.navigateUpFromSameTask(this);
+            Intent k = new Intent(map_activity.this, galleryFeed.class);
+            startActivity(k);
         }
 
 

@@ -10,28 +10,27 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jcca.teseandroid.Adapters.RecyclerViewAdapter;
+import com.bumptech.glide.Glide;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.DataObjects.Position;
@@ -51,15 +50,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class otherPhotosGallery extends AppCompatActivity
@@ -93,6 +90,8 @@ public class otherPhotosGallery extends AppCompatActivity
 
     String path;
 
+    ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +119,9 @@ public class otherPhotosGallery extends AppCompatActivity
 
         getWindow().getDecorView().setBackgroundColor(Color.LTGRAY);
 
+        progressBar=findViewById(R.id.progressBarOther);
+        progressBar.setVisibility(View.INVISIBLE);
+
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -135,30 +137,35 @@ public class otherPhotosGallery extends AppCompatActivity
             }
         });
 
-        mReviewed= FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/PhotosReviewed");
+        mReviewed= FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Species");
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
         toReview = FirebaseDatabase.getInstance().getReference().child("toReview");
 
         RecyclerView.LayoutManager layoutManager= new LinearLayoutManager(getApplicationContext());
         imageViewer.setLayoutManager(layoutManager);
 
-        mReviewed.addValueEventListener(new ValueEventListener() {
+        mReviewed.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        TextView name = findViewById(R.id.userName);
-                        name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                    for(DataSnapshot captures: postSnapshot.getChildren()){
+                        if(!captures.getKey().matches("description") && !captures.getKey().matches("ecology") && !captures.getKey().matches("vulgar")){
+                            TextView name = findViewById(R.id.userName);
+                            name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
-                        ImageInfo imageInfo=postSnapshot.getValue(ImageInfo.class);
+                            ImageInfo imageInfo=captures.getValue(ImageInfo.class);
 
-                        list.add(imageInfo);
+                            list.add(imageInfo);
+                        }
+
+                    }
 
                 }
                 if(list.size()==0)
                     noPhotos.setVisibility(View.VISIBLE);
                 else
                     noPhotos.setVisibility(View.GONE);
-                adapter = new galleryFeedAdapter(getApplicationContext(),list);
+                adapter = new galleryFeedAdapter(otherPhotosGallery.this,list);
                 imageViewer.setAdapter(adapter);
             }
 
@@ -197,22 +204,27 @@ public class otherPhotosGallery extends AppCompatActivity
 
         Query orderByDate = mDatabase.orderByChild("date");
 
-        orderByDate.addValueEventListener(new ValueEventListener() {
+        orderByDate.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    for(DataSnapshot captures: postSnapshot.getChildren()){
+                        if(!captures.getKey().matches("description") && !captures.getKey().matches("ecology") && !captures.getKey().matches("vulgar")){
 
-                    ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
+                            ImageInfo imageInfo=captures.getValue(ImageInfo.class);
 
-                    list.add(imageInfo);
+                            list.add(imageInfo);
+                        }
+
+                    }
                 }
                 if(list.size()==0)
                     noPhotos.setVisibility(View.VISIBLE);
                 else
                     noPhotos.setVisibility(View.GONE);
 
-                adapter = new galleryFeedAdapter(getApplicationContext(), list);
+                adapter = new galleryFeedAdapter(otherPhotosGallery.this, list);
                 imageViewer.setAdapter(adapter);
             }
 
@@ -265,25 +277,31 @@ public class otherPhotosGallery extends AppCompatActivity
         if (id == R.id.nav_camera) {
             // Handle the camera action
             Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_gallery) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_waitingPhotos) {
             Intent goTo = new Intent(getApplicationContext(), photosToReview.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_guide) {
             Intent goTo = new Intent(getApplicationContext(), guide_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_map) {
             Intent goTo = new Intent(getApplicationContext(), map_activity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         }else if (id == R.id.nav_options){
             Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_signOut) {
             FirebaseAuth.getInstance().signOut();
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             stopService(new Intent(getApplicationContext(), NewPhotoAdded.class));
             startActivity(goTo);
         }
@@ -298,10 +316,11 @@ public class otherPhotosGallery extends AppCompatActivity
     //After taking a photo, the upload occurs
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode!=RESULT_CANCELED) {
             path = data.getStringExtra("photoPath");
             timeStamp = data.getStringExtra("timeStamp");
             uploadPhoto(path);
+            super.onBackPressed();
         }
     }
 
@@ -315,6 +334,20 @@ public class otherPhotosGallery extends AppCompatActivity
         final StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
         UploadTask uploadTask = photosRef.putFile(file, metadata);
         //photoRef= mDatabase.getKey();
+
+        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                progressBar.setVisibility(View.VISIBLE);
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                Log.d("Upload","Upload is " + progress + "% done");
+                int currentProgress = (int) progress;
+                progressBar.setProgress(currentProgress);
+
+            }
+
+        });
+
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -330,6 +363,8 @@ public class otherPhotosGallery extends AppCompatActivity
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
                 getLocation(taskSnapshot);
+                progressBar.setVisibility(View.INVISIBLE);
+                Toast.makeText(otherPhotosGallery.this, R.string.uploadDone, Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -350,9 +385,10 @@ public class otherPhotosGallery extends AppCompatActivity
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                mDatabase.child(timeStamp).setValue(image);
+                //mDatabase.child(timeStamp).setValue(image);
                 Log.d("DATABASE:", mDatabase.getRef().toString());
                 toReview.child(timeStamp).setValue(image);
+                mDatabase.child("ToReview").child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
 
@@ -378,5 +414,20 @@ public class otherPhotosGallery extends AppCompatActivity
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
+    @Override public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+    @Override public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Glide.get(this).trimMemory(level);
     }
 }

@@ -46,10 +46,10 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/info"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
-        android:id="@+id/info">
+        android:layout_height="wrap_content"
+        app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -75,23 +75,30 @@
                 tools:layout_constraintTop_creator="1" />
 
 
-
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/editPhotos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:clickable="true"
+        app:backgroundTint="@color/greenTese"
+        app:layout_anchor="@+id/appbar"
+        app:layout_anchorGravity="right|center"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|left"
-        android:layout_marginRight="0dp"
         app:backgroundTint="@color/greenTese"
-        app:elevation="4dp"
-        app:fabSize="normal"
+        app:elevation="6dp"
         app:layout_anchor="@+id/appbar"
         app:layout_anchorGravity="bottom|end"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:srcCompat="@android:drawable/ic_dialog_map" />
+        app:srcCompat="@android:drawable/ic_dialog_map"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

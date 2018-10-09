@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
 import com.example.jcca.teseandroid.Misc.speciesDetails_activity;
@@ -76,7 +77,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                 });
 
                 //Loading image from Glide library.
-                GlideApp.with(context).load(filteredItems.get(position).getUrl()).into(holder.speciesPhoto);
+                GlideApp.with(context).load(filteredItems.get(position).getUrl()).thumbnail(0.5f).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).skipMemoryCache(true).into(holder.speciesPhoto);
             }
         }else{
             if(MainImageUploadInfoList.get(position)!=null){
@@ -102,7 +103,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                 });
 
                 //Loading image from Glide library.
-                GlideApp.with(context).load(MainImageUploadInfoList.get(position).getUrl()).into(holder.speciesPhoto);
+                GlideApp.with(context).load(MainImageUploadInfoList.get(position).getUrl()).thumbnail(0.5f).diskCacheStrategy(DiskCacheStrategy.ALL).skipMemoryCache(true).into(holder.speciesPhoto);
             }
         }
 
@@ -155,10 +156,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         public ViewHolder(View itemView) {
             super(itemView);
 
-            species = (CardView)itemView.findViewById(R.id.guideList);
-            vulgarName = (TextView)itemView.findViewById(R.id.vulgar_name);
-            speciesName= (TextView)itemView.findViewById(R.id.species_name);
-            speciesPhoto = (ImageView)itemView.findViewById(R.id.species_photo);
+            species = itemView.findViewById(R.id.guideList);
+            vulgarName = itemView.findViewById(R.id.vulgar_name);
+            speciesName= itemView.findViewById(R.id.species_name);
+            speciesPhoto = itemView.findViewById(R.id.species_photo);
 
 
         }

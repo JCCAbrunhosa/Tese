@@ -2,11 +2,9 @@ package com.example.jcca.teseandroid.Login_Registering;
 
 
 import android.annotation.TargetApi;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -16,23 +14,16 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceScreen;
-import android.preference.SwitchPreference;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
+import android.preference.SwitchPreference;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
-import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 
 import java.util.List;
@@ -153,17 +144,14 @@ public class settingsActivity extends AppCompatPreferenceActivity {
 
         }
 
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    }public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            startActivity(new Intent(this, galleryFeed.class));
+            Intent goTo = new Intent(settingsActivity.this, galleryFeed.class);
+            startActivity(goTo);
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return onOptionsItemSelected(item);
     }
 
 
@@ -212,14 +200,14 @@ public class settingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            //bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), settingsActivity.class));
+
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -241,19 +229,18 @@ public class settingsActivity extends AppCompatPreferenceActivity {
 
             SwitchPreference pref= (SwitchPreference) findPreference("notifications_new_message") ;
 
-            Log.d("PREFS", String.valueOf(pref.isChecked()));
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+            //bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         }
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), settingsActivity.class));
+
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -283,10 +270,17 @@ public class settingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), settingsActivity.class));
+
                 return true;
             }
             return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
 }

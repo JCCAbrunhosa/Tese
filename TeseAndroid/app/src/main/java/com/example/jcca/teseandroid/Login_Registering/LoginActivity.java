@@ -3,25 +3,21 @@ package com.example.jcca.teseandroid.Login_Registering;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -36,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
+import com.example.jcca.teseandroid.Gallery.otherPhotosGallery;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,11 +40,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,9 +129,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     if(user!=null){
                         // User is signed in
                         Log.d("Login", "onAuthStateChanged:signed_in:" + user.getUid());
-                        startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
-                        Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
-                        startActivity(goTo);
+                        if(user.isEmailVerified()){
+                            startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
+                            Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+                            startActivity(goTo);
+                        }else{
+                            Toast.makeText(LoginActivity.this, "Verifique o email!", Toast.LENGTH_LONG).show();
+                        }
+
+
 
                     }
 
@@ -446,11 +446,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 if(mDatabase.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()) != null)
                                     if(user.isEmailVerified()){
 
-                                        Log.d("Login", "signInWithEmail:onComplete:" + task.isSuccessful());
+                                        Log.d("Login", String.valueOf(user.isEmailVerified()));
                                         // If sign in fails, display a message to the user. If sign in succeeds
                                         // the auth state listener will be notified and logic to handle the
                                         // signed in user can be handled in the listener.
-                                        Intent goToMain = new Intent(LoginActivity.this, galleryFeed.class);
+                                        Intent goToMain = new Intent(LoginActivity.this, otherPhotosGallery.class);
                                         startActivity(goToMain);
 
                                         if (!task.isSuccessful()) {
@@ -465,6 +465,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                     }
 
 
+                            }else{
+                                try {
+                                    throw task.getException();
+                                } catch (Exception e) {
+                                    Toast.makeText(LoginActivity.this, "Verifique a sua rede e tente outra vez!", Toast.LENGTH_LONG).show();
+                                }
                             }
 
                         }
@@ -498,5 +504,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return false;
         }
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
 }
 

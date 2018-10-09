@@ -4,23 +4,22 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -28,9 +27,9 @@ import android.widget.Toast;
 import com.ceylonlabs.imageviewpopup.ImagePopup;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
+import com.example.jcca.teseandroid.Gallery.photosToReview;
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
 import com.example.jcca.teseandroid.R;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,7 +51,8 @@ public class editDetails extends AppCompatActivity {
     EditText ecologia;
     EditText vulgar;
 
-    FloatingActionButton submit;
+    Button submit;
+    Button reject;
 
     List<String> listOfSpecies = new ArrayList<>();
     boolean exists = false;
@@ -65,6 +65,10 @@ public class editDetails extends AppCompatActivity {
     String uid;
     String vulg;
     String date;
+
+    TextInputLayout layoutEco;
+    TextInputLayout layoutDesc;
+    TextInputLayout layoutVulgar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +83,11 @@ public class editDetails extends AppCompatActivity {
         toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
 
-
+        //Database references
         mDatabase = FirebaseDatabase.getInstance().getReference();
         toDatabase = FirebaseDatabase.getInstance().getReference().child("PhotosReviewed");
 
+        //Get intents from previous activity
         final String url = getIntent().getStringExtra("URL");
         key = getIntent().getStringExtra("photoName");
         data = getIntent().getStringExtra("photoName");
@@ -90,14 +95,16 @@ public class editDetails extends AppCompatActivity {
         uid = getIntent().getStringExtra("UID");
         date = getIntent().getStringExtra("Date");
 
+        //If the species exist they are put on top of the activity
         if(species.matches(""))
             setTitle(R.string.newSight);
         else
             setTitle(species);
         toolbar.setTitleTextColor(0x00000000);
 
+        //Fetch elements id
         submit = findViewById(R.id.submitData);
-
+        reject = findViewById(R.id.rejectData);
         especie = findViewById(R.id.test);
         descricao = findViewById(R.id.descrição);
         ecologia = findViewById(R.id.ecologia);
@@ -105,20 +112,108 @@ public class editDetails extends AppCompatActivity {
         submit = findViewById(R.id.submitData);
         image = findViewById(R.id.app_bar_image);
 
+        layoutDesc = (TextInputLayout) findViewById(R.id.descricaoLayout);
+        layoutEco= (TextInputLayout) findViewById(R.id.ecologiaLayout);
+        layoutVulgar= (TextInputLayout) findViewById(R.id.vulgarLayout);
+
+        //Alert Boxes for data input
+
+        //Description
+        descricao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(editDetails.this);
+                LayoutInflater li = LayoutInflater.from(editDetails.this);
+                View promptsView = li.inflate(R.layout.prompts, null);
+
+                alertDialogBuilder.setView(promptsView);
+                alertDialogBuilder.setMessage(R.string.descDialog);
+
+                final EditText userInput = promptsView
+                        .findViewById(R.id.editTextDialogUserInput);
+                if(descricao.getText()!=null)
+                    userInput.setText(descricao.getText());
+                // set dialog message
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        // get user input and set it to result
+                                        // edit text
+                                        descricao.setText(userInput.getText());
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        dialog.cancel();
+
+                                    }
+                                });
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                alertDialog.show();
+            }
+        });
+
+        //Ecology
+        ecologia.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(editDetails.this);
+                LayoutInflater li = LayoutInflater.from(editDetails.this);
+                View promptsView = li.inflate(R.layout.prompts, null);
+
+                alertDialogBuilder.setView(promptsView);
+                alertDialogBuilder.setMessage(R.string.ecoDialog);
+
+                final EditText userInput = promptsView
+                        .findViewById(R.id.editTextDialogUserInput);
+                if(ecologia.getText()!=null)
+                    userInput.setText(ecologia.getText());
+                // set dialog message
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        // get user input and set it to result
+                                        // edit text
+                                        ecologia.setText(userInput.getText());
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+
+                alertDialog.show();
+            }
+        });
+
+
         //This variable will always check the input on the Species field
         //If a new one is being inserted then a description will be needed
         checkInputFinished.run();
 
-        if(getIntent().getStringExtra("PreviousIntent").matches("onClickImage"))
+        /*if(getIntent().getStringExtra("PreviousIntent").matches("onClickImage"))
             descricao.setVisibility(View.GONE);
         else
-            descricao.setVisibility(View.VISIBLE);
+            descricao.setVisibility(View.VISIBLE);*/
 
+        //Gets the image clicked from Firebase
         mDatabase.child("Species").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    //Log.d("Species: ", postSnapshot.getKey());
                     listOfSpecies.add(postSnapshot.getKey());
 
                 }
@@ -145,6 +240,7 @@ public class editDetails extends AppCompatActivity {
         imagePopup.setImageOnClickClose(true);
         imagePopup.setHideCloseIcon(false);
 
+        //Checks if the species exist or not (handler on the bottom)
         especie.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -169,56 +265,37 @@ public class editDetails extends AppCompatActivity {
 
 
         //Passing values from new image notification to edit details activity
+        //Submit the data to the Firebase database
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                     if (species.matches("")) {
-                        if (!especie.getText().toString().matches("") && !ecologia.getText().toString().matches("")) {
-                            mDatabase.child("toReview").addChildEventListener(new ChildEventListener() {
+                        if (!especie.getText().toString().matches("")) {
+                            mDatabase.child("toReview").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
-                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                    toDatabase.child(key).setValue(dataSnapshot.getValue());
-                                    toDatabase.child(key).child("eco").setValue(ecologia.getText().toString());
-                                    toDatabase.child(key).child("description").setValue(descricao.getText().toString());
-                                    toDatabase.child(key).child("species").setValue(especie.getText().toString());
-                                    toDatabase.child(key).child("vulgar").setValue(vulgar.getText().toString());
-                                    toDatabase.child(key).child("url").setValue(url);
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(dataSnapshot.getValue());
-                                    mDatabase.child("Users").child(uid).child(key).setValue(dataSnapshot.getValue());
-                                    mDatabase.child("Users").child(uid).child(key).child("date").setValue(date);
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("date").setValue(date);
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("eco").setValue(ecologia.getText().toString());
+                                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("species").setValue(especie.getText().toString());
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("vulgar").setValue(vulgar.getText().toString());
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("url").setValue(url);
-                                    mDatabase.child("Users").child(uid).child(key).child("url").setValue(url);
-                                    mDatabase.child("Users").child(uid).child(key).child("eco").setValue(ecologia.getText().toString());
-                                    if(exists==false){
+                                    ImageInfo newImage = dataSnapshot.child(key).getValue(ImageInfo.class);
+                                    newImage.setVulgar(vulgar.getText().toString());
+                                    newImage.setSpecies(especie.getText().toString());
+                                    newImage.setEco(ecologia.getText().toString());
+
+
+                                    toDatabase.child(key).setValue(newImage);
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(newImage);
+                                    mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).setValue(newImage);
+
+                                    if(exists==false) {
                                         mDatabase.child("Species").child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());
                                         mDatabase.child("Species").child(especie.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
-
+                                        mDatabase.child("Species").child(especie.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
+                                        mDatabase.child("Users").child(uid).child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());
+                                        mDatabase.child("Users").child(uid).child(especie.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
+                                        mDatabase.child("Users").child(uid).child(especie.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
                                     }
 
-                                    mDatabase.child("Users").child(uid).child(key).child("species").setValue(especie.getText().toString());
-                                    mDatabase.child("Users").child(uid).child(key).child("vulgar").setValue(vulgar.getText().toString());
-
-
-                                }
-
-                                @Override
-                                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                                }
-
-                                @Override
-                                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                                }
-
-                                @Override
-                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                                   // mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).child("species").setValue(especie.getText().toString());
+                                   // mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).child("vulgar").setValue(vulgar.getText().toString());
                                 }
 
                                 @Override
@@ -228,6 +305,7 @@ public class editDetails extends AppCompatActivity {
                             });
 
                             mDatabase.child("toReview").child(key).getRef().removeValue();
+                            mDatabase.child("Users").child(uid).child("ToReview").child(key).removeValue();
 
                             Toast.makeText(getApplicationContext(), "Informação adicionada!", Toast.LENGTH_SHORT).show();
 
@@ -247,31 +325,33 @@ public class editDetails extends AppCompatActivity {
                         mDatabase.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                    ImageInfo image = dataSnapshot.child(uid).child(data).getValue(ImageInfo.class);
+                                    ImageInfo image = dataSnapshot.child(uid).child(species).child(data).getValue(ImageInfo.class);
 
                                     mDatabase.child("Species").child(image.getSpecies()).child(data).removeValue();
 
-                                    image.setEco(ecologia.getText().toString());
-                                    image.setVulgar(vulgar.getText().toString());
+
+
+                                    String vulg= dataSnapshot.child(uid).child(especie.getText().toString()).child("vulgar").getValue().toString();
+                                    String eco = dataSnapshot.child(uid).child(especie.getText().toString()).child("ecology").getValue().toString();
+
+                                    image.setEco(eco);
+                                    image.setVulgar(vulg);
                                     image.setSpecies(especie.getText().toString());
-                                    mDatabase.child("Users").child(uid).child(data).setValue(image);
+
+                                    mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).setValue(image);
                                     mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(image);
+                                    mDatabase.child("Species").child(species).child(key).removeValue();
+                                    mDatabase.child("Users").child(uid).child(species).child(key).removeValue();
 
                                     if(!descricao.getText().toString().matches("")){
                                         mDatabase.child("Species").child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());
                                         mDatabase.child("Species").child(especie.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
+                                        mDatabase.child("Species").child(especie.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
+                                        mDatabase.child("Users").child(uid).child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());
+                                        mDatabase.child("Users").child(uid).child(especie.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
+                                        mDatabase.child("Users").child(uid).child(especie.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
                                     }
 
-                                /*
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("eco").setValue(ecologia.getText().toString());
-                                    mDatabase.child("Users").child(uid).child(key).child("eco").setValue(ecologia.getText().toString());
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("description").setValue(descricao.getText().toString());
-                                    mDatabase.child("Users").child(uid).child(key).child("description").setValue(descricao.getText().toString());
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("species").setValue(especie.getText().toString());
-                                    mDatabase.child("Users").child(uid).child(key).child("species").setValue(especie.getText().toString());
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).child("vulgar").setValue(vulgar.getText().toString());
-                                    mDatabase.child("Users").child(uid).child(key).child("vulgar").setValue(vulgar.getText().toString());
-*/
 
                             }
 
@@ -283,7 +363,7 @@ public class editDetails extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Informação editada!", Toast.LENGTH_SHORT).show();
 
 
-                        Intent goBack = new Intent(getApplicationContext(), galleryFeed.class);
+                        Intent goBack = new Intent(getApplicationContext(), photosToReview.class);
                         startActivity(goBack);
                     }
 
@@ -291,7 +371,32 @@ public class editDetails extends AppCompatActivity {
 
         });
 
+        reject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(editDetails.this)
+                        .setTitle("Rejeitar Avistamento")
+                        .setMessage("Confirme se deseja rejeitar o avistamento:")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                mDatabase.child("toReview").child(key).getRef().removeValue();
+                                mDatabase.child("Users").child(uid).child(species).child(key).getRef().removeValue();
+                                mDatabase.child("Users").child(uid).child("ToReview").child(key).getRef().removeValue();
+
+                                mDatabase.child("Species").child(species).child(key).getRef().removeValue();
+                                mDatabase.child("PhotosReviewed").child(key).getRef().removeValue();
+                                Intent goBack = new Intent(getApplicationContext(), photosToReview.class);
+                                startActivity(goBack);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null).show();
+
+            }
+        });
+
+        //Image popup
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -302,20 +407,34 @@ public class editDetails extends AppCompatActivity {
 
     }
 
+
+    //Runnable - waits 1 second and checks if the description/ecology/vulgar already exists
+    //If the species exist then the user doesn't need to write those fields(and hides them)
+
     final long delay = 500; // 1 seconds after user stops typing
     long lastTextEdition = 0;
     Handler handler = new Handler();
-
     private Runnable checkInputFinished = new Runnable() {
         @Override
         public void run() {
             if (System.currentTimeMillis() > lastTextEdition + delay - 500) {
                 if (!listOfSpecies.contains(especie.getText().toString()) && especie.getText().length()>0) {
                     descricao.setVisibility(View.VISIBLE);
+                    ecologia.setVisibility(View.VISIBLE);
+                    vulgar.setVisibility(View.VISIBLE);
+
+                    layoutDesc.setHint(getResources().getString(R.string.descricao));
+                    layoutEco.setHint(getResources().getString(R.string.ecologia));
+                    layoutVulgar.setHint(getResources().getString(R.string.vulgar));
                     exists=false;
                 } else{
-                    descricao.setHint(null);
+
+                    layoutDesc.setHint(getResources().getString(R.string.descLayout));
+                    layoutEco.setHint(getResources().getString(R.string.ecoLayout));
+                    layoutVulgar.setHint(getResources().getString(R.string.vulgarLayout));
                     descricao.setVisibility(View.GONE);
+                    ecologia.setVisibility(View.GONE);
+                    vulgar.setVisibility(View.GONE);
                     exists=true;
 
                 }
@@ -327,6 +446,7 @@ public class editDetails extends AppCompatActivity {
 
     };
 
+    //Options menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -341,8 +461,11 @@ public class editDetails extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if(id == android.R.id.home)
-            NavUtils.navigateUpFromSameTask(this);
+        if(id == android.R.id.home){
+            super.onBackPressed();
+            return true;
+        }
+
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_reject) {
@@ -357,7 +480,7 @@ public class editDetails extends AppCompatActivity {
                                 mDatabase.child("Users").child(uid).child(key).getRef().removeValue();
                                 mDatabase.child("Species").child(species).child(key).getRef().removeValue();
                                 mDatabase.child("PhotosReviewed").child(key).getRef().removeValue();
-                                Intent goBack = new Intent(getApplicationContext(), galleryFeed.class);
+                                Intent goBack = new Intent(getApplicationContext(), photosToReview.class);
                                 startActivity(goBack);
                             }
                         })
@@ -368,5 +491,12 @@ public class editDetails extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
 
 }
+
+

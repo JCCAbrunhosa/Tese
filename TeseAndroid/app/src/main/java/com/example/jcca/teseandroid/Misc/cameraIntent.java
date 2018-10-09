@@ -1,41 +1,23 @@
 package com.example.jcca.teseandroid.Misc;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.jcca.teseandroid.BuildConfig;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
-import com.example.jcca.teseandroid.DataObjects.Position;
-import com.example.jcca.teseandroid.Gallery.galleryFeed;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,6 +66,8 @@ public class cameraIntent extends AppCompatActivity {
 
     TextView noPhotos;
 
+    int valueToReturn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +81,6 @@ public class cameraIntent extends AppCompatActivity {
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        Log.d("PackedManager", getPackageManager().toString());
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
@@ -116,7 +99,7 @@ public class cameraIntent extends AppCompatActivity {
                 }
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-                Log.d("Yeah", "Yeah");
+
             }
         }
 
@@ -146,12 +129,10 @@ public class cameraIntent extends AppCompatActivity {
         bundle.putString("timeStamp", timeStamp);
         intent.putExtras(bundle);
 
-
         setResult(Activity.RESULT_OK, intent);
         finish();
 
         return image;
     }
-
 
 }

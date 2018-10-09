@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.Glide_Module.GlideApp;
 import com.example.jcca.teseandroid.Misc.photoDetails_activity;
@@ -60,10 +61,31 @@ public class galleryFeedAdapter extends RecyclerView.Adapter<galleryFeedAdapter.
                 holder.speciesName.setText(UploadInfo.getSpecies());
 
             //Loading image from Glide library.
-            GlideApp.with(context).load(UploadInfo.getUrl()).into(holder.speciesPhoto);
+            GlideApp.with(context).load(UploadInfo.getUrl()).thumbnail(0.5f).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).skipMemoryCache(true).into(holder.speciesPhoto);
 
             holder.author.setText(UploadInfo.getAuthor());
-            holder.itemView.setLongClickable(true);
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Bundle info= new Bundle();
+                    Log.d("URL", UploadInfo.getUrl());
+                    info.putString("Date", UploadInfo.getDate());
+                    info.putString("Species", UploadInfo.getSpecies());
+                    info.putString("Eco", UploadInfo.getEco());
+                    info.putString("Vulgar", UploadInfo.getVulgar());
+                    info.putString("Author", UploadInfo.getAuthor());
+                    info.putString("URL", UploadInfo.getUrl());
+                    info.putString("Lat", String.valueOf(UploadInfo.getLocation().getLatitude()));
+                    info.putString("Long", String.valueOf(UploadInfo.getLocation().getLongitude()));
+                    info.putString("UID", UploadInfo.getUid());
+                    Intent goTo = new Intent(view.getContext(), photoDetails_activity.class);
+                    goTo.putExtras(info);
+                    goTo.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    view.getContext().startActivity(goTo);
+                }
+            });
+
             holder.info.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -123,12 +145,12 @@ public class galleryFeedAdapter extends RecyclerView.Adapter<galleryFeedAdapter.
         public ViewHolder(View itemView) {
             super(itemView);
 
-            species = (CardView)itemView.findViewById(R.id.guideList);
-            speciesName = (TextView)itemView.findViewById(R.id.species_name);
-            author=(TextView)itemView.findViewById(R.id.author);
-            map = (Button)itemView.findViewById(R.id.map);
-            info = (Button) itemView.findViewById(R.id.info);
-            speciesPhoto = (ImageView)itemView.findViewById(R.id.species_photo);
+            species = itemView.findViewById(R.id.guideList);
+            speciesName = itemView.findViewById(R.id.species_name);
+            author= itemView.findViewById(R.id.author);
+            map = itemView.findViewById(R.id.map);
+            info = itemView.findViewById(R.id.info);
+            speciesPhoto = itemView.findViewById(R.id.species_photo);
 
 
         }

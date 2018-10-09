@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:hint="teste"
-    tools:context="com.example.jcca.teseandroid.Gallery.guide_activity">
+    tools:context="com.example.jcca.teseandroid.Misc.editSpeciesDetails">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -18,22 +16,19 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/greenTese"
-            android:elevation="4dp"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_guide_activity"
-        android:id="@+id/include5" />
+    <include layout="@layout/content_edit_species_details" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/uploadDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/greenTese"
-        app:elevation="6dp"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
+        app:srcCompat="@android:drawable/ic_menu_upload" />
 
 </android.support.design.widget.CoordinatorLayout>

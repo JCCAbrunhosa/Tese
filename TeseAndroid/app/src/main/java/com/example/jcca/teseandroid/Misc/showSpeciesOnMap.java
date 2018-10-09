@@ -77,7 +77,7 @@ public class showSpeciesOnMap extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    if(!postSnapshot.getKey().toString().matches("description")){
+                    if(!postSnapshot.getKey().toString().matches("description") && !postSnapshot.getKey().toString().matches("ecology") && !postSnapshot.getKey().toString().matches("vulgar")){
                         ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
                         Position pos = imageInfo.getLocation();
                         String name = imageInfo.getSpecies();
