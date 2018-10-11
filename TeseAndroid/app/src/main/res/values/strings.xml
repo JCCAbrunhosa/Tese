@@ -151,5 +151,8 @@
     <string name="denyUpload">Reject</string>
     <string name="title_activity_edit_species_details">editSpeciesDetails</string>
     <string name="uploadDone">Upload done successfully!</string>
+    <string name="title_activity_choose_location">Map</string>
+
+    <string name="chooseLocation"> Choose location</string>
 
 </resources>

@@ -50,7 +50,7 @@
             android:name=".Login_Registering.RegisterActivity"
             android:label="@string/title_activity_register"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Gallery.galleryFeed"
             android:label="@string/userFeed"
@@ -159,7 +159,10 @@
         <activity
             android:name=".Misc.editSpeciesDetails"
             android:label="@string/title_activity_edit_species_details"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Misc.chooseLocation"
+            android:label="@string/title_activity_choose_location"></activity>
     </application>
 
 </manifest>

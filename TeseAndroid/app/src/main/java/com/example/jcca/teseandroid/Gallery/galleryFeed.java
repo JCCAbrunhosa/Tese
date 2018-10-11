@@ -44,6 +44,7 @@ import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
 import com.example.jcca.teseandroid.Misc.cameraIntent;
+import com.example.jcca.teseandroid.Misc.chooseLocation;
 import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
@@ -105,6 +106,12 @@ public class galleryFeed extends AppCompatActivity
     String timeStamp;
 
     boolean isCancelled;
+
+    boolean fromMap=false;
+    String locationFromMapLat;
+    String locationFromMapLng;
+
+    Uri photoUri;
 
 
     Handler handler = new Handler();
@@ -351,11 +358,22 @@ public class galleryFeed extends AppCompatActivity
             timeStamp=data.getStringExtra("timeStamp");
             uploadPhoto(path, null);
         }else if(requestCode==2 && resultCode!=RESULT_CANCELED ){
-            Uri photoUri = data.getData();
+            photoUri = data.getData();
             timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            uploadPhoto(null, photoUri);
+            Intent goToMap = new Intent(galleryFeed.this, chooseLocation.class);
+            startActivityForResult(goToMap, 3);
 
+        }else if(requestCode==3 && resultCode!=RESULT_CANCELED){
+            fromMap=true;
+            locationFromMapLat = data.getStringExtra("locationLat");
+            locationFromMapLng = data.getStringExtra("locationLng");
+            uploadPhoto(null, photoUri);
+            //fromMap=false;
         }
+    }
+
+    private void getLocationFromMap(){
+
     }
 
     private void uploadPhoto(String photoPath, Uri file) {
@@ -364,10 +382,8 @@ public class galleryFeed extends AppCompatActivity
         if(file==null){
             if(Build.VERSION.SDK_INT >= 24) {
                 file = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",new File(photoPath));
-                Log.d("Aqi","Ele não entra aqui!!!!!!");
             }else{
                 file = Uri.fromFile(new File(photoPath));
-                Log.d("Aqi","criei o file!");
             }
         }
 
@@ -439,10 +455,17 @@ public class galleryFeed extends AppCompatActivity
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                if(useName){
+                if(fromMap==false){
+                    Log.d("Vim2", "aqui2");
                     image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                }else{
+                }else if(fromMap==true){
+                    double latitude = Double.parseDouble(locationFromMapLat);
+                    double longitude = Double.parseDouble(locationFromMapLng);
+                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(latitude, longitude), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    fromMap=false;
+                }
+                else{
                     image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), "",new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
                 }
 

@@ -53,5 +53,7 @@
     <string name="denyUpload">Rejeitar</string>
     <string name="uploadDone">Upload com sucesso!</string>
 
+    <string name="chooseLocation"> Escolha localização</string>
+
 
 </resources>
