@@ -154,5 +154,11 @@
     <string name="title_activity_choose_location">Map</string>
 
     <string name="chooseLocation"> Choose location</string>
+    <string name="title_activity_initial_screen">Welcome!</string>
+
+    <string name="goToMA">My sightings</string>
+    <string name="goToGA">Gallery</string>
+    <string name="goToLE">Species List</string>
+    <string name="goToMapa">Map</string>
 
 </resources>

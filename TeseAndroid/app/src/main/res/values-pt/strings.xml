@@ -54,6 +54,12 @@
     <string name="uploadDone">Upload com sucesso!</string>
 
     <string name="chooseLocation"> Escolha localização</string>
+    <string name="title_activity_initial_screen">Bem-vindo!</string>
+
+    <string name="goToMA">Meus Avistamentos</string>
+    <string name="goToGA">Galeria de Avistamentos</string>
+    <string name="goToLE">Lista de Espécies</string>
+    <string name="goToMapa">Mapa</string>
 
 
 </resources>

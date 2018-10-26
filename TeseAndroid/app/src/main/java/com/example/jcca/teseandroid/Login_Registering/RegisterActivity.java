@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
+import com.example.jcca.teseandroid.Misc.initialScreen;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -88,7 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
                                         startActivity(goTo);
                                     }else{
                                         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                        Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+                                        Intent goTo = new Intent(getApplicationContext(), initialScreen.class);
                                         startActivity(goTo);
                                     }
 

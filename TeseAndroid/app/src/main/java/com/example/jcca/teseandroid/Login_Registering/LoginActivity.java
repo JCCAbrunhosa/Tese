@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.Gallery.otherPhotosGallery;
+import com.example.jcca.teseandroid.Misc.initialScreen;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -141,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                         // User is signed in
                                         if(user.isEmailVerified()){
                                             startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
-                                            Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+                                            Intent goTo = new Intent(getApplicationContext(), initialScreen.class);
                                             startActivity(goTo);
                                         }else{
                                             Toast.makeText(LoginActivity.this, "Verifique o email!", Toast.LENGTH_LONG).show();
@@ -150,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                         break;
                                     }else{
                                         startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
-                                        Intent goTo = new Intent(getApplicationContext(), galleryFeed.class);
+                                        Intent goTo = new Intent(getApplicationContext(), initialScreen.class);
                                         startActivity(goTo);
                                     }
 
@@ -480,7 +481,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                                     // If sign in fails, display a message to the user. If sign in succeeds
                                                     // the auth state listener will be notified and logic to handle the
                                                     // signed in user can be handled in the listener.
-                                                    Intent goToMain = new Intent(LoginActivity.this, otherPhotosGallery.class);
+                                                    Intent goToMain = new Intent(LoginActivity.this, initialScreen.class);
                                                     startActivity(goToMain);
 
                                                     if (!task.isSuccessful()) {
@@ -497,7 +498,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                                 }
                                                 break;
                                             }else{
-                                                    Intent goToMain = new Intent(LoginActivity.this, otherPhotosGallery.class);
+                                                    Intent goToMain = new Intent(LoginActivity.this, initialScreen.class);
                                                     startActivity(goToMain);
 
 
