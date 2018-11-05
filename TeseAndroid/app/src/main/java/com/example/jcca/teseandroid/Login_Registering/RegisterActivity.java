@@ -4,11 +4,16 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.EditTextPreference;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
@@ -84,11 +89,22 @@ public class RegisterActivity extends AppCompatActivity {
                                         mDatabase.child("Accounts").child(user.getUid()).child("isPro").setValue(true);
                                         mDatabase.child("Accounts").child(user.getUid()).child("userName").setValue(mName.getText().toString());
                                         Toast.makeText( RegisterActivity.this,"Email de Verificação Enviado",Toast.LENGTH_SHORT).show();
+                                        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                        SharedPreferences.Editor edit = sharedPreferences.edit();
+                                        edit.putString("example_text", mName.getText().toString());
+                                        edit.commit();
+                                        edit.apply();
                                         FirebaseAuth.getInstance().signOut();
                                         Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
                                         startActivity(goTo);
                                     }else{
+                                        mDatabase.child("Accounts").child(user.getUid()).child("userName").setValue(mName.getText().toString());
                                         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                        SharedPreferences.Editor edit = sharedPreferences.edit();
+                                        edit.putString("example_text", mName.getText().toString());
+                                        edit.commit();
+                                        edit.apply();
                                         Intent goTo = new Intent(getApplicationContext(), initialScreen.class);
                                         startActivity(goTo);
                                     }

@@ -33,7 +33,7 @@
     <string name="endSession">Terminar Sessão</string>
     <string name="userInfo">Conta</string>
 
-    <string name="noPhotos">Não há avistamentos!</string>
+    <string name="noPhotos">Não há avistamentos! Para fazer uma avistamento, clique no ícone no canto inferior direito.</string>
 
 
     <string name="email_validation" >Valide o seu email para continuar!</string>
@@ -52,6 +52,7 @@
     <string name="acceptUpload">Confirmar</string>
     <string name="denyUpload">Rejeitar</string>
     <string name="uploadDone">Upload com sucesso!</string>
+    <string name="uploadFailed">Upload incompleto! Active a sua localização.</string>
 
     <string name="chooseLocation"> Escolha localização</string>
     <string name="title_activity_initial_screen">Bem-vindo!</string>
@@ -60,6 +61,14 @@
     <string name="goToGA">Galeria de Avistamentos</string>
     <string name="goToLE">Lista de Espécies</string>
     <string name="goToMapa">Mapa</string>
+
+    <string name="turnOnLocation">O acesso à sua localização está desactivada. Sem ele, não será possível fazer upload de capturas feitas na aplicação. Deseja activar?</string>
+    <string name="turnOnOptionsYes">Sim</string>
+    <string name="turnOnOptionsNo">Não</string>
+
+    <string name="userName">User Name</string>
+    <string name="useUserName">Desativar isto irá usar o seu email como autor de capturas.</string>
+
 
 
 </resources>

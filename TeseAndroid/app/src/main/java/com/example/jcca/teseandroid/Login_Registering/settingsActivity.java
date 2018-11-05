@@ -4,6 +4,7 @@ package com.example.jcca.teseandroid.Login_Registering;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Ringtone;
@@ -11,6 +12,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -21,10 +23,17 @@ import android.preference.SwitchPreference;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -194,12 +203,24 @@ public class settingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
+            final EditTextPreference editUserName= (EditTextPreference) findPreference("example_text");
+
+            Log.d("editUserName", editUserName.getText());
+
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
+            editUserName.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    Log.d("onPreferenceChange", editUserName.getText());
+                    return true;
+                }
+            });
+            //FirebaseDatabase.getInstance().getReference().child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("userName").setValue(getResources().getXml(R.xml.pref_general).getText());
             //bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
@@ -282,5 +303,4 @@ public class settingsActivity extends AppCompatPreferenceActivity {
         super.onDestroy();
         Runtime.getRuntime().gc();
     }
-
 }

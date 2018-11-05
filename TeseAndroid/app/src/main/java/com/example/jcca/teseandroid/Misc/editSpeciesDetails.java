@@ -260,7 +260,7 @@ public class editSpeciesDetails extends AppCompatActivity {
 
     //Checks if the input text boxes are filled or not (description and ecology)
     private boolean checkIfFilled(){
-        if( descricao.getText().toString().matches("") && exists==false){
+        if( descricao.getText().toString().matches("") && ecologia.getText().toString().matches("") && vulgar.getText().toString().matches("") && name.getText().toString().matches("") && exists==false){
             Toast.makeText(this, "Incomplete information", Toast.LENGTH_SHORT).show();
             return false;
         }

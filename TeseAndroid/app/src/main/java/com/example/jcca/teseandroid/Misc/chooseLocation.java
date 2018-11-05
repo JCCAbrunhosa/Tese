@@ -14,10 +14,12 @@ import android.widget.Toast;
 
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
 import com.example.jcca.teseandroid.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class chooseLocation extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -54,6 +56,10 @@ public class chooseLocation extends AppCompatActivity implements OnMapReadyCallb
         mMap = googleMap;
 
         // Add a marker and move the camera
+        mMap.setMaxZoomPreference(21);
+        mMap.setMinZoomPreference(10);
+        LatLng sydney = new LatLng(Double.parseDouble("40.692034"), Double.parseDouble("-8.673691"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override

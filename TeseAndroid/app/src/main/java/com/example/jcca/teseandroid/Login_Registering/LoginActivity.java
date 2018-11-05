@@ -7,12 +7,14 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -40,6 +42,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -86,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private DatabaseReference mDatabase;
 
     private boolean notVerified=true;
-    private boolean normalUser;
+    private boolean normalUser=true;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -140,19 +143,32 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 for(DataSnapshot users: dataSnapshot.getChildren()){
                                     if(users.getKey().matches(user.getUid())){
                                         // User is signed in
-                                        if(user.isEmailVerified()){
+                                        if(users.child("isPro").exists()){
+                                            if(user.isEmailVerified()){
+                                                SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                                SharedPreferences.Editor edit = sharedPreferences.edit();
+                                                edit.putString("example_text", users.child("userName").getValue().toString());
+                                                edit.commit();
+                                                edit.apply();
+                                                startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
+                                                Intent goTo = new Intent(getApplicationContext(), initialScreen.class);
+                                                startActivity(goTo);
+                                            }else{
+                                                Toast.makeText(LoginActivity.this, "Verifique o email!", Toast.LENGTH_LONG).show();
+                                                mDatabase.removeEventListener(this);
+                                                break;
+                                            }
+                                        }else{
+                                            SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                            SharedPreferences.Editor edit = sharedPreferences.edit();
+                                            edit.putString("example_text", users.child("userName").getValue().toString());
+                                            edit.commit();
+                                            edit.apply();
                                             startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
                                             Intent goTo = new Intent(getApplicationContext(), initialScreen.class);
                                             startActivity(goTo);
-                                        }else{
-                                            Toast.makeText(LoginActivity.this, "Verifique o email!", Toast.LENGTH_LONG).show();
-                                            break;
                                         }
                                         break;
-                                    }else{
-                                        startService(new Intent(LoginActivity.this, NewPhotoAdded.class));
-                                        Intent goTo = new Intent(getApplicationContext(), initialScreen.class);
-                                        startActivity(goTo);
                                     }
 
                                 }
@@ -475,8 +491,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         outerLoop:
                                         for(DataSnapshot users: dataSnapshot.getChildren()){
-                                            if(users.getKey().matches(user.getUid())){
+                                            if(users.getKey().matches(user.getUid()) && users.child("isPro").getValue()!=null){
                                                 if(user.isEmailVerified()){
+
+                                                    SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                                    SharedPreferences.Editor edit = sharedPreferences.edit();
+                                                    edit.putString("example_text", users.child("userName").getValue().toString());
+                                                    edit.commit();
+                                                    edit.apply();
 
                                                     // If sign in fails, display a message to the user. If sign in succeeds
                                                     // the auth state listener will be notified and logic to handle the
@@ -498,10 +520,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                                 }
                                                 break;
                                             }else{
+                                                    SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                                    SharedPreferences.Editor edit = sharedPreferences.edit();
+                                                    edit.putString("example_text",  users.child("userName").getValue().toString());
+                                                    edit.commit();
+                                                    edit.apply();
                                                     Intent goToMain = new Intent(LoginActivity.this, initialScreen.class);
                                                     startActivity(goToMain);
-
-
                                             }
                                         }
 
@@ -516,8 +541,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             }else{
                                 try {
                                     throw task.getException();
+                                } catch (FirebaseAuthInvalidCredentialsException e) {
+                                    Toast.makeText(LoginActivity.this, "Email ou password incorrectos! Verifique outra vez!", Toast.LENGTH_LONG).show();
+                                    mEmailView.requestFocus();
                                 } catch (Exception e) {
-                                    Toast.makeText(LoginActivity.this, "Verifique a sua rede e tente outra vez!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(LoginActivity.this, "Email ou password incorrectos! Verifique outra vez!", Toast.LENGTH_LONG).show();
                                 }
                             }
 
@@ -528,36 +556,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
 
-
-    private boolean checkIfEmailVerified()
-    {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user.isEmailVerified())
-        {
-            Log.d("isEmailVerified", String.valueOf(user.isEmailVerified()));
-            // user is verified, so you can finish this activity or send user to activity which you want.
-            mDatabase.child("Accounts").child(user.getUid()).child("isPro").setValue(true);
-
-            Toast.makeText(LoginActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        else
-        {
-            // email is not verified, so just prompt the message to the user and restart this activity.
-            // NOTE: don't forget to log out the user.
-
-            //restart this activity
-            finish();
-            return false;
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Runtime.getRuntime().gc();
-    }
 
 }
 

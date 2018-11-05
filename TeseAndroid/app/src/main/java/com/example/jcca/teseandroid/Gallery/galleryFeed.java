@@ -1,7 +1,9 @@
 package com.example.jcca.teseandroid.Gallery;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -24,6 +26,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -91,6 +94,12 @@ public class galleryFeed extends AppCompatActivity
     DatabaseReference mDatabase;
     DatabaseReference toReview;
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
 
     //RecyclerView
     private RecyclerView imageViewer;
@@ -117,6 +126,8 @@ public class galleryFeed extends AppCompatActivity
     Handler handler = new Handler();
     boolean useName;
 
+    boolean accessGranted=true;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +136,7 @@ public class galleryFeed extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         getWindow().getDecorView().setBackgroundColor(Color.LTGRAY);
+        getUserName();
 
         //Checks if the User wants to use the name or not for the photo taken
         final SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -296,6 +308,7 @@ public class galleryFeed extends AppCompatActivity
         }else if(id == R.id.action_upload){
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
+            verifyStoragePermissions(this);
             startActivityForResult(photoPickerIntent, 2);
         }
 
@@ -355,6 +368,7 @@ public class galleryFeed extends AppCompatActivity
         if (requestCode == ACTIVITY_DONE && resultCode!=RESULT_CANCELED) {
             path=  data.getStringExtra("photoPath");
             timeStamp=data.getStringExtra("timeStamp");
+            statusCheck();
             uploadPhoto(path, null);
         }else if(requestCode==2 && resultCode!=RESULT_CANCELED ){
             photoUri = data.getData();
@@ -387,10 +401,6 @@ public class galleryFeed extends AppCompatActivity
         }
 
 
-
-
-
-
         StorageReference photosRef = storageRef.child("photos/" + FirebaseAuth.getInstance().getCurrentUser().getEmail() + "/" + file.getLastPathSegment());
         final StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
         UploadTask uploadTask = photosRef.putFile(file, metadata);
@@ -400,6 +410,7 @@ public class galleryFeed extends AppCompatActivity
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                 progressBar.setVisibility(View.VISIBLE);
                 double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                Log.d("TotalByteCount",String.valueOf(taskSnapshot.getTotalByteCount()));
                 if(Double.isNaN(progress)){
                     isCancelled=true;
                     progressBar.setVisibility(View.GONE);
@@ -433,7 +444,11 @@ public class galleryFeed extends AppCompatActivity
                     Log.d("Task", String.valueOf(taskSnapshot.getTotalByteCount()));
                     getLocation(taskSnapshot);
                     progressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(galleryFeed.this, R.string.uploadDone, Toast.LENGTH_SHORT).show();
+                    if(accessGranted)
+                        Toast.makeText(galleryFeed.this, R.string.uploadDone, Toast.LENGTH_SHORT).show();
+
+                    else
+                        Toast.makeText(galleryFeed.this, R.string.uploadFailed, Toast.LENGTH_SHORT).show();
                 }
                 isCancelled=false;
 
@@ -455,13 +470,12 @@ public class galleryFeed extends AppCompatActivity
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 if(fromMap==false){
-                    Log.d("Vim2", "aqui2");
-                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), getUserName(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                 }else if(fromMap==true){
                     double latitude = Double.parseDouble(locationFromMapLat);
                     double longitude = Double.parseDouble(locationFromMapLng);
-                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(latitude, longitude), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), getUserName(),new Position(latitude, longitude), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
                     fromMap=false;
                 }
                 else{
@@ -472,6 +486,7 @@ public class galleryFeed extends AppCompatActivity
                 toReview.child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
+                accessGranted=true;
 
             }
 
@@ -512,6 +527,60 @@ public class galleryFeed extends AppCompatActivity
     @Override public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         Glide.get(this).trimMemory(level);
+    }
+
+    public void statusCheck() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            buildAlertMessageNoGps();
+
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.turnOnLocation)
+                .setCancelable(false)
+                .setPositiveButton(R.string.turnOnOptionsYes, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton(R.string.turnOnOptionsNo, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        accessGranted=false;
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private String getUserName(){
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String getUserName;
+        if(sharedPreferences.getBoolean("example_switch",true)){
+             getUserName = sharedPreferences.getString("example_text", null);
+        }else{
+            getUserName= FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        }
+
+        return getUserName;
+    }
+
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
     }
 
 }

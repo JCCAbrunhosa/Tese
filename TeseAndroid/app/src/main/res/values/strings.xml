@@ -133,7 +133,7 @@
     <string name="endSession">Log off</string>
     <string name="userInfo">Account</string>
 
-    <string name="noPhotos">No sightings!</string>
+    <string name="noPhotos">No sightings! To make a new capture, click on the icon in the lower right corner.</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
 
@@ -151,6 +151,7 @@
     <string name="denyUpload">Reject</string>
     <string name="title_activity_edit_species_details">editSpeciesDetails</string>
     <string name="uploadDone">Upload done successfully!</string>
+    <string name="uploadFailed">Upload incomplete! Turn on location access.</string>
     <string name="title_activity_choose_location">Map</string>
 
     <string name="chooseLocation"> Choose location</string>
@@ -160,5 +161,13 @@
     <string name="goToGA">Gallery</string>
     <string name="goToLE">Species List</string>
     <string name="goToMapa">Map</string>
+    <string name="title_activity_about">aboutActivity</string>
+
+    <string name="turnOnLocation">Your location access seems to be deactivated. Without it, any picture you take in the application will not be uploaded. You want to turn it on?</string>
+    <string name="turnOnOptionsYes">Yes</string>
+    <string name="turnOnOptionsNo">No</string>
+
+    <string name="userName">User Name</string>
+    <string name="useUserName">Disabling this will make your uploads use your email as author.</string>
 
 </resources>

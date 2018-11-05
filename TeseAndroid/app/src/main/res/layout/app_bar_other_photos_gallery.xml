@@ -31,6 +31,7 @@
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/greenTese"
         app:elevation="6dp"
+        app:fabSize="normal"
         app:srcCompat="@android:drawable/ic_menu_camera" />
 
 </android.support.design.widget.CoordinatorLayout>

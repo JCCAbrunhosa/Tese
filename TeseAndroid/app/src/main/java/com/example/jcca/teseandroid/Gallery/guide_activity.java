@@ -3,6 +3,7 @@ package com.example.jcca.teseandroid.Gallery;
 import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -25,6 +26,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -110,6 +112,8 @@ public class guide_activity extends AppCompatActivity
     ListAdapter listAdapter;
 
     boolean useName;
+
+    boolean accessGranted=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -395,7 +399,11 @@ public class guide_activity extends AppCompatActivity
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
                 getLocation(taskSnapshot);
                 progressBar.setVisibility(View.INVISIBLE);
-                Toast.makeText(guide_activity.this, R.string.uploadDone, Toast.LENGTH_SHORT).show();
+                if(accessGranted)
+                    Toast.makeText(guide_activity.this, R.string.uploadDone, Toast.LENGTH_SHORT).show();
+
+                else
+                    Toast.makeText(guide_activity.this, R.string.uploadFailed, Toast.LENGTH_SHORT).show();
 
 
             }
@@ -411,6 +419,7 @@ public class guide_activity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode!=RESULT_CANCELED) {
+            statusCheck();
             uploadPhoto();
             super.onBackPressed();
 
@@ -429,7 +438,7 @@ public class guide_activity extends AppCompatActivity
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 if(useName){
-                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), getUserName(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                 }else{
                     image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), "",new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -439,6 +448,7 @@ public class guide_activity extends AppCompatActivity
                 toReview.child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
+                accessGranted=true;
 
             }
 
@@ -480,4 +490,37 @@ public class guide_activity extends AppCompatActivity
         Glide.get(this).trimMemory(level);
     }
 
+    public void statusCheck() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            buildAlertMessageNoGps();
+
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.turnOnLocation)
+                .setCancelable(false)
+                .setPositiveButton(R.string.turnOnOptionsYes, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton(R.string.turnOnOptionsNo, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private String getUserName(){
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String getUserName = sharedPreferences.getString("example_text", null);
+
+        return getUserName;
+    }
 }
