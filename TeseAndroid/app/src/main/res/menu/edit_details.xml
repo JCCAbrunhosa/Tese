@@ -3,11 +3,4 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <item
-        android:id="@+id/action_reject"
-        android:icon="@drawable/ic_close_white_24dp"
-        android:orderInCategory="100"
-        android:title="@string/action_edit"
-        app:showAsAction="always" />
-
 </menu>

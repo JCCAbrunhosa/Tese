@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -260,7 +261,7 @@ public class editSpeciesDetails extends AppCompatActivity {
 
     //Checks if the input text boxes are filled or not (description and ecology)
     private boolean checkIfFilled(){
-        if( descricao.getText().toString().matches("") && exists==false){
+        if( descricao.getText().toString().matches("") && ecologia.getText().toString().matches("") && vulgar.getText().toString().matches("") && name.getText().toString().matches("") && exists==false){
             Toast.makeText(this, "Incomplete information", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -280,15 +281,31 @@ public class editSpeciesDetails extends AppCompatActivity {
         }
 
 
-            mDatabase.child(species).addListenerForSingleValueEvent(new ValueEventListener() {
+            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    String newSpecieVulgar = null;
+                    String newSpecieEco=null;
+                    for(DataSnapshot species: dataSnapshot.getChildren()){
+                        if(species.getKey().matches(name.getText().toString())){
+                            newSpecieEco=species.child("ecology").getValue().toString();
+                            newSpecieVulgar=species.child("vulgar").getValue().toString();
+
+                        }
+                    }
+
                     for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                        if(!snapshot.getKey().toString().matches("description") && !snapshot.getKey().toString().matches("ecology") && !snapshot.getKey().toString().matches("vulgar")){
-                            ImageInfo capture = snapshot.getValue(ImageInfo.class);
-                            capture.setVulgar(vulgar.getText().toString());
-                            capture.setSpecies(name.getText().toString());
-                            mDatabase.child(name.getText().toString()).child(snapshot.getKey()).setValue(capture);
+                        if(snapshot.getKey().matches(species)){
+                            for(DataSnapshot details: snapshot.getChildren()){
+                                if(!details.getKey().matches("description") && !details.getKey().matches("ecology") && !details.getKey().matches("vulgar")){
+                                    ImageInfo capture = details.getValue(ImageInfo.class);
+                                    capture.setVulgar(newSpecieVulgar);
+                                    capture.setEco(newSpecieEco);
+                                    capture.setSpecies(name.getText().toString());
+                                    mDatabase.child(name.getText().toString()).child(details.getKey()).setValue(capture);
+
+                                }
+                            }
 
                         }
 
@@ -300,25 +317,44 @@ public class editSpeciesDetails extends AppCompatActivity {
 
                 }
             });
-            genReference.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+            genReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    String newSpecieVulgar = null;
+                    String newSpecieEco = null;
+                    String newSpecieDesc=null;
                     for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                        for(DataSnapshot data: snapshot.getChildren()){
-                            if(data.getKey().matches(species)){
-                                //genReference.child("Users").child(snapshot.getKey()).child(name.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
-                                //genReference.child("Users").child(snapshot.getKey()).child(name.getText().toString()).child("description").setValue(descricao.getText().toString());
-                                //genReference.child("Users").child(snapshot.getKey()).child(name.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
-                                for(DataSnapshot images: data.getChildren()){
-                                    if(!images.getKey().toString().matches("description") && !images.getKey().toString().matches("ecology") && !images.getKey().toString().matches("vulgar")) {
-                                        ImageInfo capture = images.getValue(ImageInfo.class);
-                                        capture.setVulgar(vulgar.getText().toString());
-                                        capture.setSpecies(name.getText().toString());
-                                        genReference.child("Users").child(snapshot.getKey()).child(name.getText().toString()).child(images.getKey()).setValue(capture);
-                                        genReference.child("Users").child(snapshot.getKey()).child(species).removeValue();
+                        if(snapshot.getKey().matches("Species")){
+                            for (DataSnapshot species : snapshot.getChildren()) {
+                                if(species.getKey().matches(name.getText().toString())){
+                                    newSpecieEco=species.child("ecology").getValue().toString();
+                                    newSpecieVulgar=species.child("vulgar").getValue().toString();
+                                    newSpecieDesc=species.child("description").getValue().toString();
+                                }
+                            }
 
+
+                        }
+                        if(snapshot.getKey().matches("Users")) {
+                            for (DataSnapshot users : snapshot.getChildren()) {
+                                for(DataSnapshot specie: users.getChildren()){
+                                    if (specie.getKey().matches(species)) {
+                                        for (DataSnapshot images : specie.getChildren()) {
+                                            if (!images.getKey().matches("description") && !images.getKey().matches("ecology") && !images.getKey().matches("vulgar")) {
+                                                ImageInfo capture = images.getValue(ImageInfo.class);
+                                                capture.setVulgar(newSpecieVulgar);
+                                                capture.setEco(newSpecieEco);
+                                                capture.setSpecies(name.getText().toString());
+                                                genReference.child("Users").child(users.getKey()).child(name.getText().toString()).child(images.getKey()).setValue(capture);
+                                                genReference.child("Users").child(users.getKey()).child(name.getText().toString()).child("description").setValue(newSpecieDesc);
+                                                genReference.child("Users").child(users.getKey()).child(name.getText().toString()).child("vulgar").setValue(newSpecieVulgar);
+                                                genReference.child("Users").child(users.getKey()).child(name.getText().toString()).child("ecology").setValue(newSpecieEco);
+                                                genReference.child("Users").child(users.getKey()).child(species).removeValue();
+                                            }
+                                        }
                                     }
                                 }
+
                             }
                         }
                     }

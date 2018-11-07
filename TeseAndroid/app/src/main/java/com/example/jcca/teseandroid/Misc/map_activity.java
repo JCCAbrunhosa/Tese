@@ -202,4 +202,7 @@ public class map_activity extends AppCompatActivity implements OnMapReadyCallbac
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
 }

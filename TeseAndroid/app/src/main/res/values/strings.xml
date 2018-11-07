@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">bioDiversidade</string>
+    <string name="app_name" translatable="false">diversidade.ID</string>
     <string name="action_settings" translatable="false">Settings</string>
     <string name="title_activity_login" translatable="false">Sign in</string>
     <string name="action_edit">Edit Photo</string>
@@ -7,7 +7,7 @@
 
     <!-- Strings related to login -->
     <string name="prompt_email" translatable="false">Email</string>
-    <string name="prompt_password" translatable="false">Password (optional)</string>
+    <string name="prompt_password" translatable="false">Password</string>
     <string name="action_sign_in" translatable="false">Sign in or register</string>
     <string name="action_sign_in_short" translatable="false">Sign in</string>
     <string name="error_invalid_email" translatable="false">This email address is invalid</string>
@@ -127,13 +127,13 @@
     <string name="userFeed">My sightings</string>
     <string name="othersFeed">Sightings Gallery</string>
     <string name="newPhotos">Pending Sightings</string>
-    <string name="guide">Species List</string>
+    <string name="guide">Species Guide</string>
     <string name="map">Sightings Map</string>
     <string name="options">Options</string>
     <string name="endSession">Log off</string>
     <string name="userInfo">Account</string>
 
-    <string name="noPhotos">No sightings! :(</string>
+    <string name="noPhotos">No sightings! To make a new capture, click on the icon in the lower right corner.</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
 
@@ -150,6 +150,24 @@
     <string name="acceptUpload">Confirm</string>
     <string name="denyUpload">Reject</string>
     <string name="title_activity_edit_species_details">editSpeciesDetails</string>
+    <string name="uploadDone">Upload done successfully!</string>
+    <string name="uploadFailed">Upload incomplete! Turn on location access.</string>
+    <string name="title_activity_choose_location">Map</string>
 
+    <string name="chooseLocation"> Choose location</string>
+    <string name="title_activity_initial_screen">Welcome!</string>
+
+    <string name="goToMA">My sightings</string>
+    <string name="goToGA">Gallery</string>
+    <string name="goToLE">Species List</string>
+    <string name="goToMapa">Map</string>
+    <string name="title_activity_about">aboutActivity</string>
+
+    <string name="turnOnLocation">Your location access seems to be deactivated. Without it, any picture you take in the application will not be uploaded. You want to turn it on?</string>
+    <string name="turnOnOptionsYes">Yes</string>
+    <string name="turnOnOptionsNo">No</string>
+
+    <string name="userName">User Name</string>
+    <string name="useUserName">Disabling this will make your uploads use your email as author.</string>
 
 </resources>

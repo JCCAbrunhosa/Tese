@@ -55,6 +55,7 @@ public class photoDetails_activity extends AppCompatActivity
     public DatabaseReference mDatabase;
     public DatabaseReference users;
     public DatabaseReference base;
+    private DatabaseReference isPro;
 
     public List<ImageInfo> list= new ArrayList<>();
 
@@ -89,6 +90,8 @@ public class photoDetails_activity extends AppCompatActivity
         toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
 
         context=this;
+
+        isPro=FirebaseDatabase.getInstance().getReference();
 
         auth = findViewById(R.id.photoAuthor);
         //ec = findViewById(R.id.photoEco);
@@ -147,6 +150,21 @@ public class photoDetails_activity extends AppCompatActivity
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Species/" + species);
         users = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid());
         base = FirebaseDatabase.getInstance().getReference();
+
+        final FloatingActionButton editPhoto = (FloatingActionButton) findViewById(R.id.editPhotos);
+        isPro.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("isPro").getValue() == null){
+                    editPhoto.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
 
@@ -218,23 +236,6 @@ public class photoDetails_activity extends AppCompatActivity
     public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.photo_details_activity, menu);
-        base.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).getValue()==null)
-                    menu.findItem(R.id.action_edit).setVisible(false);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        if(specie.getText().equals("Sem informação!")){
-            menu.findItem(R.id.action_info).setVisible(false);
-        }
 
 
 
@@ -258,30 +259,6 @@ public class photoDetails_activity extends AppCompatActivity
             return true;
         }
 
-        if(id==R.id.action_edit){
-            Bundle edit = new Bundle();
-            edit.putString("photoName", date);
-            edit.putString("URL", url);
-            edit.putString("Species", species);
-            edit.putString("UID", uid);
-            edit.putString("Vulgar", vulgar);
-            edit.putString("Date", date);
-            edit.putString("PreviousIntent", "photoDetails");
-            Log.d("UUID: ", uid);
-            Intent goTo = new Intent(photoDetails_activity.this, editDetails.class);
-            goTo.putExtras(edit);
-            startActivity(goTo);
-        }
-        if(id==R.id.action_info){
-            Bundle edit = new Bundle();
-            edit.putString("Species", species);
-            edit.putString("Eco", eco);
-            edit.putString("URL", url);
-            edit.putString("Vulgar", vulgar);
-            Intent goTo = new Intent(photoDetails_activity.this, speciesDetails_activity.class);
-            goTo.putExtras(edit);
-            startActivity(goTo);
-        }
 
         return super.onOptionsItemSelected(item);
     }

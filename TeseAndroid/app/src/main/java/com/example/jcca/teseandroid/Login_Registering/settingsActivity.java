@@ -2,39 +2,38 @@ package com.example.jcca.teseandroid.Login_Registering;
 
 
 import android.annotation.TargetApi;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceScreen;
-import android.preference.SwitchPreference;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
+import android.preference.SwitchPreference;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.jcca.teseandroid.Gallery.galleryFeed;
-import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -157,7 +156,8 @@ public class settingsActivity extends AppCompatPreferenceActivity {
     }public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            super.onBackPressed();
+            Intent goTo = new Intent(settingsActivity.this, galleryFeed.class);
+            startActivity(goTo);
             return true;
         }
         return onOptionsItemSelected(item);
@@ -203,12 +203,24 @@ public class settingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
+            final EditTextPreference editUserName= (EditTextPreference) findPreference("example_text");
+
+            Log.d("editUserName", editUserName.getText());
+
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
+            editUserName.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    Log.d("onPreferenceChange", editUserName.getText());
+                    return true;
+                }
+            });
+            //FirebaseDatabase.getInstance().getReference().child("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("userName").setValue(getResources().getXml(R.xml.pref_general).getText());
             //bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
@@ -284,5 +296,11 @@ public class settingsActivity extends AppCompatPreferenceActivity {
             }
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
     }
 }

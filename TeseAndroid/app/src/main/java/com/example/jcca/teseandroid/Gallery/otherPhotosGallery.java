@@ -2,7 +2,9 @@ package com.example.jcca.teseandroid.Gallery;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -10,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,6 +21,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +30,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +54,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -88,6 +94,12 @@ public class otherPhotosGallery extends AppCompatActivity
 
     String path;
 
+    ProgressBar progressBar;
+
+    boolean accessGranted=false;
+
+    boolean isCancelled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,7 +117,7 @@ public class otherPhotosGallery extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh1);
         imageViewer=(RecyclerView) findViewById(R.id.imageGallery1);
         imageViewer.setHasFixedSize(true);
 
@@ -114,6 +126,9 @@ public class otherPhotosGallery extends AppCompatActivity
         noPhotos=findViewById(R.id.noPhotos);
 
         getWindow().getDecorView().setBackgroundColor(Color.LTGRAY);
+
+        progressBar=findViewById(R.id.progressBarOther);
+        progressBar.setVisibility(View.INVISIBLE);
 
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -134,7 +149,7 @@ public class otherPhotosGallery extends AppCompatActivity
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
         toReview = FirebaseDatabase.getInstance().getReference().child("toReview");
 
-        RecyclerView.LayoutManager layoutManager= new LinearLayoutManager(getApplicationContext());
+        RecyclerView.LayoutManager layoutManager= new LinearLayoutManager(otherPhotosGallery.this);
         imageViewer.setLayoutManager(layoutManager);
 
         mReviewed.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -309,12 +324,12 @@ public class otherPhotosGallery extends AppCompatActivity
     //After taking a photo, the upload occurs
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode!=RESULT_CANCELED) {
             path = data.getStringExtra("photoPath");
             timeStamp = data.getStringExtra("timeStamp");
+            statusCheck();
             uploadPhoto(path);
-            Intent goTo = new Intent(this, galleryFeed.class);
-            startActivity(goTo);
+            super.onBackPressed();
         }
     }
 
@@ -329,6 +344,24 @@ public class otherPhotosGallery extends AppCompatActivity
         UploadTask uploadTask = photosRef.putFile(file, metadata);
         //photoRef= mDatabase.getKey();
 
+        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                progressBar.setVisibility(View.VISIBLE);
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                if(Double.isNaN(progress)){
+                    isCancelled=true;
+                    progressBar.setVisibility(View.GONE);
+                }
+                Log.d("Upload","Upload is " + progress + "% done");
+                int currentProgress = (int) progress;
+                progressBar.setProgress(currentProgress);
+
+            }
+
+        });
+
+
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -342,7 +375,17 @@ public class otherPhotosGallery extends AppCompatActivity
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
-                getLocation(taskSnapshot);
+                if(!isCancelled){
+                    Log.d("Task", String.valueOf(taskSnapshot.getTotalByteCount()));
+                    getLocation(taskSnapshot);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    if(accessGranted)
+                        Toast.makeText(otherPhotosGallery.this, R.string.uploadDone, Toast.LENGTH_SHORT).show();
+
+                    else
+                        Toast.makeText(otherPhotosGallery.this, R.string.uploadFailed, Toast.LENGTH_SHORT).show();
+                }
+                isCancelled=false;
             }
 
         });
@@ -362,12 +405,14 @@ public class otherPhotosGallery extends AppCompatActivity
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                mDatabase.child(timeStamp).setValue(image);
+                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), getUserName(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                //mDatabase.child(timeStamp).setValue(image);
                 Log.d("DATABASE:", mDatabase.getRef().toString());
                 toReview.child(timeStamp).setValue(image);
+                mDatabase.child("ToReview").child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
+                accessGranted=true;
 
             }
 
@@ -406,5 +451,44 @@ public class otherPhotosGallery extends AppCompatActivity
     @Override public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         Glide.get(this).trimMemory(level);
+    }
+
+    public void statusCheck() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            buildAlertMessageNoGps();
+
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.turnOnLocation)
+                .setCancelable(false)
+                .setPositiveButton(R.string.turnOnOptionsYes, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton(R.string.turnOnOptionsNo, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private String getUserName(){
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String getUserName;
+        if(sharedPreferences.getBoolean("example_switch",true)){
+            getUserName = sharedPreferences.getString("example_text", null);
+        }else{
+            getUserName= FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        }
+
+        return getUserName;
     }
 }

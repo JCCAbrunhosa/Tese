@@ -8,6 +8,18 @@
     tools:context="com.example.jcca.teseandroid.Gallery.guide_activity"
     tools:showIn="@layout/app_bar_guide_activity">
 
+    <ProgressBar
+        android:id="@+id/progressBarGuide"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="@color/greenTese"
+        android:max="100"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/speciesList"
         android:layout_width="fill_parent"

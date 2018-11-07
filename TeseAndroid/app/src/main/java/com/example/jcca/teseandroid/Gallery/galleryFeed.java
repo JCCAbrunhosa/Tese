@@ -1,7 +1,9 @@
 package com.example.jcca.teseandroid.Gallery;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -24,6 +26,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,6 +47,8 @@ import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
 import com.example.jcca.teseandroid.Misc.cameraIntent;
+import com.example.jcca.teseandroid.Misc.chooseLocation;
+import com.example.jcca.teseandroid.Misc.initialScreen;
 import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
 import com.example.jcca.teseandroid.R;
@@ -63,8 +68,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class galleryFeed extends AppCompatActivity
@@ -88,6 +95,12 @@ public class galleryFeed extends AppCompatActivity
     DatabaseReference mDatabase;
     DatabaseReference toReview;
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
 
     //RecyclerView
     private RecyclerView imageViewer;
@@ -102,8 +115,19 @@ public class galleryFeed extends AppCompatActivity
 
     String timeStamp;
 
+    boolean isCancelled;
+
+    boolean fromMap=false;
+    String locationFromMapLat;
+    String locationFromMapLng;
+
+    Uri photoUri;
+
+
     Handler handler = new Handler();
     boolean useName;
+
+    boolean accessGranted=true;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -113,6 +137,7 @@ public class galleryFeed extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         getWindow().getDecorView().setBackgroundColor(Color.LTGRAY);
+        getUserName();
 
         //Checks if the User wants to use the name or not for the photo taken
         final SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -169,8 +194,8 @@ public class galleryFeed extends AppCompatActivity
         progressBar.setVisibility(View.INVISIBLE);
 
         registerForContextMenu(imageViewer);
-
-        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+        if(FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid())!=null)
+            mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://catchabug-teste.firebaseio.com/Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
         toReview = FirebaseDatabase.getInstance().getReference().child("toReview");
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(galleryFeed.this);
@@ -189,7 +214,7 @@ public class galleryFeed extends AppCompatActivity
         });
 
         //Refresh by swipping down
-        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh1);
         mySwipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -202,6 +227,8 @@ public class galleryFeed extends AppCompatActivity
                     }
                 }
         );
+
+
 
     }
 
@@ -217,6 +244,7 @@ public class galleryFeed extends AppCompatActivity
 
         Query orderByDate = mDatabase.orderByChild("date");
 
+
         orderByDate.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -224,6 +252,9 @@ public class galleryFeed extends AppCompatActivity
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     for(DataSnapshot allImages: postSnapshot.getChildren()){
                         if(!allImages.getKey().toString().matches("description") && !allImages.getKey().toString().matches("ecology") && !allImages.getKey().toString().matches("vulgar")){
+                            TextView name = findViewById(R.id.userName);
+                            name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
                             ImageInfo imageInfo = allImages.getValue(ImageInfo.class);
 
                             list.add(imageInfo);
@@ -249,14 +280,13 @@ public class galleryFeed extends AppCompatActivity
         });
     }
 
+    //Kills the application on back pressed
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        Intent a = new Intent(this, initialScreen.class);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
     }
 
     @Override
@@ -276,6 +306,11 @@ public class galleryFeed extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }else if(id == R.id.action_upload){
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            verifyStoragePermissions(this);
+            startActivityForResult(photoPickerIntent, 2);
         }
 
         return super.onOptionsItemSelected(item);
@@ -331,23 +366,38 @@ public class galleryFeed extends AppCompatActivity
     //After taking a photo, the upload occurs
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ACTIVITY_DONE && resultCode == RESULT_OK) {
+        if (requestCode == ACTIVITY_DONE && resultCode!=RESULT_CANCELED) {
             path=  data.getStringExtra("photoPath");
             timeStamp=data.getStringExtra("timeStamp");
-            uploadPhoto(path);
+            statusCheck();
+            uploadPhoto(path, null);
+        }else if(requestCode==2 && resultCode!=RESULT_CANCELED ){
+            photoUri = data.getData();
+            timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            Intent goToMap = new Intent(galleryFeed.this, chooseLocation.class);
+            startActivityForResult(goToMap, 3);
+
+        }else if(requestCode==3 && resultCode!=RESULT_CANCELED){
+            fromMap=true;
+            locationFromMapLat = data.getStringExtra("locationLat");
+            locationFromMapLng = data.getStringExtra("locationLng");
+            uploadPhoto(null, photoUri);
+            //fromMap=false;
         }
     }
 
-    private void uploadPhoto(String photoPath) {
 
-        Uri file;
-
+    private void uploadPhoto(String photoPath, Uri file) {
         //Upload to Data Storage
-        if(Build.VERSION.SDK_INT >= 24) {
-          file = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",new File(photoPath));
-        }else{
-            file = Uri.fromFile(new File(photoPath));
+
+        if(file==null){
+            if(Build.VERSION.SDK_INT >= 24) {
+                file = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",new File(photoPath));
+            }else{
+                file = Uri.fromFile(new File(photoPath));
+            }
         }
+
 
         StorageReference photosRef = storageRef.child("photos/" + FirebaseAuth.getInstance().getCurrentUser().getEmail() + "/" + file.getLastPathSegment());
         final StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
@@ -358,6 +408,13 @@ public class galleryFeed extends AppCompatActivity
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                 progressBar.setVisibility(View.VISIBLE);
                 double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                Log.d("TotalByteCount",String.valueOf(taskSnapshot.getTotalByteCount()));
+                if(Double.isNaN(progress)){
+                    isCancelled=true;
+                    progressBar.setVisibility(View.GONE);
+                }
+
+
                 Log.d("Upload","Upload is " + progress + "% done");
                 int currentProgress = (int) progress;
                 progressBar.setProgress(currentProgress);
@@ -381,9 +438,17 @@ public class galleryFeed extends AppCompatActivity
                 //progressBar.setVisibility(View.INVISIBLE);
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
 
-                getLocation(taskSnapshot);
-                progressBar.setVisibility(View.INVISIBLE);
+                if(!isCancelled){
+                    Log.d("Task", String.valueOf(taskSnapshot.getTotalByteCount()));
+                    getLocation(taskSnapshot);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    if(accessGranted)
+                        Toast.makeText(galleryFeed.this, R.string.uploadDone, Toast.LENGTH_SHORT).show();
 
+                    else
+                        Toast.makeText(galleryFeed.this, R.string.uploadFailed, Toast.LENGTH_SHORT).show();
+                }
+                isCancelled=false;
 
             }
 
@@ -402,10 +467,16 @@ public class galleryFeed extends AppCompatActivity
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                if(useName){
-                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                if(fromMap==false){
+                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), getUserName(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                }else{
+                }else if(fromMap==true){
+                    double latitude = Double.parseDouble(locationFromMapLat);
+                    double longitude = Double.parseDouble(locationFromMapLng);
+                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), getUserName(),new Position(latitude, longitude), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    fromMap=false;
+                }
+                else{
                     image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), "",new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
                 }
 
@@ -413,6 +484,7 @@ public class galleryFeed extends AppCompatActivity
                 toReview.child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
+                accessGranted=true;
 
             }
 
@@ -453,6 +525,60 @@ public class galleryFeed extends AppCompatActivity
     @Override public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         Glide.get(this).trimMemory(level);
+    }
+
+    public void statusCheck() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            buildAlertMessageNoGps();
+
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.turnOnLocation)
+                .setCancelable(false)
+                .setPositiveButton(R.string.turnOnOptionsYes, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton(R.string.turnOnOptionsNo, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        accessGranted=false;
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private String getUserName(){
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String getUserName;
+        if(sharedPreferences.getBoolean("example_switch",true)){
+             getUserName = sharedPreferences.getString("example_text", null);
+        }else{
+            getUserName= FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        }
+
+        return getUserName;
+    }
+
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
     }
 
 }

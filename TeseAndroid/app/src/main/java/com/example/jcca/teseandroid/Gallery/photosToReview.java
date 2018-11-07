@@ -2,7 +2,9 @@ package com.example.jcca.teseandroid.Gallery;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -11,6 +13,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,6 +23,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.jcca.teseandroid.Adapters.galleryFeedAdapter;
@@ -93,7 +98,11 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
 
     ImageInfo image;
 
+    boolean isCancelled;
+
     TextView noPhotos;
+
+    boolean accessGranted=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +128,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
-        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout mySwipeRefreshLayout = findViewById(R.id.swiperefresh1);
 
         //Photo
         imageViewer = (RecyclerView) findViewById(R.id.imageGallery);
@@ -135,6 +144,7 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
             toReview.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    list.clear();
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
                         ImageInfo imageInfo = postSnapshot.getValue(ImageInfo.class);
@@ -261,12 +271,11 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
     //After taking a photo, the upload occurs
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ACTIVITY_DONE && resultCode == RESULT_OK) {
+        if (requestCode == ACTIVITY_DONE && resultCode!=RESULT_CANCELED) {
             path=  data.getStringExtra("photoPath");
             timeStamp=data.getStringExtra("timeStamp");
+            statusCheck();
             uploadPhoto(path);
-            Intent goTo = new Intent(this, galleryFeed.class);
-            startActivity(goTo);
         }
     }
 
@@ -291,6 +300,10 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                 progressBar.setVisibility(View.VISIBLE);
                 double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                if(Double.isNaN(progress)){
+                    isCancelled=true;
+                    progressBar.setVisibility(View.GONE);
+                }
                 Log.d("Upload","Upload is " + progress + "% done");
                 int currentProgress = (int) progress;
                 progressBar.setProgress(currentProgress);
@@ -313,9 +326,17 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
                 //progressBar.setVisibility(View.INVISIBLE);
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
 
-                getLocation(taskSnapshot);
-                progressBar.setVisibility(View.INVISIBLE);
+                if(!isCancelled){
+                    Log.d("Task", String.valueOf(taskSnapshot.getTotalByteCount()));
+                    getLocation(taskSnapshot);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    if(accessGranted)
+                        Toast.makeText(photosToReview.this, R.string.uploadDone, Toast.LENGTH_SHORT).show();
 
+                    else
+                        Toast.makeText(photosToReview.this, R.string.uploadFailed, Toast.LENGTH_SHORT).show();
+                }
+                isCancelled=false;
 
             }
 
@@ -334,11 +355,13 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                mDatabase.child(timeStamp).setValue(image);
+                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), getUserName(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+               // mDatabase.child(timeStamp).setValue(image);
                 toReview.child(timeStamp).setValue(image);
+                mDatabase.child("ToReview").child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
+                accessGranted=true;
 
             }
 
@@ -377,6 +400,47 @@ public class photosToReview extends AppCompatActivity implements NavigationView.
     @Override public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         Glide.get(this).trimMemory(level);
+    }
+
+    public void statusCheck() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            buildAlertMessageNoGps();
+
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.turnOnLocation)
+                .setCancelable(false)
+                .setPositiveButton(R.string.turnOnOptionsYes, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        accessGranted=true;
+                    }
+                })
+                .setNegativeButton(R.string.turnOnOptionsNo, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        accessGranted=false;
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private String getUserName(){
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String getUserName;
+        if(sharedPreferences.getBoolean("example_switch",true)){
+            getUserName = sharedPreferences.getString("example_text", null);
+        }else{
+            getUserName= FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        }
+
+        return getUserName;
     }
 
 

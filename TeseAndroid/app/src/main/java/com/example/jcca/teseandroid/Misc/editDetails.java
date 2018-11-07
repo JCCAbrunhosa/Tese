@@ -285,7 +285,7 @@ public class editDetails extends AppCompatActivity {
                                     mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(newImage);
                                     mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).setValue(newImage);
 
-                                    if(exists==false){
+                                    if(exists==false) {
                                         mDatabase.child("Species").child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());
                                         mDatabase.child("Species").child(especie.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
                                         mDatabase.child("Species").child(especie.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
@@ -322,15 +322,24 @@ public class editDetails extends AppCompatActivity {
                             }
 
                     } else {
-                        mDatabase.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        mDatabase.child("Species").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                    ImageInfo image = dataSnapshot.child(uid).child(species).child(data).getValue(ImageInfo.class);
+                                    ImageInfo image = dataSnapshot.child(species).child(data).getValue(ImageInfo.class);
 
                                     mDatabase.child("Species").child(image.getSpecies()).child(data).removeValue();
 
-                                    image.setEco(ecologia.getText().toString());
-                                    image.setVulgar(vulgar.getText().toString());
+                                    if(exists==false){
+                                        image.setEco(ecologia.getText().toString());
+                                        image.setVulgar(vulgar.getText().toString());
+                                    }else{
+                                        String vulg= dataSnapshot.child(especie.getText().toString()).child("vulgar").getValue().toString();
+                                        String eco = dataSnapshot.child(especie.getText().toString()).child("ecology").getValue().toString();
+
+                                        image.setEco(eco);
+                                        image.setVulgar(vulg);
+                                    }
+
                                     image.setSpecies(especie.getText().toString());
 
                                     mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).setValue(image);
@@ -377,7 +386,9 @@ public class editDetails extends AppCompatActivity {
 
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 mDatabase.child("toReview").child(key).getRef().removeValue();
-                                mDatabase.child("Users").child(especie.getText().toString()).child(uid).child(key).getRef().removeValue();
+                                mDatabase.child("Users").child(uid).child(species).child(key).getRef().removeValue();
+                                mDatabase.child("Users").child(uid).child("ToReview").child(key).getRef().removeValue();
+
                                 mDatabase.child("Species").child(species).child(key).getRef().removeValue();
                                 mDatabase.child("PhotosReviewed").child(key).getRef().removeValue();
                                 Intent goBack = new Intent(getApplicationContext(), photosToReview.class);
@@ -459,28 +470,6 @@ public class editDetails extends AppCompatActivity {
             return true;
         }
 
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_reject) {
-                new AlertDialog.Builder(editDetails.this)
-                        .setTitle("Rejeitar Avistamento")
-                        .setMessage("Confirme se deseja rejeitar o avistamento:")
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                mDatabase.child("toReview").child(key).getRef().removeValue();
-                                mDatabase.child("Users").child(uid).child(key).getRef().removeValue();
-                                mDatabase.child("Species").child(species).child(key).getRef().removeValue();
-                                mDatabase.child("PhotosReviewed").child(key).getRef().removeValue();
-                                Intent goBack = new Intent(getApplicationContext(), photosToReview.class);
-                                startActivity(goBack);
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, null).show();
-
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -488,6 +477,11 @@ public class editDetails extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         Runtime.getRuntime().gc();
+    }
+
+    public void getNewSpecieData(final String specie){
+
+
     }
 
 }

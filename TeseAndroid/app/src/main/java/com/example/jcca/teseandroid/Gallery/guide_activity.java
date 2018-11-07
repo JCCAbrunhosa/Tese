@@ -3,7 +3,9 @@ package com.example.jcca.teseandroid.Gallery;
 import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -13,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +26,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -65,6 +69,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -107,6 +112,12 @@ public class guide_activity extends AppCompatActivity
     SearchView searchView;
     ListAdapter listAdapter;
 
+    boolean useName;
+
+    boolean accessGranted=false;
+
+    boolean isCancelled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +153,11 @@ public class guide_activity extends AppCompatActivity
         imageViewer.setLayoutManager(layoutManager);
         imageViewer.setHasFixedSize(true);
 
+        progressBar= findViewById(R.id.progressBarGuide);
+        progressBar.setVisibility(View.INVISIBLE);
+
+        final SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        useName = sharedPreferences.getBoolean("example_switch",false);
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -165,6 +181,7 @@ public class guide_activity extends AppCompatActivity
         mDatabase2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                list.clear();
                 TextView name = findViewById(R.id.userName);
                 name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
@@ -178,7 +195,7 @@ public class guide_activity extends AppCompatActivity
                         break; //this break is used for the cycle to add only one of each species
                     }
                 }
-
+                Collections.reverse(list);
                 adapter = new CardViewAdapter(guide_activity.this, list);
                 imageViewer.setAdapter(adapter);
             }
@@ -360,10 +377,15 @@ public class guide_activity extends AppCompatActivity
         uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                //progressBar.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
                 double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                if(Double.isNaN(progress)){
+                    isCancelled=true;
+                    progressBar.setVisibility(View.GONE);
+                }
                 Log.d("Upload","Upload is " + progress + "% done");
                 int currentProgress = (int) progress;
+                progressBar.setProgress(currentProgress);
 
             }
 
@@ -383,10 +405,17 @@ public class guide_activity extends AppCompatActivity
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 //progressBar.setVisibility(View.INVISIBLE);
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL
-                Log.d("What", "Porque raio vais fazer upload?" );
-                getLocation(taskSnapshot);
-                //progressBar.setVisibility(View.INVISIBLE);
+                if(!isCancelled){
+                    Log.d("Task", String.valueOf(taskSnapshot.getTotalByteCount()));
+                    getLocation(taskSnapshot);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    if(accessGranted)
+                        Toast.makeText(guide_activity.this, R.string.uploadDone, Toast.LENGTH_SHORT).show();
 
+                    else
+                        Toast.makeText(guide_activity.this, R.string.uploadFailed, Toast.LENGTH_SHORT).show();
+                }
+                isCancelled=false;
 
             }
 
@@ -400,11 +429,10 @@ public class guide_activity extends AppCompatActivity
     //After taking a photo, the upload occurs
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Log.d("ResultCode:" , String.valueOf(resultCode));
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode!=RESULT_CANCELED) {
+            statusCheck();
             uploadPhoto();
-            Intent goTo = new Intent(this, galleryFeed.class);
-            startActivity(goTo);
+            super.onBackPressed();
 
         }else{
 
@@ -420,12 +448,18 @@ public class guide_activity extends AppCompatActivity
         // Define a listener that responds to location updates
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                // Called when a new location is found by the network location provider.
-                image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                mDatabase.child(timeStamp).setValue(image);
+                if(useName){
+                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), getUserName(),new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                }else{
+                    image = new ImageInfo(timeStamp, taskSnapshot.getDownloadUrl().toString(), "",new Position(location.getLatitude(), location.getLongitude()), "", "","", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                }
+
+                mDatabase.child("ToReview").child(timeStamp).setValue(image);
                 toReview.child(timeStamp).setValue(image);
                 //Immediately stops updates - get's position only once
                 locationManager.removeUpdates(this);
+                accessGranted=true;
 
             }
 
@@ -467,4 +501,42 @@ public class guide_activity extends AppCompatActivity
         Glide.get(this).trimMemory(level);
     }
 
+    public void statusCheck() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            buildAlertMessageNoGps();
+
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.turnOnLocation)
+                .setCancelable(false)
+                .setPositiveButton(R.string.turnOnOptionsYes, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton(R.string.turnOnOptionsNo, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private String getUserName(){
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String getUserName;
+        if(sharedPreferences.getBoolean("example_switch",true)){
+            getUserName = sharedPreferences.getString("example_text", null);
+        }else{
+            getUserName= FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        }
+
+        return getUserName;
+    }
 }
