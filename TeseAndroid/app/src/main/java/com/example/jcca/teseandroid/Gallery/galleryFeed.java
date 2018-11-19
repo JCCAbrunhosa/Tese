@@ -46,6 +46,7 @@ import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
+import com.example.jcca.teseandroid.Misc.aboutActivity;
 import com.example.jcca.teseandroid.Misc.cameraIntent;
 import com.example.jcca.teseandroid.Misc.chooseLocation;
 import com.example.jcca.teseandroid.Misc.initialScreen;
@@ -181,9 +182,7 @@ public class galleryFeed extends AppCompatActivity
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION);
-
         }
-
 
 
         //Photo
@@ -223,13 +222,9 @@ public class galleryFeed extends AppCompatActivity
                         // The method calls setRefreshing(false) when it's finished.
                         refreshList(mDatabase);
                         mySwipeRefreshLayout.setRefreshing(false);
-
                     }
                 }
         );
-
-
-
     }
 
 
@@ -251,9 +246,9 @@ public class galleryFeed extends AppCompatActivity
                 list.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     for(DataSnapshot allImages: postSnapshot.getChildren()){
-                        if(!allImages.getKey().toString().matches("description") && !allImages.getKey().toString().matches("ecology") && !allImages.getKey().toString().matches("vulgar")){
-                            TextView name = findViewById(R.id.userName);
-                            name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                        if(!allImages.getKey().matches("description") && !allImages.getKey().matches("ecology") && !allImages.getKey().matches("vulgar")){
+                            //TextView name = findViewById(R.id.userName);
+                            //name.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
                             ImageInfo imageInfo = allImages.getValue(ImageInfo.class);
 
@@ -349,6 +344,10 @@ public class galleryFeed extends AppCompatActivity
             Intent goTo = new Intent(getApplicationContext(), LoginActivity.class);
             goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             stopService(new Intent(galleryFeed.this, NewPhotoAdded.class));
+            startActivity(goTo);
+        }else if (id == R.id.nav_about) {
+            Intent goTo = new Intent(getApplicationContext(), aboutActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         }else if (id == R.id.nav_options){
             Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);

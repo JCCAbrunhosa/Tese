@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -271,19 +272,16 @@ public class editDetails extends AppCompatActivity {
             public void onClick(View view) {
                     if (species.matches("")) {
                         if (!especie.getText().toString().matches("")) {
-                            mDatabase.child("toReview").addListenerForSingleValueEvent(new ValueEventListener() {
+                            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                    ImageInfo newImage = dataSnapshot.child(key).getValue(ImageInfo.class);
+                                    ImageInfo newImage = dataSnapshot.child("toReview").child(key).getValue(ImageInfo.class);
+
                                     newImage.setVulgar(vulgar.getText().toString());
                                     newImage.setSpecies(especie.getText().toString());
                                     newImage.setEco(ecologia.getText().toString());
 
-
-                                    toDatabase.child(key).setValue(newImage);
-                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(newImage);
-                                    mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).setValue(newImage);
 
                                     if(exists==false) {
                                         mDatabase.child("Species").child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());
@@ -292,22 +290,31 @@ public class editDetails extends AppCompatActivity {
                                         mDatabase.child("Users").child(uid).child(especie.getText().toString()).child("description").setValue(descricao.getText().toString());
                                         mDatabase.child("Users").child(uid).child(especie.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
                                         mDatabase.child("Users").child(uid).child(especie.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
+                                    }else{
+                                        newImage.setVulgar(dataSnapshot.child("Species").child(especie.getText().toString()).child("vulgar").getValue().toString());
+                                        newImage.setEco(dataSnapshot.child("Species").child(especie.getText().toString()).child("ecology").getValue().toString());
                                     }
 
-                                   // mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).child("species").setValue(especie.getText().toString());
-                                   // mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).child("vulgar").setValue(vulgar.getText().toString());
+                                    toDatabase.child(key).setValue(newImage);
+                                    mDatabase.child("Species").child(especie.getText().toString()).child(key).setValue(newImage);
+                                    mDatabase.child("Users").child(uid).child(especie.getText().toString()).child(key).setValue(newImage);
+
+                                    mDatabase.child("toReview").child(key).getRef().removeValue();
+                                    mDatabase.child("Users").child(uid).child("ToReview").child(key).removeValue();
+
                                 }
 
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
 
                                 }
+
+
                             });
 
-                            mDatabase.child("toReview").child(key).getRef().removeValue();
-                            mDatabase.child("Users").child(uid).child("ToReview").child(key).removeValue();
-
                             Toast.makeText(getApplicationContext(), "Informação adicionada!", Toast.LENGTH_SHORT).show();
+
+
 
                             Intent goBack = new Intent(getApplicationContext(), galleryFeed.class);
                             startActivity(goBack);
@@ -330,6 +337,7 @@ public class editDetails extends AppCompatActivity {
                                     mDatabase.child("Species").child(image.getSpecies()).child(data).removeValue();
 
                                     if(exists==false){
+
                                         image.setEco(ecologia.getText().toString());
                                         image.setVulgar(vulgar.getText().toString());
                                     }else{

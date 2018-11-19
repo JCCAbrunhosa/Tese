@@ -170,4 +170,6 @@
     <string name="userName">User Name</string>
     <string name="useUserName">Disabling this will make your uploads use your email as author.</string>
 
+    <string name="about">About</string>
+
 </resources>

@@ -23,7 +23,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="54" />
+                                                <entry key="scalingPercent" value="122" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -33,12 +33,12 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="backgroundAssetType" value="COLOR" />
                                       <entry key="backgroundColor" value="04a628" />
+                                      <entry key="backgroundImage" value="$APPLICATION_HOME_DIR$/plugins/android/lib/templates/gradle-projects/NewAndroidModule/root/res/drawable" />
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
                                       <entry key="foregroundImage" value="$USER_HOME$/Desktop/logo.png" />
-                                      <entry key="foregroundLayerName" value="ic_launcher_foreground" />
-                                      <entry key="outputName" value="diversidadeIDLogo" />
+                                      <entry key="foregroundLayerName" value="androidlogo" />
+                                      <entry key="outputName" value="logos" />
                                     </map>
                                   </option>
                                 </PersistentState>

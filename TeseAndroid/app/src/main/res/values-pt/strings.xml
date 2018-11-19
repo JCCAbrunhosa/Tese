@@ -69,6 +69,6 @@
     <string name="userName">User Name</string>
     <string name="useUserName">Desativar isto irá usar o seu email como autor de capturas.</string>
 
-
+    <string name="about">Sobre</string>
 
 </resources>

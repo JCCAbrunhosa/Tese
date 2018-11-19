@@ -86,9 +86,27 @@ public class editSpeciesDetails extends AppCompatActivity {
         layoutEco= (TextInputLayout) findViewById(R.id.layoutEco);
         layoutVulgar= (TextInputLayout) findViewById(R.id.layoutVulgar);
 
-        //This variable will always check the input on the Species field
-        //If a new one is being inserted then a description will be needed
-        checkInputFinished.run();
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot specie: dataSnapshot.getChildren()){
+                    if(specie.getKey().matches(species)){
+                        name.setText(specie.getKey());
+                        vulgar.setText(specie.child("vulgar").getValue().toString());
+                        ecologia.setText(specie.child("ecology").getValue().toString());
+                        descricao.setText(specie.child("description").getValue().toString());
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
         //Gets the image clicked from Firebase
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -108,26 +126,6 @@ public class editSpeciesDetails extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
-
-        //Checks if the species exist or not (handler on the bottom)
-        name.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                lastTextEdition=System.currentTimeMillis();
-                handler.postDelayed(checkInputFinished,delay);
-            }
-
         });
 
 
@@ -274,11 +272,10 @@ public class editSpeciesDetails extends AppCompatActivity {
 
             //In this case then the species name changes, creating a new database entry for the new specie name and copy all the
             //nodes to it
-        if(exists==false){
             mDatabase.child(name.getText().toString()).child("ecology").setValue(ecologia.getText().toString());
             mDatabase.child(name.getText().toString()).child("description").setValue(descricao.getText().toString());
             mDatabase.child(name.getText().toString()).child("vulgar").setValue(vulgar.getText().toString());
-        }
+
 
 
             mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -366,51 +363,13 @@ public class editSpeciesDetails extends AppCompatActivity {
                 }
             });
 
-            mDatabase.child(species).removeValue();
+            if(!species.matches(name.getText().toString()))
+                mDatabase.child(species).removeValue();
 
         Intent goTo = new Intent(editSpeciesDetails.this, galleryFeed.class);
         goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goTo);
     }
-
-
-    //Runnable - waits 1 second and checks if the description/ecology/vulgar already exists
-    //If the species exist then the user doesn't need to write those fields(and hides them)
-
-    final long delay = 500; // 1 seconds after user stops typing
-    long lastTextEdition = 0;
-    Handler handler = new Handler();
-    private Runnable checkInputFinished = new Runnable() {
-        @Override
-        public void run() {
-            if (System.currentTimeMillis() > lastTextEdition + delay - 500) {
-                if (!listOfSpecies.contains(name.getText().toString()) && name.getText().length()>0) {
-                    descricao.setVisibility(View.VISIBLE);
-                    ecologia.setVisibility(View.VISIBLE);
-                    vulgar.setVisibility(View.VISIBLE);
-
-                    layoutDesc.setHint(getResources().getString(R.string.descricao));
-                    layoutEco.setHint(getResources().getString(R.string.ecologia));
-                    layoutVulgar.setHint(getResources().getString(R.string.vulgar));
-                    exists=false;
-                } else{
-
-                    layoutDesc.setHint(getResources().getString(R.string.descLayout));
-                    layoutEco.setHint(getResources().getString(R.string.ecoLayout));
-                    layoutVulgar.setHint(getResources().getString(R.string.vulgarLayout));
-                    descricao.setVisibility(View.GONE);
-                    ecologia.setVisibility(View.GONE);
-                    vulgar.setVisibility(View.GONE);
-                    exists=true;
-
-                }
-
-
-            }
-
-        }
-
-    };
 
     @Override
     public void onDestroy() {

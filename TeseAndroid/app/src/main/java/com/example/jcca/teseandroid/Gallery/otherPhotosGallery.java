@@ -40,6 +40,7 @@ import com.example.jcca.teseandroid.DataObjects.ImageInfo;
 import com.example.jcca.teseandroid.DataObjects.Position;
 import com.example.jcca.teseandroid.Login_Registering.LoginActivity;
 import com.example.jcca.teseandroid.Login_Registering.settingsActivity;
+import com.example.jcca.teseandroid.Misc.aboutActivity;
 import com.example.jcca.teseandroid.Misc.cameraIntent;
 import com.example.jcca.teseandroid.Misc.map_activity;
 import com.example.jcca.teseandroid.Notifications.NewPhotoAdded;
@@ -304,6 +305,10 @@ public class otherPhotosGallery extends AppCompatActivity
             startActivity(goTo);
         }else if (id == R.id.nav_options){
             Intent goTo = new Intent(getApplicationContext(), settingsActivity.class);
+            goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(goTo);
+        }else if (id == R.id.nav_about) {
+            Intent goTo = new Intent(getApplicationContext(), aboutActivity.class);
             goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goTo);
         } else if (id == R.id.nav_signOut) {
