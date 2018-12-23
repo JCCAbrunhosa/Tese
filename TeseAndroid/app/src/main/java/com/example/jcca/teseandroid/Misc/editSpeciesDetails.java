@@ -346,7 +346,8 @@ public class editSpeciesDetails extends AppCompatActivity {
                                                 genReference.child("Users").child(users.getKey()).child(name.getText().toString()).child("description").setValue(newSpecieDesc);
                                                 genReference.child("Users").child(users.getKey()).child(name.getText().toString()).child("vulgar").setValue(newSpecieVulgar);
                                                 genReference.child("Users").child(users.getKey()).child(name.getText().toString()).child("ecology").setValue(newSpecieEco);
-                                                genReference.child("Users").child(users.getKey()).child(species).removeValue();
+                                                if(!species.matches(name.getText().toString()))
+                                                    genReference.child("Users").child(users.getKey()).child(species).removeValue();
                                             }
                                         }
                                     }
@@ -363,8 +364,10 @@ public class editSpeciesDetails extends AppCompatActivity {
                 }
             });
 
-            if(!species.matches(name.getText().toString()))
+            if(!species.matches(name.getText().toString())){
                 mDatabase.child(species).removeValue();
+            }
+
 
         Intent goTo = new Intent(editSpeciesDetails.this, galleryFeed.class);
         goTo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

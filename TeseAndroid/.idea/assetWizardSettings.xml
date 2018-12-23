@@ -23,7 +23,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="122" />
+                                                <entry key="scalingPercent" value="59" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -36,9 +36,10 @@
                                       <entry key="backgroundColor" value="04a628" />
                                       <entry key="backgroundImage" value="$APPLICATION_HOME_DIR$/plugins/android/lib/templates/gradle-projects/NewAndroidModule/root/res/drawable" />
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="$USER_HOME$/Desktop/logo.png" />
-                                      <entry key="foregroundLayerName" value="androidlogo" />
+                                      <entry key="foregroundImage" value="$USER_HOME$/webSites/wp-content/themes/twentyseventeen-child/logos/deti.png" />
+                                      <entry key="foregroundLayerName" value="deti" />
                                       <entry key="outputName" value="logos" />
+                                      <entry key="previewDensity" value="XXHIGH" />
                                     </map>
                                   </option>
                                 </PersistentState>

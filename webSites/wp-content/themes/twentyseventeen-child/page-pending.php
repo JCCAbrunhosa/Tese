@@ -31,38 +31,40 @@ get_header(); ?>
   <!-- Modal content -->
   <div class="modal-content">
     <span class="close">&times;</span>
+    <div class="row">
 
-    <div class="wrap">
-    	<div id="primary" class="content-area">
-    		<main id="main" class="site-main" role="main">
-    			<div id="Name">
-    			  Espécie:
-    			</div>
-    			<p id="speciesName" contenteditable="true"><br>
-    				<div id="Vulgar">
-    				  Nome Vulgar:
-    				</div><br>
-    			<input id="speciesVulgar"><br>
-    				<div id="Ecology">
-    				  Ecologia:
-    				</div>
-    			<input id="speciesEcology"><br>
-    				<div id="Description">
-    				  Descrição:
-    				</div>
-    			<input id="speciesDescription"><br>
+        <div class="wrap">
+      	<div id="primary" class="content-area">
+      		<main id="main" class="site-main" role="main">
+            <img id="imageToDocument" class="rounded"/>
+        			<div id="Name">
+        			  Espécie:
+        			</div>
+        			<p id="speciesName" contenteditable="true"><br>
+        				<div id="Vulgar">
+        				  Nome Vulgar:
+        				</div><br>
+        			<input id="speciesVulgar"><br>
+        				<div id="Ecology">
+        				  Ecologia:
+        				</div>
+        			<input id="speciesEcology"><br>
+        				<div id="Description">
+        				  Descrição:
+        				</div>
+        			<input id="speciesDescription"><br>
 
-    				<div class="buttonDiv">
-    	        <button class="button" style="float:right" id="Guardar">Guardar</button>
-    	        <br>
-    	        <button class="button" style="float:left"id="Cancelar">Cancelar</button>
-    	      </div>
+      		</main><!-- #main -->
 
-    		</main><!-- #main -->
-
-    	</div><!-- #primary -->
-    </div><!-- .wrap -->
+      	</div><!-- #primary -->
+      </div><!-- .wrap -->
+  </div>
     <br>
+    <div class="buttonDiv">
+      <button class="button" style="float:right" id="Guardar">Aceitar</button>
+      <br>
+      <button class="button" style="float:left"id="Cancelar">Rejeitar</button>
+    </div>
   </div>
 
 </div>

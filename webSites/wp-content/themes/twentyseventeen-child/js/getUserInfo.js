@@ -9,6 +9,7 @@ firebase.auth().onAuthStateChanged(function(user){
   function getDetails(user){
 
     var ref = firebase.database().ref('Users');
+    var uName = firebase.database().ref("Accounts");
 
     document.getElementById("email").textContent=user.email;
 
@@ -33,5 +34,13 @@ firebase.auth().onAuthStateChanged(function(user){
       });
 
 
+    });
+
+    uName.once('value', function(snapshot){
+      snapshot.forEach(function(child){
+        if(child.key==user.uid){
+          document.getElementById("name").textContent=child.child("userName").val();
+        }
+      });
     });
   }

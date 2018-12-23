@@ -24,6 +24,7 @@ get_header(); ?>
 	height:   500px;
 	padding-left: 20px;
 	padding-right: 20px;
+	border: 3px solid green;
 
 }
 </style>

@@ -21,7 +21,9 @@ var overallImage;
 
 var markers=[];
 
-var imgArray = new Array();
+var x=-1;
+
+var imgArray = [];
 var i=0;
 var imgLocation={latitude:"",longitude:""};
 var imgObject = {author:"",date:"",eco:"",location:"",species:"",uid:"",url:"",vulgar:""};
@@ -29,6 +31,7 @@ var imgObject = {author:"",date:"",eco:"",location:"",species:"",uid:"",url:"",v
 var species= window.localStorage.getItem("species");
 var url = window.location.href;
 var authorNode=document.createTextNode("");
+
 
 //Goes through the Firebase Database and fetches the species photos
 ref.once('value', function(snapshot){
@@ -40,6 +43,7 @@ ref.once('value', function(snapshot){
     if(child.key.trim() == species){
       child.forEach(function(photos){
           if(photos.hasChild('species')){
+              imgObject = {author:"",date:"",eco:"",location:"",species:"",uid:"",url:"",vulgar:""};
               speciesName = document.createTextNode(child.key.trim());
               photoAuthor = document.createTextNode(photos.child('author').val());
 
@@ -56,14 +60,6 @@ ref.once('value', function(snapshot){
 
               img.src=photos.child('url').val();
 
-
-              imgArray[i]= new Image();
-              imgArray[i].src=photos.child('url').val();
-              imgArray[i].style.width='100%';
-              imgArray[i].style.height='100%';
-              imgArray[i].style.flex='50%';
-              i++;
-
               img.id = photos.child('species').val();
 
               img.style.height='250px';
@@ -71,25 +67,39 @@ ref.once('value', function(snapshot){
               img.style.flex='50%';
               img.style.padding='4px';
 
+              imgObject.url=img;
+              imgLocation.latitude=photos.child('location').child('latitude').val();
+              imgLocation.longitude=photos.child('location').child('longitude').val();
+              imgObject.location=imgLocation;
+              imgObject.author=photos.child('author').val();
+              imgObject.vulgar=photos.child('vulgar').val();
 
+              imgArray[i]=imgObject;
+              i++;
 
-              document.getElementById('imageCont').appendChild(img).onclick = function(){
-                imgLocation.latitude=photos.child('location').child('latitude').val();
-                imgLocation.longitude=photos.child('location').child('longitude').val();
-                imgObject.author=photos.child('author').val();
-                authorNode.textContent=imgObject.author;
+        }
 
-                showDetails(imgLocation.latitude, imgLocation.longitude, authorNode);
-              };
-          }
       });
       nameChild.parentNode.insertBefore(speciesName, nameChild);
       descChild.parentNode.insertBefore(speciesDesc, descChild);
       ecoChild.parentNode.insertBefore(speciesEco, ecoChild);
       vulgChild.parentNode.insertBefore(speciesVulg,vulgChild);
-      document.getElementById('overallImage').appendChild(imgArray[0]);
+
+      document.getElementById("displayPrevImage").onclick= function(){
+        displayPreviousImage(imgArray);
+      };
+      document.getElementById("displayNextImage").onclick=function(){
+        displayNextImage(imgArray);
+      };
+
+      //displayNextImage(imgArray);
+      window.setInterval(function(){
+        displayNextImage(imgArray);
+      }, 3000);
     }
+
   });
+
 });
 
 firebase.auth().onAuthStateChanged(function(user) {
@@ -112,38 +122,30 @@ firebase.auth().onAuthStateChanged(function(user) {
 });
 
 //Method that shows the image details
-function showDetails(imgPosLat,imgPosLong,authorNode){
+function showDetails(imgPosLat,imgPosLong,authorNode, vulgarName){
   // Get the modal
-  var modal = document.getElementById('myModal');
+  var modal1 = document.getElementById('myModal');
 
   // When the user clicks the button, open the modal
-  modal.style.display = "block";
+  modal1.style.display = "block";
 
   // Get the <span> element that closes the modal
-  var span = document.getElementsByClassName("close")[0];
+  var span1 = document.getElementsByClassName("close1")[0];
 
   // When the user clicks on <span> (x), close the modal
-  span.onclick = function() {
-      modal.style.display = "none";
+  span1.onclick = function() {
+      modal1.style.display = "none";
       setMapOnAll(null);
   }
 
   // When the user clicks anywhere outside of the modal, close it
   window.onclick = function(event) {
-      if (event.target == modal) {
-          modal.style.display = "none";
+      if (event.target == modal1) {
+          modal1.style.display = "none";
           setMapOnAll(null);
       }
   }
-/*
-  document.getElementById('seeMap').onclick=function(){
-    //Sets the location to a localStorage variable in the browser
-     window.localStorage.setItem("photoLat", imgPosLat);
-     window.localStorage.setItem("photoLng", imgPosLong);
 
-     //Redirects the page to the Map
-     window.location = "http://localhost:8888/mapa/";
-  }*/
   var myLatLng ={};
   myLatLng.lng=imgPosLong;
   myLatLng.lat=imgPosLat;
@@ -158,16 +160,16 @@ function showDetails(imgPosLat,imgPosLong,authorNode){
   google.maps.event.trigger(map, "resize");
   map.panTo(myLatLng);
 
+  spVulgar = document.createTextNode(vulgarName);
+
 
   var nameM = document.getElementById("nameM");
-  var vulgarM = document.getElementById("vulgarM");
   var authorM = document.getElementById("authorM");
-
-
+  document.getElementById("vulgarM").textContent=vulgarName;
 
   authorM.parentNode.insertBefore(authorNode,authorM);
   nameM.parentNode.insertBefore(spName, nameM);
-  vulgarM.parentNode.insertBefore(spVulgar,vulgarM);
+  //vulgarM.parentNode.insertBefore(spVulgar,vulgarM);
 
 }
 
@@ -258,4 +260,32 @@ function uploadNewInfo(){
     removeNode.ref.remove();
   });
 
+}
+
+function goToBlog(){
+    window.location = "http://localhost:8888/?s=" + species;
+}
+
+function displayNextImage(imgArray) {
+    x = (x === imgArray.length - 1) ? 0 : x + 1;
+    document.getElementById("imageCont").src = imgArray[x].url.src;
+
+    document.getElementById('imageCont').onclick = function(){
+      authorNode.textContent=imgArray[x].author;
+      document.getElementById("smallImg").src=imgArray[x].url.src;
+      showDetails(imgArray[x].location.latitude, imgArray[x].location.longitude, authorNode, authorNode,imgArray[x].vulgar);
+    };
+
+}
+
+function displayPreviousImage(imgArray) {
+    x = (x <= 0) ? imgArray.length - 1 : x - 1;
+    document.getElementById("imageCont").src = imgArray[x].url.src;
+    //document.getElementById("imageCont").src = imgArray[x].url.src;
+
+    document.getElementById('imageCont').onclick = function(){
+      authorNode.textContent=imgArray[x].author;
+      document.getElementById("smallImg").src=imgArray[x].url.src;
+      showDetails(imgArray[x].location.latitude, imgArray[x].location.longitude, authorNode,imgArray[x].vulgar);
+    };
 }

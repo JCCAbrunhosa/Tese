@@ -22,7 +22,7 @@ get_header(); ?>
   <input type="password" placeholder="password" id="pwd"/>
   <a id="registar" onclick="hideLogin()">Não tem uma conta? Registe-se!</a>
   <br>
-  <label id="pro"style="display:none"><input type="checkbox" id ="checkPro"onchange="hideLogin()"/>Profissional</label>
+  <label id="pro"style="display:none"><input type="checkbox" id ="checkPro"/>Profissional</label>
   <br>
   <input type="userName" style="display:none" placeholder="Nome de Utilizador" id="userName" />
 

@@ -155,6 +155,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                                 startActivity(goTo);
                                             }else{
                                                 Toast.makeText(LoginActivity.this, "Verifique o email!", Toast.LENGTH_LONG).show();
+                                                user.sendEmailVerification();
                                                 mDatabase.removeEventListener(this);
                                                 break;
                                             }

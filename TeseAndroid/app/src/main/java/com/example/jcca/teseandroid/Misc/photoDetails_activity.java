@@ -3,6 +3,7 @@ package com.example.jcca.teseandroid.Misc;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
@@ -128,6 +129,7 @@ public class photoDetails_activity extends AppCompatActivity
         specie.setText(species.toString());
         vlgar.setText(vulgar.toString());
 
+        specie.setPaintFlags(specie.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         photo.setOnClickListener(new View.OnClickListener() {
             @Override

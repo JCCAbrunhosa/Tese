@@ -19,6 +19,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="profile" href="http://gmpg.org/xfn/11">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
 
 <?php wp_head(); ?>
 </head>
@@ -33,6 +35,7 @@
 		<li id="logout" style="float:right" onclick="logOut()"><a>LogOut</a></li>
 		<li id="userAccount" style="float:right"><a href="/conta/">Conta</a></li>
 		<li id="uploadPhoto" style="float:right"><a href="/upload/">Carregar Avistamento</a></li>
+		<li id="uploadPhotoUser" style="float:right"><a href="/uploadcapture/">Carregar Avistamento</a></li>
 	</ul>
 </div>
 

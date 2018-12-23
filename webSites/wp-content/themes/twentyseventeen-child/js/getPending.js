@@ -3,6 +3,8 @@ var ref = firebase.database().ref('toReview');
 var addToSpecies = firebase.database().ref('Species');
 
 var speciesAvailable=[];
+var imgArray=[];
+var i=0;
 
 var imgLocation={latitude:"",longitude:""};
 var imgObject = {author:"",date:"",eco:"",location:"",species:"",uid:"",url:"",vulgar:""};
@@ -35,6 +37,7 @@ ref.once('value', function(snapshot){
 
             document.getElementById('image').appendChild(img).onclick = function(){
               showOptions(img);
+              document.getElementById("imageToDocument").src=img.src;
               imgLocation.latitude=child.child('location').child('latitude').val();
               imgLocation.longitude=child.child('location').child('longitude').val();
               imgObject.author=child.child('author').val();
@@ -199,5 +202,11 @@ function showOptions(img){
 
       //Reloads the page
       location.reload();
+  }
+
+  document.getElementById("Cancelar").onclick=function(){
+    ref.child(imgObject.date).remove();
+    firebase.database().ref('Users').child(imgObject.uid).child("ToReview").child(imgObject.date).remove();
+    location.reload();
   }
 }

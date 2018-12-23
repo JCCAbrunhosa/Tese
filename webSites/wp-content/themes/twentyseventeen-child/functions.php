@@ -18,10 +18,15 @@
       }
       wp_enqueue_script('fetchSpecies', get_stylesheet_directory_uri() . '/js/fetchSpecies.js');
       wp_enqueue_script('login', get_stylesheet_directory_uri() . '/js/login.js');
-      wp_enqueue_script('fetchPhotos', get_stylesheet_directory_uri() . '/js/fetchPhotos.js');
-      wp_enqueue_script('getUserInfo', get_stylesheet_directory_uri() . '/js/getUserInfo.js');
+      if(is_page('galeria')){
+          wp_enqueue_script('fetchPhotos', get_stylesheet_directory_uri() . '/js/fetchPhotos.js');
+      }
+      if(is_page('conta')){
+        wp_enqueue_script('getUserInfo', get_stylesheet_directory_uri() . '/js/getUserInfo.js');
+      }
       wp_enqueue_script('captureLocation', get_stylesheet_directory_uri() . '/js/captureLocation.js');
       wp_enqueue_script('getPending', get_stylesheet_directory_uri() . '/js/getPending.js');
+      wp_enqueue_script('uploadCapture', get_stylesheet_directory_uri() . '/js/uploadUserPhoto.js');
 
   }
   add_action('wp_enqueue_scripts' , 'twentyseventeen_child_scripts');

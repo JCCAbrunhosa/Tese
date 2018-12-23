@@ -1,11 +1,16 @@
 var newlyCreated = false;
+var isPro=false;
+
 
 firebase.auth().onAuthStateChanged(function(user){
-
   if(user){
     if(newlyCreated){
-      registerPro(user.uid);
+        registerUser(user.uid);
+      if(isPro){
+        registerPro(user.uid);
+      }
       newlyCreated=false;
+      isPro=false;
     }
       document.getElementById("main-div").style.display="none";
       goToHome();
@@ -52,16 +57,19 @@ function register(){
   var email= document.getElementById("email").value;
   var password = document.getElementById("pwd").value;
 
-  firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+  firebase.auth().createUserWithEmailAndPassword(email, password).then(function(user) {
+    return user.updateProfile({displayName: document.getElementById("userName").value});
+  }).catch(function(error){
     // Handle Errors here.
     var errorCode = error.code;
     var errorMessage = error.message;
     // ...
   });
   if(document.getElementById("checkPro").checked){
-    newlyCreated=true;
+    isPro=true;
   }
 
+  newlyCreated=true;
   window.setTimeout(goToHome, 2000);
 }
 
@@ -88,6 +96,8 @@ function hideLogin(){
 
 function registerPro(uuid){
   firebase.database().ref('Accounts').child(uuid).child("isPro").set("true");
+}
 
-
+function registerUser(uuid){
+  firebase.database().ref('Accounts').child(uuid).child("userName").set(document.getElementById("userName").value);
 }
